@@ -1,0 +1,22 @@
+[Global plugin config]
+manageProfile=false
+
+[SSH Config][192.168.1.242]
+hostname=192.168.1.242
+identifier=192.168.1.242
+importedFromSshConfig=true
+port=
+profileName=
+sshkey=~/.ssh/id_ed25519
+useSshConfig=true
+username=git
+
+[SSH Config][git.nogroup.group]
+hostname=git.nogroup.group
+identifier=git.nogroup.group
+importedFromSshConfig=true
+port=
+profileName=Built-in
+sshkey=~/.ssh/id_ed25519
+useSshConfig=true
+username=git

@@ -1,0 +1,443 @@
+---
+cdiVersion: 0.5.0
+containerEdits:
+  deviceNodes:
+  - path: /dev/nvidia-modeset
+  - path: /dev/nvidia-uvm
+  - path: /dev/nvidia-uvm-tools
+  - path: /dev/nvidiactl
+  env:
+  - NVIDIA_VISIBLE_DEVICES=void
+  hooks:
+  - args:
+    - nvidia-ctk
+    - hook
+    - create-symlinks
+    - --link
+    - ../libnvidia-allocator.so.1::/gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/gbm/nvidia-drm_gbm.so
+    - --link
+    - libglxserver_nvidia.so.580.142::/gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/xorg/modules/extensions/libglxserver_nvidia.so
+    env:
+    - NVIDIA_CTK_DEBUG=false
+    hookName: createContainer
+    path: /run/current-system/profile/bin/nvidia-ctk
+  - args:
+    - nvidia-ctk
+    - hook
+    - create-symlinks
+    - --link
+    - libGLX_nvidia.so.580.142::/gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libGLX_indirect.so.0
+    - --link
+    - libcuda.so.1::/gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libcuda.so
+    - --link
+    - libnvidia-opticalflow.so.1::/gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-opticalflow.so
+    env:
+    - NVIDIA_CTK_DEBUG=false
+    hookName: createContainer
+    path: /run/current-system/profile/bin/nvidia-ctk
+  - args:
+    - nvidia-ctk
+    - hook
+    - enable-cuda-compat
+    - --host-driver-version=580.142
+    env:
+    - NVIDIA_CTK_DEBUG=false
+    hookName: createContainer
+    path: /run/current-system/profile/bin/nvidia-ctk
+  - args:
+    - nvidia-ctk
+    - hook
+    - update-ldcache
+    - --ldconfig-path
+    - /run/current-system/profile/bin/true
+    - --folder
+    - /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib
+    - --folder
+    - /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/vdpau
+    env:
+    - NVIDIA_CTK_DEBUG=false
+    hookName: createContainer
+    path: /run/current-system/profile/bin/nvidia-ctk
+  mounts:
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libEGL_nvidia.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libEGL_nvidia.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libGLESv1_CM_nvidia.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libGLESv1_CM_nvidia.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libGLESv2_nvidia.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libGLESv2_nvidia.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libGLX_nvidia.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libGLX_nvidia.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libcuda.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libcuda.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libcudadebugger.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libcudadebugger.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvcuvid.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvcuvid.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-allocator.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-allocator.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-cfg.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-cfg.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-eglcore.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-eglcore.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-encode.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-encode.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-fbc.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-fbc.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-glcore.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-glcore.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-glsi.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-glsi.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-glvkspirv.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-glvkspirv.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-gpucomp.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-gpucomp.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-ml.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-ml.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-ngx.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-ngx.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-nvvm.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-nvvm.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-opencl.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-opencl.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-opticalflow.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-opticalflow.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-pkcs11-openssl3.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-pkcs11-openssl3.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-pkcs11.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-pkcs11.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-present.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-present.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-ptxjitcompiler.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-ptxjitcompiler.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-rtcore.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-rtcore.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-sandboxutils.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-sandboxutils.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-tls.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-tls.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-vksc-core.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-vksc-core.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-wayland-client.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvidia-wayland-client.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvoptix.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/libnvoptix.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /run/current-system/profile/bin/nvidia-cuda-mps-control
+    hostPath: /run/current-system/profile/bin/nvidia-cuda-mps-control
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /run/current-system/profile/bin/nvidia-cuda-mps-server
+    hostPath: /run/current-system/profile/bin/nvidia-cuda-mps-server
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /run/current-system/profile/bin/nvidia-smi
+    hostPath: /run/current-system/profile/bin/nvidia-smi
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/vdpau/libvdpau_nvidia.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/vdpau/libvdpau_nvidia.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /run/current-system/profile/share/nvidia/nvoptix.bin
+    hostPath: /run/current-system/profile/share/nvidia/nvoptix.bin
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /run/current-system/profile/share/X11/xorg.conf.d/nvidia-drm-outputclass.conf
+    hostPath: /run/current-system/profile/share/X11/xorg.conf.d/nvidia-drm-outputclass.conf
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/2nvb7fsadsyynj12fx86fi55gl2ijsj1-firmware/lib/firmware/nvidia/580.142/gsp_ga10x.bin
+    hostPath: /gnu/store/2nvb7fsadsyynj12fx86fi55gl2ijsj1-firmware/lib/firmware/nvidia/580.142/gsp_ga10x.bin
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/2nvb7fsadsyynj12fx86fi55gl2ijsj1-firmware/lib/firmware/nvidia/580.142/gsp_tu10x.bin
+    hostPath: /gnu/store/2nvb7fsadsyynj12fx86fi55gl2ijsj1-firmware/lib/firmware/nvidia/580.142/gsp_tu10x.bin
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/xorg/modules/drivers/nvidia_drv.so
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/xorg/modules/drivers/nvidia_drv.so
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+  - containerPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/xorg/modules/extensions/libglxserver_nvidia.so.580.142
+    hostPath: /gnu/store/mqsmd63pzbzh0jldabar1jhrskgr9rlm-nvidia-driver-580.142/lib/xorg/modules/extensions/libglxserver_nvidia.so.580.142
+    options:
+    - ro
+    - nosuid
+    - nodev
+    - bind
+devices:
+- containerEdits:
+    deviceNodes:
+    - path: /dev/nvidia0
+    - path: /dev/dri/card0
+    - path: /dev/dri/renderD128
+    hooks:
+    - args:
+      - nvidia-ctk
+      - hook
+      - create-symlinks
+      - --link
+      - ../card0::/dev/dri/by-path/pci-0000:1c:00.0-card
+      - --link
+      - ../renderD128::/dev/dri/by-path/pci-0000:1c:00.0-render
+      env:
+      - NVIDIA_CTK_DEBUG=false
+      hookName: createContainer
+      path: /run/current-system/profile/bin/nvidia-ctk
+    - args:
+      - nvidia-ctk
+      - hook
+      - chmod
+      - --mode
+      - "755"
+      - --path
+      - /dev/dri
+      env:
+      - NVIDIA_CTK_DEBUG=false
+      hookName: createContainer
+      path: /run/current-system/profile/bin/nvidia-ctk
+  name: "0"
+- containerEdits:
+    deviceNodes:
+    - path: /dev/nvidia0
+    - path: /dev/dri/card0
+    - path: /dev/dri/renderD128
+    hooks:
+    - args:
+      - nvidia-ctk
+      - hook
+      - create-symlinks
+      - --link
+      - ../card0::/dev/dri/by-path/pci-0000:1c:00.0-card
+      - --link
+      - ../renderD128::/dev/dri/by-path/pci-0000:1c:00.0-render
+      env:
+      - NVIDIA_CTK_DEBUG=false
+      hookName: createContainer
+      path: /run/current-system/profile/bin/nvidia-ctk
+    - args:
+      - nvidia-ctk
+      - hook
+      - chmod
+      - --mode
+      - "755"
+      - --path
+      - /dev/dri
+      env:
+      - NVIDIA_CTK_DEBUG=false
+      hookName: createContainer
+      path: /run/current-system/profile/bin/nvidia-ctk
+  name: GPU-451cef10-6f40-d8b2-d832-49d21dcf3b51
+- containerEdits:
+    deviceNodes:
+    - path: /dev/nvidia0
+    - path: /dev/dri/card0
+    - path: /dev/dri/renderD128
+    hooks:
+    - args:
+      - nvidia-ctk
+      - hook
+      - create-symlinks
+      - --link
+      - ../card0::/dev/dri/by-path/pci-0000:1c:00.0-card
+      - --link
+      - ../renderD128::/dev/dri/by-path/pci-0000:1c:00.0-render
+      env:
+      - NVIDIA_CTK_DEBUG=false
+      hookName: createContainer
+      path: /run/current-system/profile/bin/nvidia-ctk
+    - args:
+      - nvidia-ctk
+      - hook
+      - chmod
+      - --mode
+      - "755"
+      - --path
+      - /dev/dri
+      env:
+      - NVIDIA_CTK_DEBUG=false
+      hookName: createContainer
+      path: /run/current-system/profile/bin/nvidia-ctk
+  name: all
+kind: nvidia.com/gpu

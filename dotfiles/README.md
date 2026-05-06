@@ -21,7 +21,8 @@ Managed packages:
 - `x11`: X resources, X init, GTK 2, and screen layout scripts.
 - `stumpwm`: the live StumpWM rc file.
 - `emacs`: selected editable Emacs config files inside `~/.emacs.d`.
-- `config`: selected editable XDG config under `~/.config`.
+- `config`: selected editable XDG config under `~/.config`, including shell,
+  desktop, terminal, GTK, KDE/LXQt, keyboard, and small tool config.
 - `keyboard`: keyboard setup scripts and Kinesis layout files.
 
 Runtime state, credentials, browser data, package caches, and generated Emacs
@@ -29,3 +30,5 @@ state are not meant to live here.
 
 Private shell/API credentials should live outside this repo, for example in
 `~/.config/private/env`, which is sourced by the stowed `.bashrc` when present.
+Application state, browser profiles, chat databases, credentials, and local
+identity material are intentionally excluded from stow.

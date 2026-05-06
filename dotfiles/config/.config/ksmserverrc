@@ -1,0 +1,12 @@
+[LegacySession: saved at previous logout]
+clientMachine1=localhost
+command1=yad
+count=1
+
+[Session: saved at previous logout]
+clientId1=1013cd4d8d7000177779804800000012910003
+count=1
+program1=firefox
+restartCommand1=/usr/lib/firefox/firefox,--sm-client-id,1013cd4d8d7000177779804800000012910003
+restartStyleHint1=0
+userId1=tay
