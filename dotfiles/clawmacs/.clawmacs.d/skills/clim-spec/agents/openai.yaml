@@ -1,0 +1,4 @@
+interface:
+  display_name: "CLIM Spec"
+  short_description: "Build CLIM and McCLIM apps from the spec"
+  default_prompt: "Use $clim-spec to design, extend, or debug a CLIM or McCLIM application with CLIM 2 spec-grounded guidance."

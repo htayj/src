@@ -1,0 +1,4 @@
+interface:
+  display_name: "McCLIM Applications"
+  short_description: "Build McCLIM apps with CLIM docs and presentation interfaces"
+  default_prompt: "Use $mcclim-manual to design, build, or debug this McCLIM application with the consolidated CLIM/McCLIM references and bounded lookups."

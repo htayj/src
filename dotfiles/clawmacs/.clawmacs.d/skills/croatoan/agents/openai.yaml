@@ -1,0 +1,4 @@
+interface:
+  display_name: "Croatoan"
+  short_description: "Build terminal UIs with Croatoan in Common Lisp"
+  default_prompt: "Use $croatoan to design, extend, or debug a Common Lisp terminal UI built with Croatoan."

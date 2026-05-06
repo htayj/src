@@ -3,3 +3,4 @@ README.md
 \.gitignore
 \.stow-local-ignore
 \.pre-stow-backup-.*
+.*~

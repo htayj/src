@@ -1,0 +1,4 @@
+interface:
+  display_name: "Common Lisp Cookbook"
+  short_description: "Use the Common Lisp Cookbook for practical code"
+  default_prompt: "Use $common-lisp to answer this Common Lisp task with cookbook-grounded, practical guidance."

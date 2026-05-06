@@ -1,0 +1,4 @@
+interface:
+  display_name: "LispWorks CLIM Guide"
+  short_description: "Use LispWorks CLIM guide with bounded lookup"
+  default_prompt: "Use $lispworks-clim-guide to answer this LispWorks CLIM or vendor CLIM reference task from the bundled guide."

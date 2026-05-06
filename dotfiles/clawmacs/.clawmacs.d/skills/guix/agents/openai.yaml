@@ -1,0 +1,4 @@
+interface:
+  display_name: "GNU Guix"
+  short_description: "Write GNU Guix packages, channels, and services"
+  default_prompt: "Use $guix to write, debug, or explain a GNU Guix package, channel, manifest, or service configuration."

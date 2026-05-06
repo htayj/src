@@ -1,0 +1,4 @@
+interface:
+  display_name: "Franz CLIM Guide"
+  short_description: "Use Franz/Allegro CLIM 2.2 guide with bounded lookup"
+  default_prompt: "Use $franz-clim-guide to answer this Allegro CLIM or vendor CLIM reference task from the bundled guide."

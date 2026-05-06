@@ -1,0 +1,161 @@
+# Franz Allegro CLIM 2.2 User Guide Index
+
+Source: https://franz.com/support/documentation/8.1/doc/clim-ug.pdf
+Full Markdown: `franz-clim-user-guide.md`
+
+## When to use this guide
+- Use for Franz/Allegro CLIM 2.2 behavior, examples, setup, Motif notes, Allegro-specific caveats, and vendor wording.
+- Use as a conceptual CLIM guide when the question is about CLIM practice and the CLIM 2 spec is too abstract.
+- Use for chapters that Franz covers more directly than McCLIM docs: X resources, CLIM patches, dynamic/layered colors, Silica internals, and Motif CLIM notes.
+
+## Prefer another CLIM source when
+- Use `clim-spec` for portable normative API semantics from the CLIM 2 specification.
+- Use `mcclim-manual` for McCLIM-specific extensions, backends, Drei/ESA/Clouseau/Listener/Graphic Forms, or implementation details.
+- Use `lispworks-clim-guide` for LispWorks CLIM, CAPI integration, Liquid CLIM, or LispWorks implementation specifics.
+
+## Topic map
+- 1: Introduction and notation - manual notation, packages, bug reporting, CLIM terms
+- 2: Getting started with CLIM - loading CLIM, server paths, demos, simple examples, Motif/window-manager notes, X resources
+- 3: Drawing graphics - drawing plane, coordinates, drawing functions, pixmaps, regions and geometry
+- 4: Drawing environment - mediums, drawing options, line styles, transformations
+- 5: Text styles - text-style objects, family/face/size, text-style functions
+- 6: Drawing in color - colors, palettes, device colors, dynamic and layered colors
+- 7: Designs - ink/design concepts, indirect/flipping ink, patterns, stencils, translucency, compositing
+- 8: Presentation types - presentations, accept/present, input contexts, predefined presentation types
+- 9: Defining presentation types - define-presentation-type, methods, views, history, completion, translators
+- 10: Commands - command objects, command tables, command processor, interaction styles, keystrokes
+- 11: Formatted output - tables, graphs, item lists, text formatting, bordered output
+- 12: Hardcopy streams - PostScript output and hardcopy examples
+- 13: Menus and dialogs - menus, dialogs, accepting-values, menu-choose, dialog examples
+- 14: Incremental redisplay - updating-output and incremental redisplay operators
+- 15: Pointer manipulation - pointer tracking and high-level pointer tracking operators
+- 16: Gadgets - basic gadget protocol, value/action gadgets, abstract gadgets
+- 17: Input editor - activation/delimiter gestures, input editor commands, extending the editor
+- 18: Output recording - output records, redisplay, incremental redisplay, output recording streams
+- 19: Streams and windows - extended input/output streams, cursor, viewport, scrolling, window streams
+- 20: Silica windowing substrate - sheets, protocols, geometry, input/output/repaint, ports, grafts, mirrored sheets
+
+## Lookup workflow
+- Search first: `python3 scripts/franz_clim_lookup.py --query "presentations"`
+- List headings: `python3 scripts/franz_clim_lookup.py --list-headings`
+- Load a narrow section: `python3 scripts/franz_clim_lookup.py --section "Chapter 7"`
+- Read the full Markdown only when the answer needs broad context or many adjacent sections.
+
+## Generated heading index
+- L1: Franz CLIM 2.2 User Guide
+- L376:   Chapter 1 Introduction and notation
+- L387:     1.1 Notation used in this manual
+- L477:     1.2 Comments and suggestions
+- L483:     1.3 Some CLIM terms
+- L521:     1.4 Reporting bugs
+- L581:     1.5 Patches
+- L593:   Chapter 2 Getting started with CLIM
+- L601:     2.1 General information
+- L730:     2.2 Window-manager-specific information
+- L753:     2.3 X resources
+- L825:     2.4 Some miscellaneous quirks and tricks
+- L944:   Chapter 3 Drawing graphics in CLIM
+- L946:     3.1 Concepts of drawing graphics in CLIM
+- L1038:     3.2 Examples of Using CLIM Drawing Functions
+- L1053:     3.3 CLIM drawing functions
+- L1404:     3.4 Medium-level drawing functions in CLIM
+- L1495:     3.5 Pixmaps in CLIM
+- L1644:     3.6 General geometric objects and regions in CLIM
+- L2158:   Chapter 4 The CLIM drawing environment
+- L2160:     4.1 Introduction to CLIM drawing environments
+- L2246:     4.2 Using CLIM drawing options
+- L2373:     4.3 CLIM line styles
+- L2489:     4.4 Transformations in CLIM
+- L2958:   Chapter 5 Text styles in CLIM
+- L2960:     5.1 Concepts of CLIM text styles
+- L3005:     5.2 CLIM Text Style Objects
+- L3020:     5.3 CLIM Text Style Suboptions
+- L3034:     5.4 CLIM Text Style Functions
+- L3177:   Chapter 6 Drawing in color in CLIM
+- L3179:     6.1 Concepts of drawing in color in CLIM
+- L3335:     6.2 CLIM Operators for Drawing in Color
+- L3503:     6.3 Predefined color names in CLIM
+- L3537:   Chapter 7 Drawing with designs in CLIM
+- L3539:     7.1 Concepts of Designs in CLIM
+- L3579:     7.2 Indirect Ink in CLIM
+- L3604:     7.3 Flipping Ink in CLIM
+- L3621:     7.4 Concepts of patterned designs in CLIM
+- L3781:     7.5 Concepts of compositing and translucent ink in CLIM
+- L3911:     7.6 Complex Designs in CLIM
+- L3961:     7.7 Achieving different drawing effects in CLIM
+- L4017:   Chapter 8 Presentation types in CLIM
+- L4019:     8.1 Concepts of CLIM presentation types
+- L4114:     8.2 How to specify a CLIM presentation type
+- L4167:     8.3 Using CLIM presentation types for output
+- L4326:     8.4 Using CLIM presentation types for input
+- L4511:     8.5 Predefined presentation types in CLIM
+- L4783:     8.6 Defining a new presentation type in CLIM
+- L6149:     8.7 Presentation translators in CLIM
+- L7025:   Chapter 9 Defining application frames in CLIM
+- L7027:     9.1 Concepts of CLIM application frames
+- L7050:     9.2 Defining CLIM application frames
+- L7887:     9.3 CLIM application frames vs. CLOS
+- L8006:     9.4 Running a CLIM application
+- L8018:     9.5 Examples of CLIM application frames
+- L8104:     9.6 CLIM application frame accessors
+- L8286:     9.7 Operators for running CLIM applications
+- L8402:   Chapter 10 Commands in CLIM
+- L8404:     10.1 Introduction to CLIM commands
+- L8448:     10.2 Defining commands the easy way
+- L8523:     10.3 Command objects in CLIM
+- L8680:     10.4 CLIM Command Tables
+- L8849:     10.5 Styles of interaction supported by CLIM
+- L9234:     10.6 The CLIM Command Processor
+- L9344:     10.7 Command-related Presentation Types
+- L9378:   Chapter 11 Formatted output in CLIM
+- L9380:     11.1 Formatted output in CLIM
+- L9385:     11.2 Concepts of CLIM table and graph formatting
+- L9416:     11.3 CLIM Operators for Table Formatting
+- L9855:     11.4 Formatting graphs in CLIM
+- L10055:     11.5 Formatting text in CLIM
+- L10279:     11.6 Bordered output in CLIM
+- L10314:   Chapter 12 Hardcopy streams in CLIM
+- L10322:     12.1 Function for doing PostScript output
+- L10367:     12.2 Examples of Doing PostScript Output
+- L10397:   Chapter 13 Menus and dialogs in CLIM
+- L10399:     13.1 Concepts of menus and dialogs in CLIM
+- L10415:     13.2 Operators for menus in CLIM
+- L10640:     13.3 Operators for dealing with dialogs in CLIM
+- L10806:     13.4 Using an :accept-values pane in a CLIM application frame
+- L10843:     13.5 Examples of menus and dialogs in CLIM
+- L11083:   Chapter 14 Incremental redisplay in CLIM
+- L11085:     14.1 Concepts of incremental redisplay in CLIM
+- L11117:     14.2 Using clim:updating-output
+- L11176:     14.3 CLIM Operators for Incremental Redisplay
+- L11243:     14.4 Example of incremental redisplay in CLIM
+- L11564:   Chapter 15 Manipulating the pointer in CLIM
+- L11566:     15.1 Manipulating the pointer in CLIM
+- L11656:     15.2 High Level Operators for Tracking the Pointer in CLIM
+- L11881:   Chapter 16 Using gadgets in CLIM
+- L11883:     16.1 Using gadgets in CLIM
+- L11888:     16.2 Basic gadget protocol in CLIM
+- L12129:     16.3 Abstract gadgets in CLIM
+- L12564:   Chapter 17 The CLIM input editor
+- L12566:     17.1 Input editing and built-in keystroke commands in CLIM
+- L12703:     17.2 Concepts of CLIM's input editor
+- L12787:     17.3 Functions for doing input editing
+- L12838:     17.4 The input editing protocol
+- L12899:     17.5 Examples of extending the input editor
+- L12951:   Chapter 18 Output recording in CLIM
+- L12953:     18.1 Concepts of CLIM output recording
+- L12993:     18.2 CLIM operators for output recording
+- L13282:     18.3 Standard output record classes
+- L13318:   Chapter 19 Streams and windows in CLIM
+- L13330:     19.1 Extended stream input in CLIM
+- L13416:     19.2 Extended stream output in CLIM
+- L13426:     19.3 Manipulating the cursor in CLIM
+- L13582:     19.4 Attracting attention, selecting a file, noting progress
+- L13666:     19.5 Window stream operations in CLIM
+- L13882:   Chapter 20 The Silica windowing substrate
+- L13887:     20.1 Overview of CLIM's windowing substrate
+- L13971:     20.2 Sheet geometry
+- L14077:     20.3 Relationships between sheets
+- L14160:     20.4 Sheet input protocol
+- L14193:     20.5 Sheet output protocol
+- L14318:     20.6 Repainting protocol
+- L14344:     20.7 Ports, grafts, and mirrored sheets

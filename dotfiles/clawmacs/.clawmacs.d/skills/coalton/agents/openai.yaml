@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coalton"
+  short_description: "Build typed Common Lisp projects with Coalton"
+  default_prompt: "Use $coalton to build, refactor, or debug a Common Lisp project that uses Coalton."

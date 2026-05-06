@@ -1,0 +1,1996 @@
+# McCLIM Documentation Modules Index
+
+Source directory: `/home/tay/reference/external_src/mcclim/Documentation`
+
+Use this index before loading module references. Prefer bounded lookups:
+
+```bash
+python3 scripts/mcclim_docs_lookup.py --list-docs
+python3 scripts/mcclim_docs_lookup.py --doc drei --query "syntax module"
+python3 scripts/mcclim_docs_lookup.py --doc guided-tour --section "Our first application"
+python3 scripts/mcclim_docs_lookup.py --all-docs --query "minibuffer"
+```
+
+## Module Routing
+
+- **drei** (`references/modules/documentation-drei.md`): Use for McCLIM's editor substrate: buffers, marks, views, undo, kill ring, syntax modules, redisplay, editor commands, and input/editor-pane/gadget variants.
+  Word count: 12546
+- **esa** (`references/modules/documentation-esa.md`): Use for Emacs-style CLIM application structure: ESA frame/pane/buffer mixins, minibuffer/info panes, M-x, command tables, keyboard macros, and buffer file I/O.
+  Word count: 1628
+- **guided-tour** (`references/modules/documentation-guided-tour.md`): Use for tutorial-style CLIM application examples: hello world, custom panes, drawing, command definitions, file browser, scheduler, and layered CLIM concepts.
+  Word count: 11149
+- **notes** (`references/modules/documentation-notes.md`): Use for McCLIM implementation/design notes on presentation types, extended stream input, regions, sheet geometry, and layout protocol.
+  Word count: 9156
+- **specification** (`references/modules/documentation-specification.md`): Use for the CLIM II specification copy bundled in the McCLIM source tree. Prefer the separate clim-spec skill for exact section lookup when available.
+  Word count: 156343
+- **historical** (`references/modules/documentation-historical.md`): Use for old release notes, historical project notes, and context about older McCLIM changes.
+  Word count: 6921
+
+## Section Maps
+
+### drei: Drei Editor Substrate
+- line 1: Drei Manual
+- line 8: 1 Tutorials
+- line 11:   1.1 Defining Drei Commands
+- line 55: 2 How-to Guides
+- line 60: 3 Explanation
+- line 63:   3.1 Drei Concepts
+- line 74:   3.2 Drei Variants
+- line 79:   3.3 DREI-BASE Package
+- line 90:     3.3.1 Efficiency considerations
+- line 123:   3.4 Buffer Protocol
+- line 134:     3.4.1 Implementation Hints
+- line 149:   3.5 Syntax Modules
+- line 187:     3.5.1 Earley Parser
+- line 196:   3.6 View Protocol
+- line 203:   3.7 Unit Protocol
+- line 218:     3.7.1 Diligent Motors
+- line 225:   3.8 Redisplay Protocol
+- line 234:   3.9 Undo Protocol
+- line 245:     3.9.1 Implementation
+- line 264:   3.10 Kill Ring Protocol
+- line 281:   3.11 Drei Commands
+- line 291:     3.11.1 Syntax Command Table Protocol
+- line 302:     3.11.2 Numeric Argument in Drei Commands
+- line 307: 4 Reference
+- line 310:   4.1 Access Functions
+- line 351:   4.2 Special Variables
+- line 376:   4.3 External API
+- line 475:   4.4 Protocols
+- line 480:     4.4.1 Buffer Protocol Reference
+- line 485:       4.4.1.1 General Buffer Protocol Parts
+- line 612:       4.4.1.2 Operations Related To The Offset Of Marks
+- line 729:       4.4.1.3 Inserting And Deleting Objects
+- line 774:       4.4.1.4 Getting Objects Out Of The Buffer
+- line 813:     4.4.2 Buffer Modification Protocol Reference
+- line 828:     4.4.3 Syntax Protocol Reference
+- line 833:       4.4.3.1 General Syntax Protocol
+- line 864:       4.4.3.2 Incremental Parsing Framework
+- line 893:       4.4.3.3 Lexical analysis
+- line 968:       4.4.3.4 Specifying A Grammar
+- line 1027:     4.4.4 View Protocol Reference
+- line 1174:     4.4.5 Unit Protocol Reference
+- line 1179:       4.4.5.1 Motors And Limit Actions
+- line 1216:       4.4.5.2 Motion Protocol
+- line 1221:       4.4.5.3 Editing Protocol
+- line 1228:       4.4.5.4 Generator Macros
+- line 1231:     4.4.6 Redisplay Protocol Reference
+- line 1256:     4.4.7 Undo Protocol Reference
+- line 1261:       4.4.7.1 Protocol Specification
+- line 1330:       4.4.7.2 How The Buffer Handles Undo
+- line 1449:     4.4.8 Kill Ring Protocol Reference
+- line 1454:       4.4.8.1 Kill Ring Protocol Specification
+- line 1527:       4.4.8.2 Kill Ring Implementation
+- line 1542:   4.5 Command Reference
+- line 1551:     4.5.1 Drei Command Tables
+- line 1644:     4.5.2 Syntax Command Table Protocol Reference
+- line 1671: Concept Index
+- line 1684: Variable Index
+- line 1697: Function And Macro Index
+
+### esa: ESA Emacs-Style Applications
+- line 1: ESA Emacs-Style Applications
+- line 3: Introduction
+- line 5:   Purpose
+- line 13: Packages
+- line 17: Basic use of ESA
+- line 19:   Mixin classes
+- line 31:   The info pane
+- line 35:   The minibuffer pane
+- line 39:   Command tables
+- line 41:     Command tables supplied by ESA
+- line 45:         `esa:global-esa-table` \[Command Table\]
+- line 49:         `esa:com-quit`  \[Command\]
+- line 55:         `esa:keyboard-macro-table` \[Command Table\]
+- line 59:     Finding a command table
+- line 63:         `find-applicable-command-table` *frame* \[Generic Function\]
+- line 71:         `:command-table` \[Initarg\]
+- line 75: Functions for input and output
+- line 79:         `esa-io:esa-io-table` \[Command Table\]
+- line 95:         `esa-io:frame-find-file` *(application-frame pathname)* \[Generic Function\]
+- line 115:         `esa-io:frame-find-file-read-only` *(application-frame pathname)* \[Generic Function\]
+- line 119:         `com-read-only` *()* \[Command\]
+- line 172:         `esa-io:frame-save-buffer` *(application-frame buffer)* \[Generic Function\]
+
+### guided-tour: Guided Tour
+- line 1: Guided Tour
+- line 3: Introduction
+- line 21: Overview of Functionality
+- line 25:       Geometry
+- line 29:       Graphics substrate
+- line 33:       Windowing substrate
+- line 37:       Extended Streams
+- line 41:       Output Recording
+- line 45:       Formatted Output
+- line 49:       Presentations
+- line 53:       Panes
+- line 59:       Look and Feel Adaptiveness
+- line 63:       Application Building
+- line 67:       Commands
+- line 71:       Dialogs and Incremental Update/Redisplay
+- line 77: Our first application
+- line 140: Basic Facilities
+- line 142:   Geometry
+- line 152:   The Windowing Substrate
+- line 182:       Window hierarchies
+- line 188:       Window input
+- line 194:       Window output
+- line 202: Building Applications
+- line 206:   Application Frames
+- line 226:   Panes
+- line 240:   Commands
+- line 258: Simple applications
+- line 260:   Color Editor
+- line 373:   A simple drawing application
+- line 475: High Level Facilities
+- line 479:       Output Recording
+- line 485:       Output Formatting
+- line 518:       Presentations
+- line 530:       Presentation Types
+- line 544:       Context-Dependent Input
+- line 556:       Command Processors
+- line 564:   A Directory Browser
+- line 643:   Schedule Example
+- line 764: Conclusion
+- line 772: Acknowledgments
+- line 774:       Original article
+- line 778:       2006 update
+
+### notes: Implementation Notes
+- line 1: McCLIM Implementation Notes
+- line 4: Extended Stream Input
+- line 7: Introduction
+- line 11: Glossary
+- line 19: [Extended Stream Input](http://bauhh.dyndns.org:8000/clim-spec/22.html)
+- line 32:   Input buffer
+- line 36: Problems with the specification
+- line 38:   EIS initargs
+- line 48:   CLIM input kernel
+- line 57:   Input buffer
+- line 65:   Unspecified functionality
+- line 85: Current practice
+- line 101: Proposed solution
+- line 113:   STREAM-READ-GESTURE
+- line 117:     Reading a gesture from EIS (specified algorithm)
+- line 158:     How the function is used (in McCLIM)
+- line 185:     Proposed solution
+- line 229:   STREAM-WAIT-INPUT
+- line 231:     (Un)specified algorithm
+- line 242:     How the function is used (in McCLIM)
+- line 246:     \[rejected\] Proposed solution
+- line 264:     Proposed solution
+- line 290:   Input buffer and event sheet interaction
+- line 302:   Input buffer and input context handlers interaction
+- line 304: Future work
+- line 311: Layout Protocol
+- line 314: Layout protocol
+- line 325:   Composition
+- line 331:   Allocation
+- line 335: Changing the space requirements
+- line 344: Presentation Types
+- line 347: Introduction
+- line 364: Presentation type categories
+- line 379: Presentation methods
+- line 435: Presentation type inheritance
+- line 477: Correspondence between lisp objects and presentation types
+- line 549: Examples
+- line 668: Footnotes
+- line 697: Regions
+- line 700: Introduction
+- line 767: Region types
+- line 795: Simple region composition - canonical form
+- line 830: Canonical form of the region composition
+- line 852: Unbound region algebra
+- line 886: Sheet Geometry
+- line 889: Sheet geometry for sheets
+- line 891:   Coordinate systems
+- line 910:   Transformations
+- line 944:   Regions
+- line 959:   Sheets and mirrors
+- line 970:   The sheet geometry modifiers
+- line 1055: Sheet geometry for panes
+- line 1061:   The layout protocol
+- line 1109:   basic-pane
+- line 1113:   clim-stream-pane
+- line 1121:   composite-pane
+- line 1140:   scroller-pane
+- line 1151: Footnotes
+
+### specification: Bundled CLIM II Specification Source
+- line 1: Bundled CLIM II Specification Source
+- line 17: Overview of CLIM
+- line 55: Conventions
+- line 59:   Audience, Goals, and Purpose
+- line 65:   Package Structure
+- line 79:   “Spread” Point Arguments to Functions
+- line 85:   Immutability of Objects
+- line 97:     Behavior of Interfaces
+- line 111:   Protocol Classes and Predicates
+- line 141:   Specialized Arguments to Generic Functions
+- line 151:   Multiple Value `setf`
+- line 165:   Sheet, Stream, or Medium Arguments to Macros
+- line 175:   Macros that Expand into Calls to Advertised Functions
+- line 193:   Terminology Pertaining to Error Conditions
+- line 215: Regions
+- line 225:   General Regions
+- line 235:         `region` \[Protocol Class\]
+- line 243:         `regionp` *object* \[Protocol Predicate\]
+- line 247:         `path` \[Protocol Class\]
+- line 255:         `pathp` *object* \[Protocol Predicate\]
+- line 261:         `area` \[Protocol Class\]
+- line 267:         `areap` *object* \[Protocol Predicate\]
+- line 271:         `coordinate` \[Type\]
+- line 277:         `coordinate` *n* \[Function\]
+- line 281:         `+everywhere+` \[Constant\]
+- line 283:         `+nowhere+` \[Constant\]
+- line 287:     The Region Predicate Protocol
+- line 293:         `region-equal` *region1 region2* \[Generic Function\]
+- line 297:         `region-contains-region-p` *region1 region2* \[Generic Function\]
+- line 301:         `region-contains-position-p` *region x y* \[Generic Function\]
+- line 307:         `region-intersects-region-p` *region1 region2* \[Generic Function\]
+- line 311:     Region Composition Protocol
+- line 319:         `region-set` \[Protocol Class\]
+- line 327:         `region-set-p` *object* \[Protocol Predicate\]
+- line 331:         `standard-region-union` \[Class\]
+- line 333:         `standard-region-intersection` \[Class\]
+- line 335:         `standard-region-difference` \[Class\]
+- line 345:         `region-set-regions` *region &key normalize* \[Generic Function\]
+- line 353:         `map-over-region-set-regions` *function region &key normalize* \[Generic Function\]
+- line 370:     Permissible Alternatives During Rendering
+- line 378:   Drawing Functions
+- line 392:     Basic Drawing Functions
+- line 394:         `draw-point` *medium point &key* \[Function\]
+- line 396:         `draw-point*` *medium x y &key* \[Function\]
+- line 402:         `draw-points` *medium points &key* \[Function\]
+- line 404:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 420:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 422:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 428:         `draw-lines` *medium points &key* \[Function\]
+- line 430:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 461:         `draw-rectangles` *medium points &key* \[Function\]
+- line 463:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 512:     Compound Drawing Functions
+- line 516:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 518:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 528:   Pixmaps
+- line 534:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 542:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 546:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 548:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 550:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 562:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 570:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 574:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 580:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 590:   Graphics Protocols
+- line 600:     General Behavior of Drawing Functions
+- line 614:     Medium-specific Drawing Functions
+- line 624:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 628:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 632:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 636:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 640:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 644:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 648:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 652:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 658:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 662:     Other Medium-specific Output Functions
+- line 664:         `medium-finish-output` *medium* \[Generic Function\]
+- line 668:         `medium-force-output` *medium* \[Generic Function\]
+- line 672:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 678:         `medium-beep` *medium* \[Generic Function\]
+- line 682:         `region-union` *region1 region2* \[Generic Function\]
+- line 688:         `region-intersection` *region1 region2* \[Generic Function\]
+- line 694:         `region-difference` *region1 region2* \[Generic Function\]
+- line 700:   Other Region Types
+- line 710:     Points
+- line 716:         `point` \[Protocol Class\]
+- line 720:         `pointp` *object* \[Protocol Predicate\]
+- line 724:         `standard-point` \[Class\]
+- line 728:         `make-point` *x y* \[Function\]
+- line 732:       The Point Protocol
+- line 736:         `point-position` *point* \[Generic Function\]
+- line 740:         `point-x` *point* \[Generic Function\]
+- line 742:         `point-y` *point* \[Generic Function\]
+- line 746:     Polygons and Polylines
+- line 756:         `polyline` \[Protocol Class\]
+- line 760:         `polylinep` *object* \[Protocol Predicate\]
+- line 764:         `standard-polyline` \[Class\]
+- line 768:         `make-polyline` *point-seq &key closed* \[Function\]
+- line 770:         `make-polyline*` *coord-seq &key closed* \[Function\]
+- line 776:         `polygon` \[Protocol Class\]
+- line 780:         `polygonp` *object* \[Protocol Predicate\]
+- line 784:         `standard-polygon` \[Class\]
+- line 788:         `make-polygon` *point-seq* \[Function\]
+- line 790:         `make-polygon*` *coord-seq* \[Function\]
+- line 794:       The Polygon and Polyline Protocol
+- line 798:         `polygon-points` *polygon-or-polyline* \[Generic Function\]
+- line 802:         `map-over-polygon-coordinates` *function polygon-or-polyline* \[Generic Function\]
+- line 806:         `map-over-polygon-segments` *function polygon-or-polyline* \[Generic Function\]
+- line 810:         `polyline-closed` *polyline* \[Generic Function\]
+- line 814:     Lines
+- line 818:         `line` \[Protocol Class\]
+- line 822:         `linep` *object* \[Protocol Predicate\]
+- line 826:         `standard-line` \[Class\]
+- line 830:         `make-line` *start-point end-point* \[Function\]
+- line 832:         `make-line*` *start-x start-y end-x end-y* \[Function\]
+- line 836:       The Line Protocol
+- line 840:         `line-start-point*` *line* \[Generic Function\]
+- line 842:         `line-end-point*` *line* \[Generic Function\]
+- line 846:         `line-start-point` *line* \[Generic Function\]
+- line 848:         `line-end-point` *line* \[Generic Function\]
+- line 854:     Rectangles
+- line 858:         `rectangle` \[Protocol Class\]
+- line 862:         `rectanglep` *object* \[Protocol Predicate\]
+- line 866:         `standard-rectangle` \[Class\]
+- line 870:         `make-rectangle` *point1 point2* \[Function\]
+- line 872:         `make-rectangle*` *x1 y1 x2 y2* \[Function\]
+- line 878:       The Rectangle Protocol
+- line 882:         `rectangle-edges*` *rectangle* \[Generic Function\]
+- line 886:         `rectangle-min-point` *rectangle* \[Generic Function\]
+- line 888:         `rectangle-max-point` *rectangle* \[Generic Function\]
+- line 894:         `rectangle-min-x` *rectangle* \[Generic Function\]
+- line 896:         `rectangle-min-y` *rectangle* \[Generic Function\]
+- line 898:         `rectangle-max-x` *rectangle* \[Generic Function\]
+- line 900:         `rectangle-max-y` *rectangle* \[Generic Function\]
+- line 906:         `rectangle-width` *rectangle* \[Generic Function\]
+- line 908:         `rectangle-height` *rectangle* \[Generic Function\]
+- line 910:         `rectangle-size` *rectangle* \[Generic Function\]
+- line 916:     Ellipses and Elliptical Arcs
+- line 938:         `ellipse` \[Protocol Class\]
+- line 942:         `ellipsep` *object* \[Protocol Predicate\]
+- line 946:         `standard-ellipse` \[Class\]
+- line 950:         `make-ellipse` *center-point radius-1-dx radius-1-dy radius-2-dx radius-2-dy &key start-angle end-angle* \[Function\]
+- line 952:         `make-ellipse*` *center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy &key start-angle end-angle* \[Function\]
+- line 960:         `elliptical-arc` \[Protocol Class\]
+- line 964:         `elliptical-arc-p` *object* \[Protocol Predicate\]
+- line 968:         `standard-elliptical-arc` \[Class\]
+- line 972:         `make-elliptical-arc` *center-point radius-1-dx radius-1-dy radius-2-dx radius-2-dy &key start-angle end-angle* \[Function\]
+- line 974:         `make-elliptical-arc*` *center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy &key start-angle end-angle* \[Function\]
+- line 982:       The Ellipse and Elliptical Arc Protocol
+- line 986:         `ellipse-center-point*` *elliptical-object* \[Generic Function\]
+- line 990:         `ellipse-center-point` *elliptical-object* \[Generic Function\]
+- line 996:         `ellipse-radii` *elliptical-object* \[Generic Function\]
+- line 1000:         `ellipse-start-angle` *elliptical-object* \[Generic Function\]
+- line 1004:         `ellipse-end-angle` *elliptical-object* \[Generic Function\]
+- line 1008: Bounding Rectangles
+- line 1010:   Bounding Rectangles
+- line 1035:     Permissible Alternatives During Rendering
+- line 1043:   Drawing Functions
+- line 1057:     Basic Drawing Functions
+- line 1059:         `draw-point` *medium point &key* \[Function\]
+- line 1061:         `draw-point*` *medium x y &key* \[Function\]
+- line 1067:         `draw-points` *medium points &key* \[Function\]
+- line 1069:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 1085:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 1087:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 1093:         `draw-lines` *medium points &key* \[Function\]
+- line 1095:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 1126:         `draw-rectangles` *medium points &key* \[Function\]
+- line 1128:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 1177:     Compound Drawing Functions
+- line 1181:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 1183:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 1193:   Pixmaps
+- line 1199:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 1207:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 1211:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 1213:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 1215:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 1227:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 1235:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 1239:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 1245:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 1255:   Graphics Protocols
+- line 1265:     General Behavior of Drawing Functions
+- line 1279:     Medium-specific Drawing Functions
+- line 1289:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 1293:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 1297:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 1301:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 1305:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 1309:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 1313:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 1317:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 1323:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 1327:     Other Medium-specific Output Functions
+- line 1329:         `medium-finish-output` *medium* \[Generic Function\]
+- line 1333:         `medium-force-output` *medium* \[Generic Function\]
+- line 1337:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 1343:         `medium-beep` *medium* \[Generic Function\]
+- line 1351:         `bounding-rectangle` \[Protocol Class\]
+- line 1359:         `bounding-rectangle-p` *object* \[Protocol Predicate\]
+- line 1363:         `standard-bounding-rectangle` \[Class\]
+- line 1371:         `make-bounding-rectangle` *x1 y1 x2 y2* \[Function\]
+- line 1377:     The Bounding Rectangle Protocol
+- line 1381:         `bounding-rectangle*` *region* \[Generic Function\]
+- line 1390:         `bounding-rectangle` *region* \[Generic Function\]
+- line 1398:     Bounding Rectangle Convenience Functions
+- line 1404:         `with-bounding-rectangle*` *(min-x min-y max-x max-y) region &body body* \[Macro\]
+- line 1412:         `bounding-rectangle-position` *region* \[Generic Function\]
+- line 1416:         `bounding-rectangle-min-x` *region* \[Generic Function\]
+- line 1418:         `bounding-rectangle-min-y` *region* \[Generic Function\]
+- line 1420:         `bounding-rectangle-max-x` *region* \[Generic Function\]
+- line 1422:         `bounding-rectangle-max-y` *region* \[Generic Function\]
+- line 1426:         `bounding-rectangle-width` *region* \[Generic Function\]
+- line 1428:         `bounding-rectangle-height` *region* \[Generic Function\]
+- line 1430:         `bounding-rectangle-size` *region* \[Generic Function\]
+- line 1436: Affine Transformations
+- line 1440:   Transformations
+- line 1442:         `transformation` \[Protocol Class\]
+- line 1448:         `transformationp` *object* \[Protocol Predicate\]
+- line 1452:         `+identity-transformation+` \[Constant\]
+- line 1456:     Transformation Conditions
+- line 1458:         `transformation-error` \[Error Condition\]
+- line 1462:         `transformation-underspecified` \[Error Condition\]
+- line 1466:         `reflection-underspecified` \[Error Condition\]
+- line 1470:         `singular-transformation` \[Error Condition\]
+- line 1474:   Transformation Constructors
+- line 1478:         `make-translation-transformation` *translation-x translation-y* \[Function\]
+- line 1484:         `make-rotation-transformation` *angle &optional origin* \[Function\]
+- line 1486:         `make-rotation-transformation*` *angle &optional origin-x origin-y* \[Function\]
+- line 1492:         `make-scaling-transformation` *scale-x scale-y &optional origin* \[Function\]
+- line 1494:         `make-scaling-transformation*` *scale-x scale-y &optional origin-x origin-y* \[Function\]
+- line 1500:         `make-reflection-transformation` *point1 point2* \[Function\]
+- line 1502:         `make-reflection-transformation*` *x1 y1 x2 y2* \[Function\]
+- line 1508:         `make-transformation` *mxx mxy myx myy tx ty* \[Function\]
+- line 1517:         `make-3-point-transformation` *point-1 point-2 point-3 point-1-image point-2-image point-3-image* \[Function\]
+- line 1523:         `make-3-point-transformation*` *x1 y1 x2 y2 x3 y3 x1-image y1-image x2-image y2-image x3-image y3-image* \[Function\]
+- line 1531:   The Transformation Protocol
+- line 1535:     Transformation Predicates
+- line 1539:         `transformation-equal` *transformation1 transformation2* \[Generic Function\]
+- line 1545:         `identity-transformation-p` *transformation* \[Generic Function\]
+- line 1549:         `invertible-transformation-p` *transformation* \[Generic Function\]
+- line 1553:         `translation-transformation-p` *transformation* \[Generic Function\]
+- line 1557:         `reflection-transformation-p` *transformation* \[Generic Function\]
+- line 1561:         `rigid-transformation-p` *transformation* \[Generic Function\]
+- line 1567:         `even-scaling-transformation-p` *transformation* \[Generic Function\]
+- line 1571:         `scaling-transformation-p` *transformation* \[Generic Function\]
+- line 1575:         `rectilinear-transformation-p` *transformation* \[Generic Function\]
+- line 1583:     Composition of Transformations
+- line 1589:         `compose-transformations` *transformation1 transformation2* \[Generic Function\]
+- line 1593:         `invert-transformation` *transformation* \[Generic Function\]
+- line 1601:         `compose-translation-with-transformation` *transformation dx dy* \[Function\]
+- line 1603:         `compose-scaling-with-transformation` *transformation sx sy &optional origin* \[Function\]
+- line 1605:         `compose-rotation-with-transformation` *transformation angle &optional origin* \[Function\]
+- line 1613:         `compose-transformation-with-translation` *transformation dx dy* \[Function\]
+- line 1615:         `compose-transformation-with-scaling` *transformation sx sy &optional origin* \[Function\]
+- line 1617:         `compose-transformation-with-rotation` *transformation angle &optional origin* \[Function\]
+- line 1625:     Applying Transformations
+- line 1633:         `transform-region` *transformation region* \[Generic Function\]
+- line 1637:         `untransform-region` *transformation region* \[Generic Function\]
+- line 1644:         `transform-position` *transformation x y* \[Generic Function\]
+- line 1650:         `untransform-position` *transformation x y* \[Generic Function\]
+- line 1657:         `transform-distance` *transformation dx dy* \[Generic Function\]
+- line 1663:         `untransform-distance` *transformation dx dy* \[Generic Function\]
+- line 1670:         `transform-rectangle*` *transformation x1 y1 x2 y2* \[Generic Function\]
+- line 1678:         `untransform-rectangle*` *transformation x1 y1 x2 y2* \[Generic Function\]
+- line 1685: Overview of Window Facilities
+- line 1687:   Introduction
+- line 1738:   Properties of Sheets
+- line 1771:   Sheet Protocols
+- line 1801: Properties of Sheets
+- line 1804:   Basic Sheet Classes
+- line 1830:   Relationships Between Sheets
+- line 1862:     Sheet Relationship Functions
+- line 1974:     Sheet Genealogy Classes
+- line 1996:   Sheet Geometry
+- line 2004:     Sheet Geometry Functions
+- line 2186:     Sheet Geometry Classes
+- line 2215: Sheet Protocols
+- line 2218:   Input Protocol
+- line 2257:     Input Protocol Functions
+- line 2371:     Input Protocol Classes
+- line 2420:   Standard Device Events
+- line 2700:   Output Protocol
+- line 2712:     Output Properties
+- line 2856:     Output Protocol Functions
+- line 2865:     Output Protocol Classes
+- line 2896:     Associating a Medium with a Sheet
+- line 2978:       Grafting and Degrafting of Mediums
+- line 3021:   Repaint Protocol
+- line 3033:     Repaint Protocol Functions
+- line 3056:     Repaint Protocol Classes
+- line 3076:   Sheet Notification Protocol
+- line 3082:     Relationship to Window System Change Notifications
+- line 3097:     Sheet Geometry Notifications
+- line 3110: Ports, Grafts, and Mirrored Sheets
+- line 3113:   Introduction
+- line 3118:   Ports
+- line 3267:   Grafts
+- line 3380:   Mirrors and Mirrored Sheets
+- line 3416:     Mirror Functions
+- line 3476:     Internal Interfaces for Native Coordinates
+- line 3535:   Dynamic Output Contract
+- line 3561:   Providing a Display Medium Type
+- line 3623: Input Processing
+- line 3712:   Input Contracts
+- line 3767: Other Input Facilities
+- line 3769:   Standard Polling Interfaces
+- line 3777: Drawing Options
+- line 3781:   Medium Components
+- line 3791:         `medium-foreground` *medium* \[Generic Function\]
+- line 3793:         `medium-background` *medium* \[Generic Function\]
+- line 3801:         `(setf medium-foreground)` *design medium* \[Generic Function\]
+- line 3803:         `(setf medium-background)` *design medium* \[Generic Function\]
+- line 3813:         `medium-ink` *medium* \[Generic Function\]
+- line 3817:         `(setf medium-ink)` *design medium* \[Generic Function\]
+- line 3823:         `medium-transformation` *medium* \[Generic Function\]
+- line 3827:         `(setf medium-transformation)` *transformation medium* \[Generic Function\]
+- line 3831:         `medium-clipping-region` *medium* \[Generic Function\]
+- line 3837:         `(setf medium-clipping-region)` *region medium* \[Generic Function\]
+- line 3841:         `medium-line-style` *medium* \[Generic Function\]
+- line 3845:         `(setf medium-line-style)` *line-style medium* \[Generic Function\]
+- line 3849:         `medium-default-text-style` *medium* \[Generic Function\]
+- line 3857:         `(setf medium-default-text-style)` *text-style medium* \[Generic Function\]
+- line 3863:         `medium-text-style` *medium* \[Generic Function\]
+- line 3867:         `(setf medium-text-style)` *text-style medium* \[Generic Function\]
+- line 3871:         `medium-current-text-style` *medium* \[Generic Function\]
+- line 3875:   Drawing Option Binding Forms
+- line 3877:         `with-drawing-options` *(medium &rest drawing-options) &body body* \[Macro\]
+- line 3885:         `invoke-with-drawing-options` *medium continuation &rest drawing-options* \[Generic Function\]
+- line 3893:         `:ink` \[Option\]
+- line 3899:         `:transformation` \[Option\]
+- line 3905:         `:clipping-region` \[Option\]
+- line 3913:         `:line-style` \[Option\]
+- line 3921:         `:text-style` \[Option\]
+- line 3929:     Transformation “Convenience” Forms
+- line 3943:         `with-translation` *(medium dx dy) &body body* \[Macro\]
+- line 3951:         `with-scaling` *(medium sx &optional sy origin) &body body* \[Macro\]
+- line 3959:         `with-rotation` *(medium angle &optional origin) &body body* \[Macro\]
+- line 3967:         `with-identity-transformation` *(medium) &body body* \[Macro\]
+- line 3973:     Establishing Local Coordinate Systems
+- line 3975:         `with-local-coordinates` *(medium &optional x y) &body body* \[Macro\]
+- line 3981:         `with-first-quadrant-coordinates` *(medium &optional x y) &body body* \[Macro\]
+- line 3987:   Line Styles
+- line 3991:         `line-style` \[Protocol Class\]
+- line 3995:         `line-style-p` *object* \[Protocol Predicate\]
+- line 3999:         `standard-line-style` \[Class\]
+- line 4003:         `make-line-style` *&key unit thickness joint-shape cap-shape dashes* \[Function\]
+- line 4007:     Line Style Protocol and Line Style Suboptions
+- line 4011:         `:line-unit` \[Option\]
+- line 4013:         `line-style-unit` *line-style* \[Generic Function\]
+- line 4023:         `:line-thickness` \[Option\]
+- line 4025:         `line-style-thickness` *line-style* \[Generic Function\]
+- line 4029:         `:line-joint-shape` \[Option\]
+- line 4031:         `line-style-joint-shape` *line-style* \[Generic Function\]
+- line 4048:     Permissible Alternatives During Rendering
+- line 4056:   Drawing Functions
+- line 4070:     Basic Drawing Functions
+- line 4072:         `draw-point` *medium point &key* \[Function\]
+- line 4074:         `draw-point*` *medium x y &key* \[Function\]
+- line 4080:         `draw-points` *medium points &key* \[Function\]
+- line 4082:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 4098:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 4100:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 4106:         `draw-lines` *medium points &key* \[Function\]
+- line 4108:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 4139:         `draw-rectangles` *medium points &key* \[Function\]
+- line 4141:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 4190:     Compound Drawing Functions
+- line 4194:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 4196:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 4206:   Pixmaps
+- line 4212:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 4220:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 4224:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 4226:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 4228:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 4240:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 4248:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 4252:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 4258:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 4268:   Graphics Protocols
+- line 4278:     General Behavior of Drawing Functions
+- line 4292:     Medium-specific Drawing Functions
+- line 4302:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 4306:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 4310:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 4314:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 4318:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 4322:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 4326:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 4330:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 4336:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 4340:     Other Medium-specific Output Functions
+- line 4342:         `medium-finish-output` *medium* \[Generic Function\]
+- line 4346:         `medium-force-output` *medium* \[Generic Function\]
+- line 4350:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 4356:         `medium-beep` *medium* \[Generic Function\]
+- line 4362:         `:line-cap-shape` \[Option\]
+- line 4364:         `line-style-cap-shape` *line-style* \[Generic Function\]
+- line 4368:         `:line-dashes` \[Option\]
+- line 4370:         `line-style-dashes` *line-style* \[Generic Function\]
+- line 4382:     Contrasting Dash Patterns
+- line 4384:         `make-contrasting-dash-patterns` *n &optional k* \[Function\]
+- line 4392:         `contrasting-dash-pattern-limit` *port* \[Generic Function\]
+- line 4400: Text Styles
+- line 4404:   Text Styles
+- line 4408:         `text-style` \[Protocol Class\]
+- line 4412:         `text-style-p` *object* \[Protocol Predicate\]
+- line 4416:         `standard-text-style` \[Class\]
+- line 4422:         `make-text-style` *family face size* \[Function\]
+- line 4436:         `*default-text-style*` \[Constant\]
+- line 4440:         `*undefined-text-style*` \[Constant\]
+- line 4444:     Text Style Protocol and Text Style Suboptions
+- line 4450:         `text-style-components` *text-style* \[Generic Function\]
+- line 4454:         `:text-family` \[Option\]
+- line 4456:         `text-style-family` *text-style* \[Generic Function\]
+- line 4460:         `:text-face` \[Option\]
+- line 4462:         `text-style-face` *text-style* \[Generic Function\]
+- line 4466:         `:text-size` \[Option\]
+- line 4468:         `text-style-size` *text-style* \[Generic Function\]
+- line 4472:         `parse-text-style` *style-spec* \[Function\]
+- line 4476:         `merge-text-styles` *style1 style2* \[Generic Function\]
+- line 4484:         `text-style-ascent` *text-style medium* \[Generic Function\]
+- line 4486:         `text-style-descent` *text-style medium* \[Generic Function\]
+- line 4488:         `text-style-height` *text-style medium* \[Generic Function\]
+- line 4490:         `text-style-width` *text-style medium* \[Generic Function\]
+- line 4498:         `text-style-fixed-width-p` *text-style medium* \[Generic Function\]
+- line 4516:   Text Style Binding Forms
+- line 4518:         `with-text-style` *(medium text-style) &body body* \[Macro\]
+- line 4526:         `invoke-with-text-style` *medium continuation text-style* \[Generic Function\]
+- line 4532:         `with-text-family` *(medium family) &body body* \[Macro\]
+- line 4534:         `with-text-face` *(medium face) &body body* \[Macro\]
+- line 4536:         `with-text-size` *(medium size) &body body* \[Macro\]
+- line 4544:   Controlling Text Style Mappings
+- line 4554:         `text-style-mapping` *port text-style &optional character-set* \[Generic Function\]
+- line 4560:         `(setf text-style-mapping)` *mapping port text-style &optional character-set* \[Generic Function\]
+- line 4566:         `make-device-font-text-style` *display-device device-font-name* \[Function\]
+- line 4570: Graphics
+- line 4572:   Overview of Graphics
+- line 4586:   Definitions
+- line 4588:         Drawing plane.
+- line 4592:         Coordinates.
+- line 4596:         Sheets and Mediums.
+- line 4606:   Drawing is Approximate
+- line 4630:   Rendering Conventions for Geometric Shapes
+- line 4661:     Permissible Alternatives During Rendering
+- line 4669:   Drawing Functions
+- line 4683:     Basic Drawing Functions
+- line 4685:         `draw-point` *medium point &key* \[Function\]
+- line 4687:         `draw-point*` *medium x y &key* \[Function\]
+- line 4693:         `draw-points` *medium points &key* \[Function\]
+- line 4695:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 4711:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 4713:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 4719:         `draw-lines` *medium points &key* \[Function\]
+- line 4721:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 4752:         `draw-rectangles` *medium points &key* \[Function\]
+- line 4754:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 4803:     Compound Drawing Functions
+- line 4807:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 4809:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 4819:   Pixmaps
+- line 4825:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 4833:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 4837:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 4839:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 4841:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 4853:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 4861:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 4865:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 4871:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 4881:   Graphics Protocols
+- line 4891:     General Behavior of Drawing Functions
+- line 4905:     Medium-specific Drawing Functions
+- line 4915:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 4919:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 4923:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 4927:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 4931:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 4935:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 4939:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 4943:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 4949:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 4953:     Other Medium-specific Output Functions
+- line 4955:         `medium-finish-output` *medium* \[Generic Function\]
+- line 4959:         `medium-force-output` *medium* \[Generic Function\]
+- line 4963:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 4969:         `medium-beep` *medium* \[Generic Function\]
+- line 4973: Drawing in Color
+- line 4981:   The `:ink` Drawing Option
+- line 5011:   Basic Designs
+- line 5013:         `design` \[Protocol Class\]
+- line 5029:         `designp` *object* \[Protocol Predicate\]
+- line 5033:   Color
+- line 5035:         `color` \[Protocol Class\]
+- line 5043:         `colorp` *object* \[Protocol Predicate\]
+- line 5049:         `make-rgb-color` *red green blue* \[Function\]
+- line 5053:         `make-ihs-color` *intensity hue saturation* \[Function\]
+- line 5057:         `make-gray-color` *luminance* \[Function\]
+- line 5065:         `color-rgb` *color* \[Generic Function\]
+- line 5069:         `color-ihs` *color* \[Generic Function\]
+- line 5073:     Standard Color Names and Constants
+- line 5080:         `+red+` \[Constant\]
+- line 5082:         `+green+` \[Constant\]
+- line 5084:         `+blue+` \[Constant\]
+- line 5086:         `+cyan+` \[Constant\]
+- line 5088:         `+magenta+` \[Constant\]
+- line 5090:         `+yellow+` \[Constant\]
+- line 5092:         `+black+` \[Constant\]
+- line 5094:         `+white+` \[Constant\]
+- line 5098:     Contrasting Colors
+- line 5100:         `make-contrasting-inks` *n &optional k* \[Function\]
+- line 5110:         `contrasting-inks-limit` *port* \[Generic Function\]
+- line 5114:   Opacity
+- line 5116:         `opacity` \[Protocol Class\]
+- line 5128:         `opacityp` *object* \[Protocol Predicate\]
+- line 5134:         `make-opacity` *value* \[Function\]
+- line 5138:         `+transparent-ink+` \[Constant\]
+- line 5144:         `opacity-value` *opacity* \[Generic Function\]
+- line 5148:   Color Blending
+- line 5169:   Indirect Inks
+- line 5179:         `+foreground-ink+` \[Constant\]
+- line 5183:         `+background-ink+` \[Constant\]
+- line 5187:   Flipping Ink
+- line 5189:         `make-flipping-ink` *design1 design2* \[Function\]
+- line 5199:         `+flipping-ink+` \[Constant\]
+- line 5203:   Examples of Simple Drawing Effects
+- line 5205:         Drawing in the foreground color.
+- line 5209:         Erasing.
+- line 5213:         Drawing in color.
+- line 5217:         Drawing an opaque gray.
+- line 5221: General Designs
+- line 5243:   The Compositing Protocol
+- line 5251:         `compose-over` *design1 design2* \[Generic Function\]
+- line 5259:         `compose-in` *ink mask* \[Generic Function\]
+- line 5273:         `compose-out` *ink mask* \[Generic Function\]
+- line 5285:   Patterns and Stencils
+- line 5291:         `make-pattern` *array designs* \[Function\]
+- line 5299:         `pattern-width` *pattern* \[Generic Function\]
+- line 5301:         `pattern-height` *pattern* \[Generic Function\]
+- line 5305:         `make-stencil` *array* \[Function\]
+- line 5309:   Tiling
+- line 5313:         `make-rectangular-tile` *design width height* \[Function\]
+- line 5319:   Regions as Designs
+- line 5336:     Permissible Alternatives During Rendering
+- line 5344:   Drawing Functions
+- line 5358:     Basic Drawing Functions
+- line 5360:         `draw-point` *medium point &key* \[Function\]
+- line 5362:         `draw-point*` *medium x y &key* \[Function\]
+- line 5368:         `draw-points` *medium points &key* \[Function\]
+- line 5370:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 5386:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 5388:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 5394:         `draw-lines` *medium points &key* \[Function\]
+- line 5396:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 5427:         `draw-rectangles` *medium points &key* \[Function\]
+- line 5429:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 5478:     Compound Drawing Functions
+- line 5482:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 5484:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 5494:   Pixmaps
+- line 5500:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 5508:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 5512:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 5514:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 5516:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 5528:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 5536:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 5540:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 5546:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 5556:   Graphics Protocols
+- line 5566:     General Behavior of Drawing Functions
+- line 5580:     Medium-specific Drawing Functions
+- line 5590:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 5594:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 5598:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 5602:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 5606:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 5610:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 5614:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 5618:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 5624:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 5628:     Other Medium-specific Output Functions
+- line 5630:         `medium-finish-output` *medium* \[Generic Function\]
+- line 5634:         `medium-force-output` *medium* \[Generic Function\]
+- line 5638:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 5644:         `medium-beep` *medium* \[Generic Function\]
+- line 5654:   Arbitrary Designs
+- line 5656:         `draw-design` *medium design &key  * \[Generic Function\]
+- line 5678:         `draw-pattern*` *medium pattern x y &key clipping-region transformation* \[Function\]
+- line 5702:   Examples of More Complex Drawing Effects
+- line 5704:         Painting a gray or colored wash over a display.
+- line 5708:         Drawing a faded but opaque version of the foreground color.
+- line 5712:         Drawing a tiled pattern.
+- line 5716:         Drawing a “bitmap”.
+- line 5720:   Design Protocol
+- line 5724: Extended Stream Output
+- line 5735:   Basic Output Streams
+- line 5801:   Extended Output Streams
+- line 5843:   The Text Cursor
+- line 5915:     Text Cursor Protocol
+- line 5991:     Stream Text Cursor Protocol
+- line 6025:   Text Protocol
+- line 6089:     Mixing Text and Graphics
+- line 6122:     Wrapping of Text Lines
+- line 6196:   Attracting the User's Attention
+- line 6203:   Buffering of Output
+- line 6240: Output Recording
+- line 6242:   Overview of Output Recording
+- line 6260:   Output Records
+- line 6262:         `output-record` \[Protocol Class\]
+- line 6268:         `output-record-p` *object* \[Protocol Predicate\]
+- line 6272:         `displayed-output-record` \[Protocol Class\]
+- line 6278:         `displayed-output-record-p` *object* \[Protocol Predicate\]
+- line 6282:         `:x-position` \[Initarg\]
+- line 6284:         `:y-position` \[Initarg\]
+- line 6286:         `:parent` \[Initarg\]
+- line 6290:         `:size` \[Initarg\]
+- line 6294:     The Basic Output Record Protocol
+- line 6300:         `output-record-position` *record* \[Generic Function\]
+- line 6304:         `(setf* output-record-position)` *x y record* \[Generic Function\]
+- line 6310:         `output-record-start-cursor-position` *record* \[Generic Function\]
+- line 6316:         `(setf* output-record-start-cursor-position)` *x y record* \[Generic Function\]
+- line 6322:         `output-record-end-cursor-position` *record* \[Generic Function\]
+- line 6328:         `(setf* output-record-end-cursor-position)` *x y record* \[Generic Function\]
+- line 6334:         `output-record-parent` *record* \[Generic Function\]
+- line 6338:         `replay` *record stream &optional region* \[Function\]
+- line 6344:         `replay-output-record` *record stream &optional region x-offset y-offset* \[Generic Function\]
+- line 6356:         `output-record-hit-detection-rectangle*` *record* \[Generic Function\]
+- line 6360:         `output-record-refined-position-test` *record x y* \[Generic Function\]
+- line 6364:         `highlight-output-record` *record stream state* \[Generic Function\]
+- line 6368:         `displayed-output-record-ink` *displayed-output-record* \[Generic Function\]
+- line 6372:     The Output Record “Database” Protocol
+- line 6376:         `output-record-children` *record* \[Generic Function\]
+- line 6380:         `add-output-record` *child record* \[Generic Function\]
+- line 6394:         `clear-output-record` *record* \[Generic Function\]
+- line 6398:         `output-record-count` *record* \[Generic Function\]
+- line 6402:         `map-over-output-records-containing-position` *function record x y &optional x-offset y-offset &rest function-args* \[Generic Function\]
+- line 6408:         `map-over-output-records-overlapping-region` *function record region &optional x-offset y-offset &rest function-args* \[Generic Function\]
+- line 6414:     Output Record Change Notification Protocol
+- line 6418:         `recompute-extent-for-new-child` *record child* \[Generic Function\]
+- line 6424:         `recompute-extent-for-changed-child` *record child old-min-x old-min-y old-max-x old-max-y* \[Generic Function\]
+- line 6430:         `tree-recompute-extent` *record* \[Generic Function\]
+- line 6434:   Types of Output Records
+- line 6438:     Standard Output Record Classes
+- line 6440:         `standard-sequence-output-record` \[Class\]
+- line 6444:         `standard-tree-output-record` \[Class\]
+- line 6448:     Graphics Displayed Output Records
+- line 6464:         `graphics-displayed-output-record` \[Protocol Class\]
+- line 6468:         `graphics-displayed-output-record-p` *object* \[Protocol Predicate\]
+- line 6472:     Text Displayed Output Record
+- line 6488:         `text-displayed-output-record` \[Protocol Class\]
+- line 6492:         `text-displayed-output-record-p` *object* \[Protocol Predicate\]
+- line 6498:         `add-character-output-to-text-record` *text-record character text-style width height baseline* \[Generic Function\]
+- line 6502:         `add-string-output-to-text-record` *text-record string start end text-style width height baseline* \[Generic Function\]
+- line 6506:         `text-displayed-output-record-string` *text-record* \[Generic Function\]
+- line 6510:     Top-Level Output Records
+- line 6514:         `stream-output-history-mixin` \[Class\]
+- line 6520:         `standard-tree-output-history` \[Class\]
+- line 6524:         `standard-sequence-output-history` \[Class\]
+- line 6528:   Output Recording Streams
+- line 6534:         `output-recording-stream` \[Protocol Class\]
+- line 6538:         `output-recording-stream-p` *object* \[Protocol Predicate\]
+- line 6542:         `standard-output-recording-stream` \[Class\]
+- line 6546:     The Output Recording Stream Protocol
+- line 6550:         `stream-recording-p` *stream* \[Generic Function\]
+- line 6554:         `(setf stream-recording-p)` *recording-p stream* \[Generic Function\]
+- line 6558:         `stream-drawing-p` *stream* \[Generic Function\]
+- line 6562:         `(setf stream-drawing-p)` *drawing-p stream* \[Generic Function\]
+- line 6566:         `stream-output-history` *stream* \[Generic Function\]
+- line 6570:         `stream-current-output-record` *stream* \[Generic Function\]
+- line 6574:         `(setf stream-current-output-record)` *record stream* \[Generic Function\]
+- line 6578:         `stream-add-output-record` *stream record* \[Generic Function\]
+- line 6582:         `stream-replay` *stream &optional region* \[Generic Function\]
+- line 6592:         `copy-textual-output-history` *window stream &optional region record* \[Function\]
+- line 6598:     Graphics Output Recording
+- line 6614:     Text Output Recording
+- line 6618:         `stream-text-output-record` *stream text-style* \[Generic Function\]
+- line 6622:         `stream-close-text-output-record` *stream* \[Generic Function\]
+- line 6630:         `stream-add-character-output` *stream character text-style width height baseline* \[Generic Function\]
+- line 6636:         `stream-add-string-output` *stream string start end text-style width height baseline* \[Generic Function\]
+- line 6642:     Output Recording Utilities
+- line 6646:         `with-output-recording-options` *(stream &key record draw) &body body* \[Macro\]
+- line 6654:         `invoke-with-output-recording-options` *stream continuation record draw* \[Generic Function\]
+- line 6662:         `with-new-output-record` *(stream &optional record-type record &rest initargs) &body body* \[Macro\]
+- line 6674:         `invoke-with-new-output-record` *stream continuation record-type &rest initargs &key parent &allow-other-keys* \[Generic Function\]
+- line 6686:         `with-output-to-output-record` *(stream &optional record-type record &rest initargs) &body body* \[Macro\]
+- line 6700:         `invoke-with-output-to-output-record` *stream continuation record-type &rest initargs &key* \[Generic Function\]
+- line 6710:         `make-design-from-output-record` *record* \[Generic Function\]
+- line 6716: Table Formatting
+- line 6749:     Permissible Alternatives During Rendering
+- line 6757:   Drawing Functions
+- line 6771:     Basic Drawing Functions
+- line 6773:         `draw-point` *medium point &key* \[Function\]
+- line 6775:         `draw-point*` *medium x y &key* \[Function\]
+- line 6781:         `draw-points` *medium points &key* \[Function\]
+- line 6783:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 6799:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 6801:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 6807:         `draw-lines` *medium points &key* \[Function\]
+- line 6809:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 6840:         `draw-rectangles` *medium points &key* \[Function\]
+- line 6842:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 6891:     Compound Drawing Functions
+- line 6895:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 6897:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 6907:   Pixmaps
+- line 6913:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 6921:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 6925:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 6927:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 6929:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 6941:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 6949:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 6953:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 6959:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 6969:   Graphics Protocols
+- line 6979:     General Behavior of Drawing Functions
+- line 6993:     Medium-specific Drawing Functions
+- line 7003:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 7007:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 7011:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 7015:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 7019:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 7023:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 7027:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 7031:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 7037:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 7041:     Other Medium-specific Output Functions
+- line 7043:         `medium-finish-output` *medium* \[Generic Function\]
+- line 7047:         `medium-force-output` *medium* \[Generic Function\]
+- line 7051:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 7057:         `medium-beep` *medium* \[Generic Function\]
+- line 7063:   Overview of Table Formatting Facilities
+- line 7095:   Table Formatting Functions
+- line 7121:         `formatting-row` *(&optional stream &key record-type &allow-other-keys ) &body body* \[Macro\]
+- line 7131:         `formatting-column` *(&optional stream &key record-type &allow-other-keys ) &body body* \[Macro\]
+- line 7200:   The Table and Item List Formatting Protocols
+- line 7204:     Table Formatting Protocol
+- line 7210:         `table-output-record` \[Protocol Class\]
+- line 7214:         `table-output-record-p` *object* \[Protocol Predicate\]
+- line 7218:         `:x-spacing` \[Initarg\]
+- line 7220:         `:y-spacing` \[Initarg\]
+- line 7222:         `:multiple-columns` \[Initarg\]
+- line 7224:         `:multiple-columns-x-spacing` \[Initarg\]
+- line 7226:         `:equalize-column-widths` \[Initarg\]
+- line 7230:         `standard-table-output-record` \[Class\]
+- line 7234:         `map-over-table-elements` *function table-record type* \[Generic Function\]
+- line 7238:         `adjust-table-cells` *table-record stream* \[Generic Function\]
+- line 7242:         `adjust-multiple-columns` *table-record stream* \[Generic Function\]
+- line 7246:     Row and Column Formatting Protocol
+- line 7250:         `row-output-record` \[Protocol Class\]
+- line 7254:         `row-output-record-p` *object* \[Protocol Predicate\]
+- line 7258:         `standard-row-output-record` \[Class\]
+- line 7262:         `map-over-row-cells` *function row-record* \[Generic Function\]
+- line 7268:         `column-output-record` \[Protocol Class\]
+- line 7272:         `column-output-record-p` *object* \[Protocol Predicate\]
+- line 7276:         `standard-column-output-record` \[Class\]
+- line 7280:         `map-over-column-cells` *function column-record* \[Generic Function\]
+- line 7284:     Cell Formatting Protocol
+- line 7288:         `cell-output-record` \[Protocol Class\]
+- line 7292:         `cell-output-record-p` *object* \[Protocol Predicate\]
+- line 7296:         `:align-x` \[Initarg\]
+- line 7298:         `:align-y` \[Initarg\]
+- line 7300:         `:min-width` \[Initarg\]
+- line 7302:         `:min-height` \[Initarg\]
+- line 7306:         `standard-cell-output-record` \[Class\]
+- line 7310:         `cell-align-x` *cell* \[Generic Function\]
+- line 7312:         `cell-align-y` *cell* \[Generic Function\]
+- line 7314:         `cell-min-width` *cell* \[Generic Function\]
+- line 7316:         `cell-min-height` *cell* \[Generic Function\]
+- line 7320:     Item List Formatting Protocol
+- line 7322:         `item-list-output-record` \[Protocol Class\]
+- line 7326:         `item-list-output-record-p` *object* \[Protocol Predicate\]
+- line 7330:         `:x-spacing` \[Initarg\]
+- line 7332:         `:y-spacing` \[Initarg\]
+- line 7334:         `:initial-spacing` \[Initarg\]
+- line 7336:         `:row-wise` \[Initarg\]
+- line 7338:         `:n-rows` \[Initarg\]
+- line 7340:         `:n-columns` \[Initarg\]
+- line 7342:         `:max-width` \[Initarg\]
+- line 7344:         `:max-height` \[Initarg\]
+- line 7348:         `standard-item-list-output-record` \[Class\]
+- line 7352:         `map-over-item-list-cells` *function item-list-record* \[Generic Function\]
+- line 7356:         `adjust-item-list-cells` *item-list-record stream* \[Generic Function\]
+- line 7360: Graph Formatting
+- line 7399:     Permissible Alternatives During Rendering
+- line 7407:   Drawing Functions
+- line 7421:     Basic Drawing Functions
+- line 7423:         `draw-point` *medium point &key* \[Function\]
+- line 7425:         `draw-point*` *medium x y &key* \[Function\]
+- line 7431:         `draw-points` *medium points &key* \[Function\]
+- line 7433:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 7449:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 7451:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 7457:         `draw-lines` *medium points &key* \[Function\]
+- line 7459:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 7490:         `draw-rectangles` *medium points &key* \[Function\]
+- line 7492:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 7541:     Compound Drawing Functions
+- line 7545:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 7547:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 7557:   Pixmaps
+- line 7563:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 7571:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 7575:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 7577:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 7579:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 7591:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 7599:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 7603:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 7609:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 7619:   Graphics Protocols
+- line 7629:     General Behavior of Drawing Functions
+- line 7643:     Medium-specific Drawing Functions
+- line 7653:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 7657:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 7661:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 7665:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 7669:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 7673:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 7677:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 7681:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 7687:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 7691:     Other Medium-specific Output Functions
+- line 7693:         `medium-finish-output` *medium* \[Generic Function\]
+- line 7697:         `medium-force-output` *medium* \[Generic Function\]
+- line 7701:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 7707:         `medium-beep` *medium* \[Generic Function\]
+- line 7711:   Graph Formatting Functions
+- line 7737:   The Graph Formatting Protocols
+- line 7741:         `graph-output-record` \[Protocol Class\]
+- line 7745:         `graph-output-record-p` *object* \[Protocol Predicate\]
+- line 7749:         `standard-graph-output-record` \[Class\]
+- line 7753:         `:orientation` \[Initarg\]
+- line 7755:         `:center-nodes` \[Initarg\]
+- line 7757:         `:cutoff-depth` \[Initarg\]
+- line 7759:         `:merge-duplicates` \[Initarg\]
+- line 7761:         `:generation-separation` \[Initarg\]
+- line 7763:         `:within-generation-separation` \[Initarg\]
+- line 7765:         `:hash-table` \[Initarg\]
+- line 7769:         `define-graph-type` *graph-type class* \[Macro\]
+- line 7775:         `graph-root-nodes` *graph-record* \[Generic Function\]
+- line 7779:         `(setf graph-root-nodes)` *roots graph-record* \[Generic Function\]
+- line 7783:         `generate-graph-nodes` *graph-record stream root-objects object-printer inferior-producer &key duplicate-key duplicate-test* \[Generic Function\]
+- line 7789:         `layout-graph-nodes` *graph-record stream arc-drawer arc-drawing-options* \[Generic Function\]
+- line 7793:         `layout-graph-edges` *graph-record stream arc-drawer arc-drawing-options* \[Generic Function\]
+- line 7797:         `graph-node-output-record` \[Protocol Class\]
+- line 7801:         `graph-node-output-record-p` *object* \[Protocol Predicate\]
+- line 7805:         `standard-graph-node-output-record` \[Class\]
+- line 7809:         `graph-node-parents` *graph-node-record* \[Generic Function\]
+- line 7813:         `(setf graph-node-parents)` *parents graph-node-record* \[Generic Function\]
+- line 7817:         `graph-node-children` *graph-node-record* \[Generic Function\]
+- line 7821:         `(setf graph-node-children)` *children graph-node-record* \[Generic Function\]
+- line 7825:         `graph-node-object` *graph-node-record* \[Generic Function\]
+- line 7829: Bordered Output
+- line 7859:     Permissible Alternatives During Rendering
+- line 7867:   Drawing Functions
+- line 7881:     Basic Drawing Functions
+- line 7883:         `draw-point` *medium point &key* \[Function\]
+- line 7885:         `draw-point*` *medium x y &key* \[Function\]
+- line 7891:         `draw-points` *medium points &key* \[Function\]
+- line 7893:         `draw-points*` *medium position-seq &key* \[Function\]
+- line 7909:         `draw-line` *medium point1 point2 &key* \[Function\]
+- line 7911:         `draw-line*` *medium x1 y1 x2 y2 &key* \[Function\]
+- line 7917:         `draw-lines` *medium points &key* \[Function\]
+- line 7919:         `draw-lines*` *medium position-seq &key* \[Function\]
+- line 7950:         `draw-rectangles` *medium points &key* \[Function\]
+- line 7952:         `draw-rectangles*` *medium position-seq &key* \[Function\]
+- line 8001:     Compound Drawing Functions
+- line 8005:         `draw-arrow` *medium point-1 point-2 &key to-head from-head head-length head-width* \[Function\]
+- line 8007:         `draw-arrow*` *medium x1 y1 x2 y2 &key from-head to-head head-length head-width* \[Function\]
+- line 8017:   Pixmaps
+- line 8023:         `allocate-pixmap` *medium width height* \[Generic Function\]
+- line 8031:         `deallocate-pixmap` *pixmap* \[Generic Function\]
+- line 8035:         `pixmap-width` *pixmap* \[Generic Function\]
+- line 8037:         `pixmap-height` *pixmap* \[Generic Function\]
+- line 8039:         `pixmap-depth` *pixmap* \[Generic Function\]
+- line 8051:         `copy-from-pixmap` *pixmap pixmap-x pixmap-y width height medium medium-x medium-y* \[Function\]
+- line 8059:         `copy-area` *medium from-x from-y width height to-x to-y* \[Generic Function\]
+- line 8063:         `medium-copy-area` *from-drawable from-x from-y width height to-drawable to-x to-y* \[Generic Function\]
+- line 8069:         `with-output-to-pixmap` *(medium-var medium &key width height) &body body* \[Macro\]
+- line 8079:   Graphics Protocols
+- line 8089:     General Behavior of Drawing Functions
+- line 8103:     Medium-specific Drawing Functions
+- line 8113:         `medium-draw-point*` *medium x y* \[Generic Function\]
+- line 8117:         `medium-draw-points*` *medium coord-seq* \[Generic Function\]
+- line 8121:         `medium-draw-line*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 8125:         `medium-draw-lines*` *medium position-seq* \[Generic Function\]
+- line 8129:         `medium-draw-polygon*` *medium coord-seq closed* \[Generic Function\]
+- line 8133:         `medium-draw-rectangle*` *medium x1 y1 x2 y2* \[Generic Function\]
+- line 8137:         `medium-draw-rectangles*` *medium coord-seq* \[Generic Function\]
+- line 8141:         `medium-draw-ellipse*` *medium center-x center-y radius-1-dx radius-1-dy radius-2-dx radius-2-dy start-angle end-angle* \[Generic Function\]
+- line 8147:         `medium-draw-text*` *medium text x y start end align-x align-y toward-x toward-y transform-glyphs* \[Generic Function\]
+- line 8151:     Other Medium-specific Output Functions
+- line 8153:         `medium-finish-output` *medium* \[Generic Function\]
+- line 8157:         `medium-force-output` *medium* \[Generic Function\]
+- line 8161:         `medium-clear-area` *medium left top right bottom* \[Generic Function\]
+- line 8167:         `medium-beep` *medium* \[Generic Function\]
+- line 8181:         `define-border-type` *shape arglist &body body* \[Macro\]
+- line 8189: Text Formatting
+- line 8191:   Textual List Formatting
+- line 8193:         `format-textual-list` *sequence printer &key stream separator conjunction* \[Function\]
+- line 8205:   Indented Output
+- line 8221:   Filled Output
+- line 8223:         `filling-output` *(stream &key fill-width break-characters after-line-break after-line-break-initially) &body body* \[Macro\]
+- line 8237: Incremental Redisplay
+- line 8239:   Overview of Incremental Redisplay
+- line 8251:     Examples of Incremental Redisplay
+- line 8321:   Standard Programmer Interface
+- line 8333:         `invoke-updating-output` *stream continuation record-type unique-id id-test cache-value cache-test &key all-new parent-cache* \[Generic Function\]
+- line 8365:   Incremental Redisplay Protocol
+- line 8369:         `updating-output-record` \[Protocol Class\]
+- line 8373:         `updating-output-record-p` *object* \[Protocol Predicate\]
+- line 8377:         `:unique-id` \[Initarg\]
+- line 8379:         `:id-test` \[Initarg\]
+- line 8381:         `:cache-value` \[Initarg\]
+- line 8383:         `:cache-test` \[Initarg\]
+- line 8385:         `:fixed-position` \[Initarg\]
+- line 8389:         `standard-updating-output-record` \[Class\]
+- line 8393:         `output-record-unique-id` *record* \[Generic Function\]
+- line 8397:         `output-record-cache-value` *record* \[Generic Function\]
+- line 8401:         `output-record-fixed-position` *record* \[Generic Function\]
+- line 8405:         `output-record-displayer` *record* \[Generic Function\]
+- line 8409:         `compute-new-output-records` *record stream* \[Generic Function\]
+- line 8435:         `augment-draw-set` *record erases moves draws erase-overlapping move-overlapping* \[Generic Function\]
+- line 8451:         `propagate-output-record-changes-p` *record child mode old-position old-bounding-rectangle* \[Generic Function\]
+- line 8455:         `propagate-output-record-changes` *record child mode &optional old-position old-bounding-rectangle difference-set check-overlapping* \[Generic Function\]
+- line 8463:         `match-output-records` *record &rest initargs* \[Generic Function\]
+- line 8467:         `find-child-output-record` *record use-old-elements record-type &rest initargs &key unique-id unique-id-test* \[Generic Function\]
+- line 8471:         `output-record-contents-ok` *record* \[Generic Function\]
+- line 8475:         `recompute-contents-ok` *record* \[Generic Function\]
+- line 8479:         `cache-output-record` *record child unique-id* \[Generic Function\]
+- line 8483:         `decache-child-output-record` *record child use-old-elements* \[Generic Function\]
+- line 8487:         `find-cached-output-record` *record use-old-elements record-type &rest initargs &key unique-id unique-id-test &allow-other-keys* \[Generic Function\]
+- line 8491:   Incremental Redisplay Stream Protocol
+- line 8493:         `redisplayable-stream-p` *stream* \[Generic Function\]
+- line 8497:         `stream-redisplaying-p` *stream* \[Generic Function\]
+- line 8501:         `incremental-redisplay` *stream position erases moves draws erase-overlapping move-overlapping* \[Generic Function\]
+- line 8507: Extended Stream Input
+- line 8511:   Basic Input Streams
+- line 8515:         `standard-input-stream` \[Class\]
+- line 8519:         `stream-read-char` *stream* \[Generic Function\]
+- line 8523:         `stream-read-char-no-hang` *stream* \[Generic Function\]
+- line 8527:         `stream-unread-char` *stream character* \[Generic Function\]
+- line 8531:         `stream-peek-char` *stream* \[Generic Function\]
+- line 8535:         `stream-listen` *stream* \[Generic Function\]
+- line 8539:         `stream-read-line` *stream* \[Generic Function\]
+- line 8543:         `stream-clear-input` *stream* \[Generic Function\]
+- line 8547:   Extended Input Streams
+- line 8551:         `extended-input-stream` \[Protocol Class\]
+- line 8555:         `extended-input-stream-p` *object* \[Protocol Predicate\]
+- line 8559:         `:input-buffer` \[Initarg\]
+- line 8561:         `:pointer` \[Initarg\]
+- line 8563:         `:text-cursor` \[Initarg\]
+- line 8567:         `standard-extended-input-stream` \[Class\]
+- line 8573:     The Extended Input Stream Protocol
+- line 8577:         `stream-input-buffer` *stream* \[Generic Function\]
+- line 8579:         `(setf stream-input-buffer)` *buffer stream* \[Generic Function\]
+- line 8583:         `stream-pointer-position` *stream &key pointer* \[Generic Function\]
+- line 8587:         `(setf* stream-pointer-position)` *x y stream &key pointer* \[Generic Function\]
+- line 8593:         `stream-set-input-focus` *stream* \[Generic Function\]
+- line 8597:         `with-input-focus` *(stream) &body body* \[Macro\]
+- line 8603:         `*input-wait-test*` \[Variable\]
+- line 8605:         `*input-wait-handler*` \[Variable\]
+- line 8607:         `*pointer-button-press-handler*` \[Variable\]
+- line 8637:         `stream-input-wait` *stream &key timeout input-wait-test* \[Generic Function\]
+- line 8645:         `stream-unread-gesture` *stream gesture* \[Generic Function\]
+- line 8649:     Extended Input Stream Conditions
+- line 8651:         `*abort-gestures*` \[Variable\]
+- line 8655:         `abort-gesture` \[Condition\]
+- line 8659:         `abort-gesture-event` *condition* \[Generic Function\]
+- line 8663:         `*accelerator-gestures*` \[Variable\]
+- line 8667:         `accelerator-gesture` \[Condition\]
+- line 8671:         `accelerator-gesture-event` *condition* \[Generic Function\]
+- line 8675:         `accelerator-gesture-numeric-argument` *condition* \[Generic Function\]
+- line 8679:   Gestures and Gesture Names
+- line 8699:         `add-gesture-name` *name type gesture-spec &key unique* \[Function\]
+- line 8720:         `delete-gesture-name` *name* \[Function\]
+- line 8724:         `event-matches-gesture-name-p` *event gesture-name* \[Function\]
+- line 8732:         `modifier-state-matches-gesture-name-p` *modifier-state gesture-name* \[Function\]
+- line 8738:         `make-modifier-state` *&rest modifiers* \[Function\]
+- line 8742:     Standard Gesture Names
+- line 8770:   The Pointer Protocol
+- line 8772:         `pointer` \[Protocol Class\]
+- line 8776:         `pointerp` *object* \[Protocol Predicate\]
+- line 8780:         `:port` \[Initarg\]
+- line 8784:         `standard-pointer` \[Class\]
+- line 8788:         `pointer-sheet` *pointer* \[Generic Function\]
+- line 8790:         `(setf pointer-sheet)` *sheet pointer* \[Generic Function\]
+- line 8794:         `pointer-button-state` *pointer* \[Generic Function\]
+- line 8798:         `pointer-position` *pointer* \[Generic Function\]
+- line 8802:         `(setf* pointer-position)` *x y pointer* \[Generic Function\]
+- line 8808:         `pointer-cursor` *pointer* \[Generic Function\]
+- line 8810:         `(setf pointer-cursor)` *cursor pointer* \[Generic Function\]
+- line 8818:   Pointer Tracking
+- line 8820:         `tracking-pointer` *(sheet &key pointer multiple-window transformp context-type highlight) &body body* \[Macro\]
+- line 8881:         `drag-output-record` *stream output-record &key repaint erase feedback finish-on-release multiple-window* \[Generic Function\]
+- line 8897:         `dragging-output` *(&optional stream &key repaint finish-on-release multiple-window) &body body* \[Macro\]
+- line 8907: Presentation Types
+- line 8909:   Overview of Presentation Types
+- line 8927:   Presentations
+- line 8933:         `presentation` \[Protocol Class\]
+- line 8937:         `presentationp` *object* \[Protocol Predicate\]
+- line 8941:         `standard-presentation` \[Class\]
+- line 8945:         `:object` \[Initarg\]
+- line 8947:         `:type` \[Initarg\]
+- line 8949:         `:view` \[Initarg\]
+- line 8951:         `:single-box` \[Initarg\]
+- line 8953:         `:modifier` \[Initarg\]
+- line 8957:     The Presentation Protocol
+- line 8961:         `presentation-object` *presentation* \[Generic Function\]
+- line 8965:         `(setf presentation-object)` *object presentation* \[Generic Function\]
+- line 8969:         `presentation-type` *presentation* \[Generic Function\]
+- line 8973:         `(setf presentation-type)` *type presentation* \[Generic Function\]
+- line 8977:         `presentation-view` *presentation* \[Generic Function\]
+- line 8981:         `(setf presentation-view)` *view presentation* \[Generic Function\]
+- line 8985:         `presentation-single-box` *presentation* \[Generic Function\]
+- line 8997:         `(setf presentation-single-box)` *single-box presentation* \[Generic Function\]
+- line 9001:         `presentation-modifier` *presentation* \[Generic Function\]
+- line 9005:   Presentation Types
+- line 9031:     Defining Presentation Types
+- line 9033:         `define-presentation-type` *name parameters &key options inherit-from description history parameters-are-types* \[Macro\]
+- line 9061:     Presentation Type Abbreviations
+- line 9063:         `define-presentation-type-abbreviation` *name parameters equivalent-type &key options* \[Macro\]
+- line 9080:         `expand-presentation-type-abbreviation-1` *type &optional env* \[Function\]
+- line 9086:         `expand-presentation-type-abbreviation` *type &optional env* \[Function\]
+- line 9090:     Presentation Methods
+- line 9119:         `define-presentation-generic-function` *generic-function-name presentation-function-name lambda-list &rest options* \[Macro\]
+- line 9133:         `define-presentation-method` *name qualifiers\* specialized-lambda-list &body body* \[Macro\]
+- line 9143:         `define-default-presentation-method` *name qualifiers\* specialized-lambda-list &body body* \[Macro\]
+- line 9147:         `funcall-presentation-generic-function` *presentation-function-name &rest arguments* \[Macro\]
+- line 9160:         `apply-presentation-generic-function` *presentation-function-name &rest arguments* \[Macro\]
+- line 9271:     Presentation Type Functions
+- line 9273:         `describe-presentation-type` *type &optional stream plural-count* \[Function\]
+- line 9279:         `presentation-type-parameters` *type-name &optional env* \[Function\]
+- line 9283:         `presentation-type-options` *type-name &optional env* \[Function\]
+- line 9287:         `with-presentation-type-decoded` *(name-var &optional parameters-var options-var) type &body body* \[Macro\]
+- line 9293:         `presentation-type-name` *type* \[Function\]
+- line 9301:         `with-presentation-type-parameters` *(type-name type) &body body* \[Macro\]
+- line 9307:         `with-presentation-type-options` *(type-name type) &body body* \[Macro\]
+- line 9313:         `presentation-type-specifier-p` *object* \[Function\]
+- line 9317:         `presentation-typep` *object type* \[Function\]
+- line 9325:         `presentation-type-of` *object* \[Function\]
+- line 9333:         `presentation-subtypep` *type putative-supertype* \[Function\]
+- line 9341:         `map-over-presentation-type-supertypes` *function type* \[Function\]
+- line 9345:         `presentation-type-direct-supertypes` *type* \[Function\]
+- line 9353:         `class-presentation-type-name` *class &optional environment* \[Function\]
+- line 9357:         `default-describe-presentation-type` *description stream plural-count* \[Function\]
+- line 9361:         `make-presentation-type-specifier` *type-name-and-parameters &rest options* \[Function\]
+- line 9365:   Typed Output
+- line 9369:         `with-output-as-presentation` *(stream object type &key modifier single-box allow-sensitive-inferiors parent record-type &allow-other-keys ) &body body* \[Macro\]
+- line 9394:         `present` *object &optional type &key stream view modifier acceptably for-context-type single-box allow-sensitive-inferiors sensitive record-type* \[Function\]
+- line 9402:         `stream-present` *stream object type &key view modifier acceptably for-context-type single-box allow-sensitive-inferiors sensitive record-type* \[Generic Function\]
+- line 9418:         `present-to-string` *object &optional type &key view acceptably for-context-type string index* \[Function\]
+- line 9424:   Context-dependent (Typed) Input
+- line 9430:         `*input-context*` \[Variable\]
+- line 9436:         `input-context-type` *context-entry* \[Function\]
+- line 9440:         `with-input-context` *(type &key override) (&optional object-var type-var event-var options-var) form &body pointer-cases* \[Macro\]
+- line 9460:         `accept` *type &key stream view default default-type provide-default insert-default replace-input history active-p prompt prompt-mode display-default query-identifier activation-gestures additional-activation-gestures delimiter-gestures additional-delimiter-gestures* \[Function\]
+- line 9466:         `stream-accept` *stream type &key view default default-type provide-default insert-default replace-input history active-p prompt prompt-mode display-default query-identifier activation-gestures additional-activation-gestures delimiter-gestures additional-delimiter-gestures* \[Generic Function\]
+- line 9474:         `accept-1` *stream type &key view default default-type provide-default insert-default replace-input history active-p prompt prompt-mode display-default query-identifier activation-gestures additional-activation-gestures delimiter-gestures additional-delimiter-gestures* \[Function\]
+- line 9500:         `accept-from-string` *type string &key view default default-type start end* \[Function\]
+- line 9506:         `prompt-for-accept` *stream type view &rest accept-args &key* \[Generic Function\]
+- line 9510:         `prompt-for-accept-1` *stream type &key default default-type display-default prompt prompt-mode &allow-other-keys* \[Function\]
+- line 9520:   Views
+- line 9524:         `view` \[Protocol Class\]
+- line 9530:         `viewp` *object* \[Protocol Predicate\]
+- line 9534:         `textual-view` \[Class\]
+- line 9538:         `textual-menu-view` \[Class\]
+- line 9542:         `textual-dialog-view` \[Class\]
+- line 9546:         `gadget-view` \[Class\]
+- line 9550:         `gadget-menu-view` \[Class\]
+- line 9554:         `gadget-dialog-view` \[Class\]
+- line 9558:         `pointer-documentation-view` \[Class\]
+- line 9562:         `+textual-view+` \[Constant\]
+- line 9564:         `+textual-menu-view+` \[Constant\]
+- line 9566:         `+textual-dialog-view+` \[Constant\]
+- line 9568:         `+gadget-view+` \[Constant\]
+- line 9570:         `+gadget-menu-view+` \[Constant\]
+- line 9572:         `+gadget-dialog-view+` \[Constant\]
+- line 9574:         `+pointer-documentation-view+` \[Constant\]
+- line 9578:         `stream-default-view` *stream* \[Generic Function\]
+- line 9582:         `(setf stream-default-view)` *view stream* \[Generic Function\]
+- line 9586:   Presentation Translators
+- line 9592:     Defining Presentation Translators
+- line 9594:         `define-presentation-translator` *name (from-type to-type command-table &key gesture tester tester-definitive documentation pointer-documentation menu priority) arglist &body body* \[Macro\]
+- line 9628:         `define-presentation-to-command-translator` *name (from-type command-name command-table &key gesture tester documentation pointer-documentation menu priority echo) arglist &body body* \[Macro\]
+- line 9640:         `define-presentation-action` *name (from-type to-type command-table &key gesture tester documentation pointer-documentation menu priority) arglist &body body* \[Macro\]
+- line 9650:         `define-drag-and-drop-translator` *name (from-type to-type destination-type command-table &key gesture tester documentation pointer-documentation menu priority feedback highlighting) arglist &body body* \[Macro\]
+- line 9664:     Presentation Translator Functions
+- line 9666:         `find-presentation-translators` *from-type to-type command-table* \[Function\]
+- line 9674:         `test-presentation-translator` *translator presentation context-type frame window x y &key event modifier-state for-menu* \[Function\]
+- line 9686:         `find-applicable-translators` *presentation input-context frame window x y &key event modifier-state for-menu fastp* \[Function\]
+- line 9716:         `presentation-matches-context-type` *presentation context-type frame window x y &key event modifier-state* \[Function\]
+- line 9722:         `call-presentation-translator` *translator presentation context-type frame event window x y* \[Function\]
+- line 9734:         `call-presentation-menu` *presentation input-context frame window x y &key for-menu label* \[Function\]
+- line 9742:     Finding Applicable Presentations
+- line 9744:         `find-innermost-applicable-presentation` *input-context window x y &key frame modifier-state event* \[Function\]
+- line 9754:         `throw-highlighted-presentation` *presentation input-context button-press-event* \[Function\]
+- line 9760:         `highlight-applicable-presentation` *frame stream input-context &optional prefer-pointer-window* \[Function\]
+- line 9768:         `set-highlighted-presentation` *stream presentation &optional prefer-pointer-window* \[Function\]
+- line 9774:         `unhighlight-highlighted-presentation` *stream &optional prefer-pointer-window* \[Function\]
+- line 9780:     Translator Applicability
+- line 9814:   Standard Presentation Types
+- line 9818:     Basic Presentation Types
+- line 9820:         `t`  \[Presentation Type\]
+- line 9824:         `nil`  \[Presentation Type\]
+- line 9828:         `null`  \[Presentation Type\]
+- line 9832:         `boolean`  \[Presentation Type\]
+- line 9836:         `symbol`  \[Presentation Type\]
+- line 9840:         `keyword`  \[Presentation Type\]
+- line 9844:         `blank-area`  \[Presentation Type\]
+- line 9848:         `*null-presentation*` \[Variable\]
+- line 9852:     Numeric Presentation Types
+- line 9854:         `number`  \[Presentation Type\]
+- line 9858:         `complex` *&optional part-type* \[Presentation Type\]
+- line 9864:         `real` *&optional low high* \[Presentation Type\]
+- line 9868:         `rational` *&optional low high* \[Presentation Type\]
+- line 9872:         `integer` *&optional low high* \[Presentation Type\]
+- line 9876:         `ratio` *&optional low high* \[Presentation Type\]
+- line 9880:         `float` *&optional low high* \[Presentation Type\]
+- line 9884:     Character and String Presentation Types
+- line 9886:         `character`  \[Presentation Type\]
+- line 9890:         `string` *&optional length* \[Presentation Type\]
+- line 9894:     Pathname Presentation Type
+- line 9896:         `pathname`  \[Presentation Type\]
+- line 9900:     “One-of” and “Some-of” Presentation Types
+- line 9902:         `completion` *sequence &key test value-key* \[Presentation Type\]
+- line 9930:         `member` *&rest elements* \[Presentation Type Abbreviation\]
+- line 9934:         `member-sequence` *sequence &key test* \[Presentation Type Abbreviation\]
+- line 9938:         `member-alist` *alist &key test* \[Presentation Type Abbreviation\]
+- line 9954:         `subset-completion` *sequence &key test value-key* \[Presentation Type\]
+- line 9958:         `subset` *&rest elements* \[Presentation Type Abbreviation\]
+- line 9962:         `subset-sequence` *sequence &key test* \[Presentation Type Abbreviation\]
+- line 9966:         `subset-alist` *alist &key test* \[Presentation Type Abbreviation\]
+- line 9970:     Sequence Presentation Types
+- line 9972:         `sequence` *element-type* \[Presentation Type\]
+- line 9978:         `sequence-enumerated` *&rest types* \[Presentation Type\]
+- line 9984:     “Meta” Presentation Types
+- line 9986:         `or` *&rest types* \[Presentation Type\]
+- line 9992:         `and` *&rest types* \[Presentation Type\]
+- line 10000:     Compound Presentation Types
+- line 10002:         `token-or-type` *tokens type* \[Presentation Type Abbreviation\]
+- line 10006:         `null-or-type` *type* \[Presentation Type Abbreviation\]
+- line 10010:         `type-or-string` *type* \[Presentation Type Abbreviation\]
+- line 10014:     Lisp Expression Presentation Types
+- line 10016:         `expression`  \[Presentation Type\]
+- line 10022:         `form`  \[Presentation Type\]
+- line 10026: Input Editing and Completion Facilities
+- line 10030:   The Input Editor
+- line 10089:         `interactive-stream-p` *object* \[Protocol Predicate\]
+- line 10095:         `input-editing-stream` \[Protocol Class\]
+- line 10099:         `input-editing-stream-p` *object* \[Protocol Predicate\]
+- line 10103:         `standard-input-editing-stream` \[Class\]
+- line 10109:         `with-input-editing` *(&optional stream &key input-sensitizer initial-contents class) &body body* \[Macro\]
+- line 10119:         `with-input-editor-typeout` *(&optional stream &key erase) &body body* \[Macro\]
+- line 10125:         `input-editor-format` *stream format-string &rest format-args* \[Generic Function\]
+- line 10131:     The Input Editing Stream Protocol
+- line 10143:         `stream-insertion-pointer` *stream* \[Generic Function\]
+- line 10147:         `(setf stream-insertion-pointer)` *pointer stream* \[Generic Function\]
+- line 10151:         `stream-scan-pointer` *stream* \[Generic Function\]
+- line 10155:         `(setf stream-scan-pointer)` *pointer stream* \[Generic Function\]
+- line 10159:         `stream-rescanning-p` *stream* \[Generic Function\]
+- line 10167:         `immediate-rescan` *stream* \[Generic Function\]
+- line 10171:         `queue-rescan` *stream* \[Generic Function\]
+- line 10175:         `rescan-if-necessary` *stream &optional inhibit-activation* \[Generic Function\]
+- line 10189:         `stream-process-gesture` *stream gesture type* \[Generic Function\]
+- line 10203:     Suggestions for Input Editing Commands
+- line 10238:         `add-input-editor-command` *gestures function* \[Function\]
+- line 10242:   Activation and Delimiter Gestures
+- line 10248:         `*activation-gestures*` \[Variable\]
+- line 10252:         `*standard-activation-gestures*` \[Variable\]
+- line 10256:         `with-activation-gestures` *(gestures &key override) &body body* \[Macro\]
+- line 10264:         `activation-gesture-p` *gesture* \[Function\]
+- line 10268:         `*delimiter-gestures*` \[Variable\]
+- line 10272:         `with-delimiter-gestures` *(gestures &key override) &body body* \[Macro\]
+- line 10280:         `delimiter-gesture-p` *gesture* \[Function\]
+- line 10284:   Signalling Errors Inside `present` Methods
+- line 10286:         `simple-parse-error` \[Error Condition\]
+- line 10292:         `simple-parse-error` *format-string &rest format-arguments* \[Function\]
+- line 10296:         `input-not-of-required-type` \[Error Condition\]
+- line 10302:         `input-not-of-required-type` *object type* \[Function\]
+- line 10306:   Reading and Writing of Tokens
+- line 10308:         `replace-input` *stream new-input &key start end buffer-start rescan* \[Generic Function\]
+- line 10318:         `presentation-replace-input` *stream object type view &key buffer-start rescan query-identifier for-context-type* \[Generic Function\]
+- line 10326:         `read-token` *stream &key input-wait-handler pointer-button-press-handler click-only* \[Function\]
+- line 10336:         `write-token` *token stream &key acceptably* \[Function\]
+- line 10342:   Completion
+- line 10346:         `*completion-gestures*` \[Variable\]
+- line 10350:         `*help-gestures*` \[Variable\]
+- line 10354:         `*possibilities-gestures*` \[Variable\]
+- line 10358:         `complete-input` *stream function &key partial-completers allow-any-input possibility-printer (help-displays-possibilities t)* \[Function\]
+- line 10394:         `simple-completion-error` \[Condition\]
+- line 10410:         `suggest` *completion object* \[Function\]
+- line 10442:         `with-accept-help` *options &body body* \[Macro\]
+- line 10466: Menu Facilities
+- line 10470:         `menu-choose` *items &key associated-window printer presentation-type default-item text-style label cache unique-id id-test cache-value cache-test max-width max-height n-rows n-columns x-spacing y-spacing row-wise cell-align-x cell-align-y scroll-bars pointer-documentation* \[Generic Function\]
+- line 10476:         `frame-manager-menu-choose` *frame-manager items &key associated-window printer presentation-type default-item text-style label cache unique-id id-test cache-value cache-test max-width max-height n-rows n-columns x-spacing y-spacing row-wise cell-align-x cell-align-y scroll-bars pointer-documentation* \[Generic Function\]
+- line 10538:         `menu-choose-from-drawer` *menu presentation-type drawer &key x-position y-position cache unique-id id-test cache-value cache-test default-presentation pointer-documentation* \[Generic Function\]
+- line 10560:         `draw-standard-menu` *stream presentation-type items default-item &key item-printer max-width max-height n-rows n-columns x-spacing y-spacing row-wise cell-align-x cell-align-y* \[Function\]
+- line 10570:         `menu-item-value` *menu-item* \[Function\]
+- line 10574:         `menu-item-display` *menu-item* \[Function\]
+- line 10578:         `menu-item-options` *menu-item* \[Function\]
+- line 10582:         `with-menu` *(menu &optional associated-window &key (deexpose t)) &body body* \[Macro\]
+- line 10592: Dialog Facilities
+- line 10596:         `accepting-values` *(&optional stream &key own-window exit-boxes initially-select-query-identifier modify-initial-query resynchronize-every-pass resize-frame align-prompts label scroll-bars x-position y-position width height command-table frame-class) &body body* \[Macro\]
+- line 10637:         `display-exit-boxes` *frame stream view* \[Generic Function\]
+- line 10643:         `accept-values-resynchronize` *stream* \[Generic Function\]
+- line 10647:         `accept-values-command-button` *(&optional stream &key documentation query-identifier cache-value cache-test resynchronize) prompt &body body* \[Macro\]
+- line 10655:         `invoke-accept-values-command-button` *stream continuation view prompt &key documentation query-identifier cache-value cache-test resynchronize* \[Method\]
+- line 10669: Application Frames
+- line 10671:   Overview of Application Frames
+- line 10699:   Defining and Creating Application Frames
+- line 10701:         `application-frame` \[Protocol Class\]
+- line 10707:         `application-frame-p` *object* \[Protocol Predicate\]
+- line 10711:         `:name` \[Initarg\]
+- line 10713:         `:pretty-name` \[Initarg\]
+- line 10715:         `:command-table` \[Initarg\]
+- line 10717:         `:disabled-commands` \[Initarg\]
+- line 10719:         `:panes` \[Initarg\]
+- line 10721:         `:menu-bar` \[Initarg\]
+- line 10723:         `:calling-frame` \[Initarg\]
+- line 10725:         `:state` \[Initarg\]
+- line 10727:         `:properties` \[Initarg\]
+- line 10731:         `standard-application-frame` \[Class\]
+- line 10735:         `define-application-frame` *name superclasses slots &rest options* \[Macro\]
+- line 10763:         `make-application-frame` *frame-name &rest options &key pretty-name frame-manager enable state left top right bottom width height save-under frame-class &allow-other-keys* \[Function\]
+- line 10777:         `*application-frame*` \[Variable\]
+- line 10781:         `with-application-frame` *(frame) &body body* \[Macro\]
+- line 10787:         `map-over-frames` *function &key port frame-manager* \[Function\]
+- line 10793:         `destroy-frame` *frame* \[Generic Function\]
+- line 10797:         `raise-frame` *frame* \[Generic Function\]
+- line 10801:         `bury-frame` *frame* \[Generic Function\]
+- line 10805:     Specifying the Panes of a Frame
+- line 10891:   Application Frame Functions
+- line 10895:         `frame-name` *frame* \[Generic Function\]
+- line 10899:         `frame-pretty-name` *frame* \[Generic Function\]
+- line 10903:         `(setf frame-pretty-name)` *name frame* \[Generic Function\]
+- line 10907:         `frame-command-table` *frame* \[Generic Function\]
+- line 10911:         `(setf frame-command-table)` *command-table frame* \[Generic Function\]
+- line 10915:         `frame-standard-output` *frame* \[Generic Function\]
+- line 10919:         `frame-standard-input` *frame* \[Generic Function\]
+- line 10923:         `frame-query-io` *frame* \[Generic Function\]
+- line 10927:         `frame-error-output` *frame* \[Generic Function\]
+- line 10931:         `*pointer-documentation-output*` \[Variable\]
+- line 10935:         `frame-pointer-documentation-output` *frame* \[Generic Function\]
+- line 10939:         `frame-calling-frame` *frame* \[Generic Function\]
+- line 10943:         `frame-parent` *frame* \[Generic Function\]
+- line 10947:         `frame-panes` *frame* \[Generic Function\]
+- line 10951:         `frame-top-level-sheet` *frame* \[Generic Function\]
+- line 10957:         `frame-current-panes` *frame* \[Generic Function\]
+- line 10961:         `get-frame-pane` *frame pane-name* \[Generic Function\]
+- line 10965:         `find-pane-named` *frame pane-name* \[Generic Function\]
+- line 10969:         `frame-current-layout` *frame* \[Generic Function\]
+- line 10973:         `(setf frame-current-layout)` *layout frame* \[Generic Function\]
+- line 10979:         `frame-all-layouts` *frame* \[Generic Function\]
+- line 10983:         `layout-frame` *frame &optional width height* \[Generic Function\]
+- line 10993:         `frame-exit` \[Condition\]
+- line 10997:         `frame-exit-frame` *condition* \[Generic Function\]
+- line 11001:         `frame-exit` *frame* \[Generic Function\]
+- line 11005:         `pane-needs-redisplay` *pane* \[Generic Function\]
+- line 11009:         `(setf pane-needs-redisplay)` *value pane* \[Generic Function\]
+- line 11015:         `redisplay-frame-pane` *frame pane &key force-p* \[Generic Function\]
+- line 11019:         `redisplay-frame-panes` *frame &key force-p* \[Generic Function\]
+- line 11023:         `frame-replay` *frame stream &optional region* \[Generic Function\]
+- line 11027:         `notify-user` *frame message &key associated-window title documentation exit-boxes name style text-style* \[Generic Function\]
+- line 11033:         `frame-properties` *frame property* \[Generic Function\]
+- line 11035:         `(setf frame-properties)` *value frame property* \[Generic Function\]
+- line 11039:     Interface with Presentation Types
+- line 11043:         `frame-maintain-presentation-histories` *frame* \[Generic Function\]
+- line 11047:         `frame-find-innermost-applicable-presentation` *frame input-context stream x y &key event* \[Generic Function\]
+- line 11053:         `frame-input-context-button-press-handler` *frame stream button-press-event* \[Generic Function\]
+- line 11061:         `frame-document-highlighted-presentation` *frame presentation input-context window x y stream* \[Generic Function\]
+- line 11071:         `frame-drag-and-drop-feedback` *frame presentation stream initial-x initial-y new-x new-y state* \[Generic Function\]
+- line 11075:         `frame-drag-and-drop-highlighting` *frame presentation stream state* \[Generic Function\]
+- line 11079:   The Generic Command Loop
+- line 11095:         `run-frame-top-level` *frame &key &allow-other-keys* \[Generic Function\]
+- line 11103:         `default-frame-top-level` *frame &key command-parser command-unparser partial-command-parser prompt* \[Generic Function\]
+- line 11119:         `execute-frame-command` *frame command* \[Generic Function\]
+- line 11127:         `command-enabled` *command-name frame* \[Generic Function\]
+- line 11133:         `(setf command-enabled)` *enabled command-name frame* \[Generic Function\]
+- line 11145:   Frame Managers
+- line 11153:         `frame-manager` \[Protocol Class\]
+- line 11159:         `frame-manager-p` *object* \[Protocol Predicate\]
+- line 11163:         `standard-frame-manager` \[Class\]
+- line 11167:     Finding Frame Managers
+- line 11183:         `find-frame-manager` *&rest options &key port &allow-other-keys* \[Function\]
+- line 11197:         `*default-frame-manager*` \[Variable\]
+- line 11201:         `with-frame-manager` *(frame-manager) &body body* \[Macro\]
+- line 11205:     Frame Manager Operations
+- line 11207:         `frame-manager` *frame* \[Generic Function\]
+- line 11211:         `(setf frame-manager)` *frame-manager frame* \[Generic Function\]
+- line 11215:         `frame-manager-frames` *frame-manager* \[Generic Function\]
+- line 11219:         `adopt-frame` *frame-manager frame* \[Generic Function\]
+- line 11221:         `disown-frame` *frame-manager frame* \[Generic Function\]
+- line 11233:         `frame-state` *frame* \[Generic Function\]
+- line 11237:         `enable-frame` *frame* \[Generic Function\]
+- line 11239:         `disable-frame` *frame* \[Generic Function\]
+- line 11241:         `shrink-frame` *frame* \[Generic Function\]
+- line 11247:         `note-frame-enabled` *frame-manager frame* \[Generic Function\]
+- line 11249:         `note-frame-disabled` *frame-manager frame* \[Generic Function\]
+- line 11251:         `note-frame-iconified` *frame-manager frame* \[Generic Function\]
+- line 11253:         `note-frame-deiconified` *frame-manager frame* \[Generic Function\]
+- line 11257:         `note-command-enabled` *frame-manager frame command-name* \[Generic Function\]
+- line 11259:         `note-command-disabled` *frame-manager frame command-name* \[Generic Function\]
+- line 11263:         `frame-manager-notify-user` *framem message-string &key frame associated-window title documentation exit-boxes name style text-style* \[Generic Function\]
+- line 11267:         `generate-panes` *frame-manager frame* \[Generic Function\]
+- line 11273:         `find-pane-for-frame` *frame-manager frame* \[Generic Function\]
+- line 11277:     Frame Manager Settings
+- line 11281:         `(setf client-setting)` *value frame setting* \[Generic Function\]
+- line 11285:         `reset-frame` *frame &rest client-settings* \[Generic Function\]
+- line 11289:   Examples of Applications
+- line 11373: Panes
+- line 11375:   Overview of Panes
+- line 11385:   Basic Pane Construction
+- line 11393:         `pane` \[Protocol Class\]
+- line 11399:         `panep` *object* \[Protocol Predicate\]
+- line 11403:         `basic-pane` \[Class\]
+- line 11407:         `make-pane` *abstract-class-name &rest initargs* \[Function\]
+- line 11413:         `make-pane-1` *realizer frame abstract-class-name &rest initargs* \[Generic Function\]
+- line 11417:         `with-look-and-feel-realization` *(realizer frame) &body forms* \[Macro\]
+- line 11423:     Pane Initialization Options
+- line 11427:         `:foreground` \[Option\]
+- line 11429:         `:background` \[Option\]
+- line 11435:         `:text-style` \[Option\]
+- line 11441:         `:name` \[Option\]
+- line 11445:     Pane Properties
+- line 11447:         `pane-frame` *pane* \[Generic Function\]
+- line 11451:         `pane-name` *pane* \[Generic Function\]
+- line 11455:         `pane-foreground` *pane* \[Generic Function\]
+- line 11457:         `pane-background` *pane* \[Generic Function\]
+- line 11459:         `pane-text-style` *pane* \[Generic Function\]
+- line 11463:   Composite and Layout Panes
+- line 11479:     Layout Pane Options
+- line 11481:         `:contents` \[Option\]
+- line 11485:         `:width` \[Option\]
+- line 11487:         `:max-width` \[Option\]
+- line 11489:         `:min-width` \[Option\]
+- line 11491:         `:height` \[Option\]
+- line 11493:         `:max-height` \[Option\]
+- line 11495:         `:min-height` \[Option\]
+- line 11505:         `+fill+` \[Constant\]
+- line 11509:         `:align-x` \[Option\]
+- line 11511:         `:align-y` \[Option\]
+- line 11515:         `:x-spacing` \[Option\]
+- line 11517:         `:y-spacing` \[Option\]
+- line 11519:         `:spacing` \[Option\]
+- line 11523:     Layout Pane Classes
+- line 11525:         `hbox-pane` \[Layout Pane\]
+- line 11527:         `horizontally` *(&rest options &key spacing &allow-other-keys ) &body contents* \[Macro\]
+- line 11549:         `vbox-pane` \[Layout Pane\]
+- line 11551:         `vertically` *(&rest options &key spacing &allow-other-keys ) &body contents* \[Macro\]
+- line 11559:         `hrack-pane` \[Layout Pane\]
+- line 11561:         `vrack-pane` \[Layout Pane\]
+- line 11567:         `table-pane` \[Layout Pane\]
+- line 11569:         `tabling` *(&rest options) &body contents* \[Macro\]
+- line 11583:         `grid-pane` \[Layout Pane\]
+- line 11587:         `spacing-pane` \[Layout Pane\]
+- line 11589:         `spacing` *(&rest options &key thickness &allow-other-keys ) &body contents* \[Macro\]
+- line 11593:         `outlined-pane` \[Layout Pane\]
+- line 11595:         `outlining` *(&rest options &key thickness &allow-other-keys ) &body contents* \[Macro\]
+- line 11601:         `restraining-pane` \[Layout Pane\]
+- line 11603:         `restraining` *(&rest options) &body contents* \[Macro\]
+- line 11607:         `bboard-pane` \[Layout Pane\]
+- line 11611:         `label-pane` \[Service Pane\]
+- line 11613:         `labelling` *(&rest options &key label label-alignment &allow-other-keys ) &body contents* \[Macro\]
+- line 11617:     Scroller Pane Classes
+- line 11621:         `scroller-pane` \[Service Pane\]
+- line 11623:         `scrolling` *(&rest options) &body contents* \[Macro\]
+- line 11629:         `pane-viewport` *pane* \[Generic Function\]
+- line 11633:         `pane-viewport-region` *pane* \[Generic Function\]
+- line 11637:         `pane-scroller` *pane* \[Generic Function\]
+- line 11641:         `scroll-extent` *pane x y* \[Generic Function\]
+- line 11647:     The Layout Protocol
+- line 11665:         `space-requirement` \[Class\]
+- line 11675:         `space-requirement-width` *space-req* \[Generic Function\]
+- line 11677:         `space-requirement-min-width` *space-req* \[Generic Function\]
+- line 11679:         `space-requirement-max-width` *space-req* \[Generic Function\]
+- line 11681:         `space-requirement-height` *space-req* \[Generic Function\]
+- line 11683:         `space-requirement-min-height` *space-req* \[Generic Function\]
+- line 11685:         `space-requirement-max-height` *space-req* \[Generic Function\]
+- line 11689:         `space-requirement-components` *space-req* \[Generic Function\]
+- line 11693:         `space-requirement-combine` *function sr1 sr2* \[Function\]
+- line 11699:         `space-requirement+` *sr1 sr2* \[Function\]
+- line 11706:         `space-requirement+*` *space-req &key width min-width max-width height min-height max-height* \[Function\]
+- line 11712:         `compose-space` *pane &key width height* \[Generic Function\]
+- line 11720:         `allocate-space` *pane width height* \[Generic Function\]
+- line 11724:         `change-space-requirements` *pane &key resize-frame &rest space-req-keys* \[Generic Function\]
+- line 11730:         `note-space-requirements-changed` *sheet pane* \[Generic Function\]
+- line 11736:         `changing-space-requirements` *(&key resize-frame layout) &body body* \[Macro\]
+- line 11740:   CLIM Stream Panes
+- line 11746:     CLIM Stream Pane Options
+- line 11752:         `:display-function` \[Option\]
+- line 11756:         `:display-time` \[Option\]
+- line 11760:         `:incremental-redisplay` \[Option\]
+- line 11764:         `:text-margin` \[Option\]
+- line 11766:         `:vertical-spacing` \[Option\]
+- line 11770:         `:end-of-line-action` \[Option\]
+- line 11772:         `:end-of-page-action` \[Option\]
+- line 11776:         `:output-record` \[Option\]
+- line 11780:         `:draw` \[Option\]
+- line 11782:         `:record` \[Option\]
+- line 11786:     CLIM Stream Pane Classes
+- line 11788:         `clim-stream-pane` \[Service Pane\]
+- line 11792:         `interactor-pane` \[Service Pane\]
+- line 11798:         `application-pane` \[Service Pane\]
+- line 11804:         `command-menu-pane` \[Service Pane\]
+- line 11810:         `title-pane` \[Service Pane\]
+- line 11816:         `pointer-documentation-pane` \[Service Pane\]
+- line 11822:     Making CLIM Stream Panes
+- line 11826:         `make-clim-stream-pane` *&rest options &key type label label-alignment scroll-bars borders display-after-commands &allow-other-keys* \[Function\]
+- line 11840:         `make-clim-interactor-pane` *&rest options* \[Function\]
+- line 11844:         `make-clim-application-pane` *&rest options* \[Function\]
+- line 11848:     CLIM Stream Pane Functions
+- line 11852:         `window-clear` *window* \[Generic Function\]
+- line 11856:         `window-refresh` *window* \[Generic Function\]
+- line 11860:         `window-viewport` *window* \[Generic Function\]
+- line 11866:         `window-erase-viewport` *window* \[Generic Function\]
+- line 11870:         `window-viewport-position` *window* \[Generic Function\]
+- line 11874:         `(setf* window-viewport-position)` *x y window* \[Generic Function\]
+- line 11880:     Creating a Standalone CLIM Window
+- line 11902:   Defining New Pane Types
+- line 11906:     Defining a New Leaf Pane
+- line 11956:     Defining a New Composite Pane
+- line 12008: Gadgets
+- line 12010:   Overview of Gadgets
+- line 12018:   Abstract Gadgets
+- line 12024:     Using Gadgets
+- line 12072:     Implementing Gadgets
+- line 12166:   Basic Gadget Classes
+- line 12170:         `gadget` \[Protocol Class\]
+- line 12176:         `gadgetp` *object* \[Protocol Predicate\]
+- line 12180:         `basic-gadget` \[Class\]
+- line 12184:         `:id` \[Initarg\]
+- line 12186:         `:client` \[Initarg\]
+- line 12188:         `:armed-callback` \[Initarg\]
+- line 12190:         `:disarmed-callback` \[Initarg\]
+- line 12194:         `gadget-id` *gadget* \[Generic Function\]
+- line 12196:         `(setf gadget-id)` *id gadget* \[Generic Function\]
+- line 12200:         `gadget-client` *gadget* \[Generic Function\]
+- line 12202:         `(setf gadget-client)` *client gadget* \[Generic Function\]
+- line 12206:         `gadget-armed-callback` *gadget* \[Generic Function\]
+- line 12208:         `gadget-disarmed-callback` *gadget* \[Generic Function\]
+- line 12214:         `armed-callback` *gadget client gadget-id* \[Callback Generic Function\]
+- line 12216:         `disarmed-callback` *gadget client gadget-id* \[Callback Generic Function\]
+- line 12224:         `activate-gadget` *gadget* \[Generic Function\]
+- line 12228:         `deactivate-gadget` *gadget* \[Generic Function\]
+- line 12232:         `gadget-active-p` *gadget* \[Generic Function\]
+- line 12236:         `note-gadget-activated` *client gadget* \[Generic Function\]
+- line 12240:         `note-gadget-deactivated` *client gadget* \[Generic Function\]
+- line 12244:         `value-gadget` \[Class\]
+- line 12248:         `:value` \[Initarg\]
+- line 12250:         `:value-changed-callback` \[Initarg\]
+- line 12254:         `gadget-value` *value-gadget* \[Generic Function\]
+- line 12258:         `(setf gadget-value)` *value value-gadget &key invoke-callback* \[Generic Function\]
+- line 12266:         `gadget-value-changed-callback` *value-gadget* \[Generic Function\]
+- line 12272:         `value-changed-callback` *value-gadget client gadget-id value* \[Callback Generic Function\]
+- line 12280:         `action-gadget` \[Class\]
+- line 12284:         `:activate-callback` \[Initarg\]
+- line 12288:         `gadget-activate-callback` *action-gadget* \[Generic Function\]
+- line 12294:         `activate-callback` *action-gadget client gadget-id* \[Callback Generic Function\]
+- line 12302:         `oriented-gadget-mixin` \[Class\]
+- line 12306:         `:orientation` \[Initarg\]
+- line 12310:         `gadget-orientation` *oriented-gadget* \[Generic Function\]
+- line 12314:         `labelled-gadget-mixin` \[Class\]
+- line 12318:         `:label` \[Initarg\]
+- line 12320:         `:align-x` \[Initarg\]
+- line 12322:         `:align-y` \[Initarg\]
+- line 12326:         `gadget-label` *labelled-gadget* \[Generic Function\]
+- line 12328:         `(setf gadget-label)` *label labelled-gadget* \[Generic Function\]
+- line 12332:         `gadget-label-align-x` *labelled-gadget* \[Generic Function\]
+- line 12334:         `(setf gadget-label-align-x)` *alignment labelled-gadget* \[Generic Function\]
+- line 12336:         `gadget-label-align-y` *labelled-gadget* \[Generic Function\]
+- line 12338:         `(setf gadget-label-align-y)` *alignment labelled-gadget* \[Generic Function\]
+- line 12342:         `range-gadget-mixin` \[Class\]
+- line 12346:         `:min-value` \[Initarg\]
+- line 12348:         `:max-value` \[Initarg\]
+- line 12352:         `gadget-min-value` *range-gadget* \[Generic Function\]
+- line 12354:         `(setf gadget-min-value)` *min-value range-gadget* \[Generic Function\]
+- line 12358:         `gadget-max-value` *range-gadget* \[Generic Function\]
+- line 12360:         `(setf gadget-max-value)` *max-value range-gadget* \[Generic Function\]
+- line 12364:         `gadget-range` *range-gadget* \[Generic Function\]
+- line 12368:         `gadget-range*` *range-gadget* \[Generic Function\]
+- line 12372:   Abstract Gadget Classes
+- line 12386:         `push-button` \[Class\]
+- line 12390:         `:show-as-default` \[Initarg\]
+- line 12394:         `push-button-show-as-default` *push-button* \[Generic Function\]
+- line 12398:         `push-button-pane` \[Class\]
+- line 12406:         `toggle-button` \[Class\]
+- line 12410:         `:indicator-type` \[Initarg\]
+- line 12414:         `toggle-button-indicator-type` *toggle-button* \[Generic Function\]
+- line 12422:         `toggle-button-pane` \[Class\]
+- line 12430:         `menu-button` \[Class\]
+- line 12434:         `menu-button-pane` \[Class\]
+- line 12440:         `scroll-bar` \[Class\]
+- line 12444:         `:drag-callback` \[Initarg\]
+- line 12446:         `:scroll-to-bottom-callback` \[Initarg\]
+- line 12448:         `:scroll-to-top-callback` \[Initarg\]
+- line 12450:         `:scroll-down-line-callback` \[Initarg\]
+- line 12452:         `:scroll-up-line-callback` \[Initarg\]
+- line 12454:         `:scroll-down-page-callback` \[Initarg\]
+- line 12456:         `:scroll-up-page-callback` \[Initarg\]
+- line 12460:         `scroll-bar-drag-callback` *scroll-bar* \[Generic Function\]
+- line 12464:         `scroll-bar-scroll-to-bottom-callback` *scroll-bar* \[Generic Function\]
+- line 12466:         `scroll-bar-scroll-to-top-callback` *scroll-bar* \[Generic Function\]
+- line 12468:         `scroll-bar-scroll-down-line-callback` *scroll-bar* \[Generic Function\]
+- line 12470:         `scroll-bar-scroll-up-line-callback` *scroll-bar* \[Generic Function\]
+- line 12472:         `scroll-bar-scroll-down-page-callback` *scroll-bar* \[Generic Function\]
+- line 12474:         `scroll-bar-scroll-up-page-callback` *scroll-bar* \[Generic Function\]
+- line 12480:         `drag-callback` *scroll-bar client gadget-id value* \[Callback Generic Function\]
+- line 12486:         `scroll-to-top-callback` *scroll-bar client gadget-id* \[Callback Generic Function\]
+- line 12488:         `scroll-to-bottom-callback` *scroll-bar client gadget-id* \[Callback Generic Function\]
+- line 12490:         `scroll-up-line-callback` *scroll-bar client gadget-id* \[Callback Generic Function\]
+- line 12492:         `scroll-up-page-callback` *scroll-bar client gadget-id* \[Callback Generic Function\]
+- line 12494:         `scroll-down-line-callback` *scroll-bar client gadget-id* \[Callback Generic Function\]
+- line 12496:         `scroll-down-page-callback` *scroll-bar client gadget-id* \[Callback Generic Function\]
+- line 12504:         `scroll-bar-pane` \[Class\]
+- line 12510:         `slider` \[Class\]
+- line 12514:         `:drag-callback` \[Initarg\]
+- line 12516:         `:show-value-p` \[Initarg\]
+- line 12518:         `:decimal-places` \[Initarg\]
+- line 12522:         `:min-label` \[Initarg\]
+- line 12524:         `:max-label` \[Initarg\]
+- line 12526:         `:range-label-text-style` \[Initarg\]
+- line 12530:         `:number-of-tick-marks` \[Initarg\]
+- line 12532:         `:number-of-quanta` \[Initarg\]
+- line 12536:         `gadget-show-value-p` *slider* \[Generic Function\]
+- line 12540:         `slider-drag-callback` *slider* \[Generic Function\]
+- line 12546:         `drag-callback` *slider client gadget-id value* \[Callback Generic Function\]
+- line 12556:         `slider-pane` \[Class\]
+- line 12560:     The `radio-box` and `check-box` Gadgets
+- line 12566:         `radio-box` \[Class\]
+- line 12570:         `:current-selection` \[Initarg\]
+- line 12574:         `radio-box-current-selection` *radio-box* \[Generic Function\]
+- line 12576:         `(setf radio-box-current-selection)` *button radio-box* \[Generic Function\]
+- line 12580:         `radio-box-selections` *radio-box* \[Generic Function\]
+- line 12588:         `radio-box-pane` \[Class\]
+- line 12592:         `check-box` \[Class\]
+- line 12596:         `:current-selection` \[Initarg\]
+- line 12600:         `check-box-current-selection` *check-box* \[Generic Function\]
+- line 12602:         `(setf check-box-current-selection)` *button check-box* \[Generic Function\]
+- line 12606:         `check-box-selections` *check-box* \[Generic Function\]
+- line 12614:         `check-box-pane` \[Class\]
+- line 12637:     The `list-pane` and `option-pane` Gadgets
+- line 12639:         `list-pane` \[Class\]
+- line 12643:         `:mode` \[Initarg\]
+- line 12647:         `:items` \[Initarg\]
+- line 12649:         `:name-key` \[Initarg\]
+- line 12651:         `:value-key` \[Initarg\]
+- line 12653:         `:test` \[Initarg\]
+- line 12669:         `generic-list-pane` \[Class\]
+- line 12673:         `option-pane` \[Class\]
+- line 12677:         `:mode` \[Initarg\]
+- line 12681:         `:items` \[Initarg\]
+- line 12683:         `:name-key` \[Initarg\]
+- line 12685:         `:value-key` \[Initarg\]
+- line 12687:         `:test` \[Initarg\]
+- line 12703:         `generic-option-pane` \[Class\]
+- line 12709:         `text-field` \[Class\]
+- line 12715:         `:editable-p` \[Initarg\]
+- line 12723:         `text-field-pane` \[Class\]
+- line 12729:         `text-editor` \[Class\]
+- line 12735:         `:ncolumns` \[Initarg\]
+- line 12737:         `:nlines` \[Initarg\]
+- line 12745:         `text-editor-pane` \[Class\]
+- line 12749:   Integrating Gadgets and Output Records
+- line 12755:         `gadget-output-record` \[Class\]
+- line 12759:         `with-output-as-gadget` *(stream &rest options) &body body* \[Macro\]
+- line 12799: Command Processing
+- line 12801:   Commands
+- line 12809:         `command-name` *command* \[Function\]
+- line 12813:         `command-arguments` *command* \[Function\]
+- line 12817:         `partial-command-p` *command* \[Function\]
+- line 12821:         `define-command` *name-and-options arguments &body body* \[Macro\]
+- line 12867:   Command Tables
+- line 12887:         `command-table` \[Protocol Class\]
+- line 12891:         `command-table-p` *object* \[Protocol Predicate\]
+- line 12895:         `standard-command-table` \[Class\]
+- line 12901:         `command-table-name` *command-table* \[Generic Function\]
+- line 12905:         `command-table-inherit-from` *command-table* \[Generic Function\]
+- line 12909:         `define-command-table` *name &key inherit-from menu inherit-menu* \[Macro\]
+- line 12921:         `make-command-table` *name &key inherit-from menu inherit-menu (errorp t)* \[Function\]
+- line 12925:         `find-command-table` *name &key (errorp t)* \[Function\]
+- line 12929:         `command-table-error` \[Error Condition\]
+- line 12935:         `command-table-not-found` \[Error Condition\]
+- line 12939:         `command-table-already-exists` \[Error Condition\]
+- line 12943:         `command-not-present` \[Error Condition\]
+- line 12947:         `command-not-accessible` \[Error Condition\]
+- line 12951:         `command-already-present` \[Error Condition\]
+- line 12955:         `add-command-to-command-table` *command-name command-table &key name menu keystroke (errorp t)* \[Function\]
+- line 12967:         `remove-command-from-command-table` *command-name command-table &key (errorp t)* \[Function\]
+- line 12973:         `command-name-from-symbol` *symbol* \[Function\]
+- line 12977:         `do-command-table-inheritance` *(command-table-var command-table) &body body* \[Macro\]
+- line 12983:         `map-over-command-table-commands` *function command-table &key (inherited t)* \[Function\]
+- line 12989:         `map-over-command-table-names` *function command-table &key (inherited t)* \[Function\]
+- line 12995:         `command-present-in-command-table-p` *command-name command-table* \[Function\]
+- line 12999:         `command-accessible-in-command-table-p` *command-name command-table* \[Function\]
+- line 13003:         `find-command-from-command-line-name` *name command-table &key (errorp t)* \[Function\]
+- line 13009:         `command-line-name-for-command` *command-name command-table &key (errorp t)* \[Function\]
+- line 13017:         `command-table-complete-input` *command-table string action &key frame* \[Function\]
+- line 13025:         `global-command-table` \[Command Table\]
+- line 13029:         `user-command-table` \[Command Table\]
+- line 13033:   Command Menus
+- line 13041:         `add-menu-item-to-command-table` *command-table string type value &key documentation (after ’:end) keystroke text-style (errorp t)* \[Function\]
+- line 13065:         `remove-menu-item-from-command-table` *command-table string &key (errorp t)* \[Function\]
+- line 13071:         `map-over-command-table-menu-items` *function command-table &key (inherited t)* \[Function\]
+- line 13079:         `find-menu-item` *menu-name command-table &key (errorp t)* \[Function\]
+- line 13085:         `command-menu-item-type` *menu-item* \[Function\]
+- line 13089:         `command-menu-item-value` *menu-item* \[Function\]
+- line 13093:         `command-menu-item-options` *menu-item* \[Function\]
+- line 13103:         `menu-choose-command-from-command-table` *command-table &key associated-window default-style label cache unique-id id-test cache-value cache-test* \[Function\]
+- line 13111:   Keystroke Accelerators
+- line 13117:         `add-keystroke-to-command-table` *command-table gesture type value &key documentation (errorp t)* \[Function\]
+- line 13127:         `remove-keystroke-from-command-table` *command-table gesture &key (errorp t)* \[Function\]
+- line 13133:         `map-over-command-table-keystrokes` *function command-table &key (inherited t)* \[Function\]
+- line 13141:         `find-keystroke-item` *gesture command-table &key test (errorp t)* \[Function\]
+- line 13149:         `lookup-keystroke-item` *gesture command-table &key test* \[Function\]
+- line 13159:         `lookup-keystroke-command-item` *gesture command-table &key test numeric-arg* \[Function\]
+- line 13171:         `substitute-numeric-argument-marker` *command numeric-arg* \[Function\]
+- line 13175:   Presentation Translator Utilities
+- line 13179:         `add-presentation-translator-to-command-table` *command-table translator &key (errorp t)* \[Function\]
+- line 13185:         `remove-presentation-translator-from-command-table` *command-table translator-name &key (errorp t)* \[Function\]
+- line 13191:         `map-over-command-table-translators` *function command-table &key (inherited t)* \[Function\]
+- line 13197:         `find-presentation-translator` *translator-name command-table &key (errorp t)* \[Function\]
+- line 13201:   The Command Processor
+- line 13205:         `read-command` *command-table &key (stream \*standard-input\*) command-parser command-unparser partial-command-parser use-keystrokes* \[Function\]
+- line 13221:         `with-command-table-keystrokes` *(keystroke-var command-table) &body body* \[Macro\]
+- line 13225:         `read-command-using-keystrokes` *command-table keystrokes &key (stream \*standard-input\*) command-parser command-unparser partial-command-parser* \[Function\]
+- line 13233:         `command-line-command-parser` *command-table stream* \[Function\]
+- line 13237:         `command-line-command-unparser` *command-table stream command* \[Function\]
+- line 13241:         `command-line-read-remaining-arguments-for-partial-command` *command-table stream partial-command start-position* \[Function\]
+- line 13245:         `menu-command-parser` *command-table stream* \[Function\]
+- line 13251:         `menu-read-remaining-arguments-for-partial-command` *command-table stream partial-command start-position* \[Function\]
+- line 13255:         `*command-parser*` \[Variable\]
+- line 13259:         `*command-unparser*` \[Variable\]
+- line 13263:         `*partial-command-parser*` \[Variable\]
+- line 13267:         `*unsupplied-argument-marker*` \[Variable\]
+- line 13271:         `*numeric-argument-marker*` \[Variable\]
+- line 13275:         `*command-name-delimiters*` \[Variable\]
+- line 13279:         `*command-argument-delimiters*` \[Variable\]
+- line 13283:     Command Presentation Types
+- line 13285:         `command` *&key command-table* \[Presentation Type\]
+- line 13299:         `command-name` *&key command-table* \[Presentation Type\]
+- line 13305:         `command-or-form` *&key command-table* \[Presentation Type\]
+- line 13313:         `*command-dispatchers*` \[Variable\]
+- line 13317: Common Lisp Streams
+- line 13323:   Stream Classes
+- line 13327:         `fundamental-stream` \[Class\]
+- line 13331:         `streamp` *object* \[Generic Function\]
+- line 13335:         `fundamental-input-stream` \[Class\]
+- line 13339:         `input-stream-p` *object* \[Generic Function\]
+- line 13343:         `fundamental-output-stream` \[Class\]
+- line 13347:         `output-stream-p` *object* \[Generic Function\]
+- line 13353:         `fundamental-character-stream` \[Class\]
+- line 13357:         `fundamental-binary-stream` \[Class\]
+- line 13361:         `fundamental-character-input-stream` \[Class\]
+- line 13365:         `fundamental-character-output-stream` \[Class\]
+- line 13369:         `fundamental-binary-input-stream` \[Class\]
+- line 13373:         `fundamental-binary-output-stream` \[Class\]
+- line 13377:   Basic Stream Functions
+- line 13381:         `stream-element-type` *stream* \[Generic Function\]
+- line 13385:         `open-stream-p` *stream* \[Generic Function\]
+- line 13389:         `close` *stream &key abort* \[Generic Function\]
+- line 13393:         `stream-pathname` *stream* \[Generic Function\]
+- line 13395:         `stream-truename` *stream* \[Generic Function\]
+- line 13399:   Character Input
+- line 13403:         `stream-read-char` *stream* \[Generic Function\]
+- line 13407:         `stream-unread-char` *stream character* \[Generic Function\]
+- line 13411:         `stream-read-char-no-hang` *stream* \[Generic Function\]
+- line 13415:         `stream-peek-char` *stream* \[Generic Function\]
+- line 13419:         `stream-listen` *stream* \[Generic Function\]
+- line 13423:         `stream-read-line` *stream* \[Generic Function\]
+- line 13427:         `stream-clear-input` *stream* \[Generic Function\]
+- line 13431:   Character Output
+- line 13435:         `stream-write-char` *stream character* \[Generic Function\]
+- line 13439:         `stream-line-column` *stream* \[Generic Function\]
+- line 13443:         `stream-start-line-p` *stream* \[Generic Function\]
+- line 13453:         `stream-terpri` *stream* \[Generic Function\]
+- line 13457:         `stream-fresh-line` *stream* \[Generic Function\]
+- line 13461:         `stream-finish-output` *stream* \[Generic Function\]
+- line 13465:         `stream-force-output` *stream* \[Generic Function\]
+- line 13469:         `stream-clear-output` *stream* \[Generic Function\]
+- line 13473:         `stream-advance-to-column` *stream column* \[Generic Function\]
+- line 13477:   Binary Streams
+- line 13481:         `stream-read-byte` *stream* \[Generic Function\]
+- line 13485:         `stream-write-byte` *stream integer* \[Generic Function\]
+- line 13489: Encapsulating Streams
+- line 13495:   Encapsulating Stream Classes
+- line 13497:         `encapsulating-stream` \[Protocol Class\]
+- line 13501:         `encapsulating-stream-p` *object* \[Protocol Predicate\]
+- line 13505:         `:stream` \[Initarg\]
+- line 13509:         `standard-encapsulating-stream` \[Class\]
+- line 13513:     Encapsulating Stream Protocol
+- line 13539:         `encapsulating-stream-stream` *encapsulating-stream* \[Generic Function\]
+- line 13543:     The “Delegation Problem”
+- line 13553:         `*original-stream*` \[Variable\]
+- line 13557: The CLIM-SYS Package
+- line 13563:   Resources
+- line 13567:         `defresource` *name parameters &key constructor initializer deinitializer matcher initial-copies* \[Macro\]
+- line 13581:         `using-resource` *(variable name &rest parameters) &body body* \[Macro\]
+- line 13587:         `allocate-resource` *name &rest parameters* \[Function\]
+- line 13591:         `deallocate-resource` *name object* \[Function\]
+- line 13595:         `clear-resource` *name* \[Function\]
+- line 13599:         `map-resource` *function name* \[Function\]
+- line 13603:   Multi-processing
+- line 13607:         `*multiprocessing-p*` \[Variable\]
+- line 13611:         `make-process` *function &key name* \[Function\]
+- line 13615:         `destroy-process` *process* \[Function\]
+- line 13619:         `current-process`  \[Function\]
+- line 13623:         `all-processes`  \[Function\]
+- line 13627:         `processp` *object* \[Protocol Predicate\]
+- line 13631:         `process-name` *process* \[Function\]
+- line 13633:         `process-state` *process* \[Function\]
+- line 13635:         `process-whostate` *process* \[Function\]
+- line 13639:         `process-wait` *reason predicate* \[Function\]
+- line 13643:         `process-wait-with-timeout` *reason timeout predicate* \[Function\]
+- line 13647:         `process-yield`  \[Function\]
+- line 13651:         `process-interrupt` *process function* \[Function\]
+- line 13655:         `disable-process` *process* \[Function\]
+- line 13659:         `enable-process` *process* \[Function\]
+- line 13663:         `restart-process` *process* \[Function\]
+- line 13667:         `without-scheduling` *&body body* \[Macro\]
+- line 13671:         `atomic-incf` *reference* \[Function\]
+- line 13673:         `atomic-decf` *reference* \[Function\]
+- line 13677:   Locks
+- line 13679:         `make-lock` *&optional name* \[Function\]
+- line 13683:         `with-lock-held` *(place &optional state) &body body* \[Macro\]
+- line 13689:         `make-recursive-lock` *&optional name* \[Function\]
+- line 13693:         `with-recursive-lock-held` *(place &optional state) &body body* \[Macro\]
+- line 13699:   Multiple Value `setf`
+- line 13703:         `defgeneric*` *name lambda-list &body options* \[Macro\]
+- line 13732: Suggested Extensions to CLIM
+- line 13738:   Support for PostScript Output
+- line 13742:         `with-output-to-postscript-stream` *(stream-var file-stream &key device-type multi-page scale-to-fit orientation header-comments) &body body* \[Macro\]
+- line 13760:         `new-page` *stream* \[Function\]
+- line 13764:   Support for Reading Bitmap Files
+- line 13768:         `read-bitmap-file` *type pathname &key* \[Generic Function\]
+- line 13778:         `make-pattern-from-bitmap-file` *pathname &key type designs &allow-other-keys* \[Function\]
+- line 13786: Glossary
+- line 14156: Changes from CLIM 1.0
+- line 14164:         Regions
+- line 14172:         Bounding Rectangles
+- line 14182:         Affine Transformations
+- line 14192:         Properties of Sheets
+- line 14194:         Sheet Protocols
+- line 14196:         Ports, Grafts, and Mirrored Sheets
+- line 14198:         Text Styles
+- line 14204:         Drawing in Color
+- line 14210:         Extended Stream Output
+- line 14220:         Output Recording
+- line 14252:         Table Formatting
+- line 14262:         Graph Formatting
+- line 14266:         Incremental Redisplay
+- line 14270:         Extended Stream Input
+- line 14280:         Presentation Types
+- line 14296:         Input Editing and Completion Facilities
+- line 14310:         Menus
+- line 14314:         Command Processing
+- line 14322:         Application Frames
+- line 14338:         Panes
+
+### historical: Historical Documents
+- line 1: McCLIM Historical Documents
+- line 4:   0-9-1-mothering-sunday
+- line 291:   0-9-2-laetare-sunday
+- line 622:   0-9-3-all-souls'-day
+- line 704:   0-9-4-orthodox-new-year
+- line 792:   0-9-5-eastern-orthodox-liturgical-new-year
+- line 875:   0-9-6-st-george's-day
+- line 944:   0-9-7-imbolc
+- line 998:   0-9-armistice
+- line 1222:   NEWS
+- line 1392:   README.old

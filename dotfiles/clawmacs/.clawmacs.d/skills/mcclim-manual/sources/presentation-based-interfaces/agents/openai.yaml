@@ -1,0 +1,4 @@
+interface:
+  display_name: "Presentation-Based Interfaces"
+  short_description: "Use presentation-based UI papers and synthesis"
+  default_prompt: "Use $presentation-based-interfaces to answer this presentation-based UI architecture task from the bundled synthesis and source papers."

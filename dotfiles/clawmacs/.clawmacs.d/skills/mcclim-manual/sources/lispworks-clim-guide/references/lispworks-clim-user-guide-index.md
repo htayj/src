@@ -1,0 +1,692 @@
+# LispWorks CLIM 2.0 User Guide Index
+
+Source: https://www.lispworks.com/documentation/lww42/CLIM-W/html/climguide.htm
+Full Markdown: `lispworks-clim-user-guide.md`
+
+## When to use this guide
+- Use for LispWorks CLIM behavior, examples, implementation specifics, CAPI integration, Liquid CLIM/Motif notes, and Windows details.
+- Use as a concept-oriented CLIM guide organized around drawing, presentations, frames, panes, commands, streams, sheets, and ports.
+- Use when comparing vendor CLIM behavior or when McCLIM follows CLIM concepts but does not document the conceptual background.
+
+## Prefer another CLIM source when
+- Use `clim-spec` for portable normative API semantics from the CLIM 2 specification.
+- Use `mcclim-manual` for McCLIM-specific extensions, examples, Drei/ESA/Clouseau/Listener/Graphic Forms, and McCLIM implementation details.
+- Use `franz-clim-guide` for Allegro/Franz CLIM setup, Motif notes, dynamic/layered colors, or Franz-specific documentation wording.
+
+## Topic map
+- Preface: how the guide is organized and its CLIM II basis
+- 1 Using CLIM: packages, loading, applications, windows, streams, CLIM concepts
+- 2 Drawing Graphics: drawing functions, graphics protocols, geometric objects
+- 3 Drawing Environment: mediums, drawing options, line styles, transformations, clipping
+- 4 Text Styles: text styles, mapping and merging text styles
+- 5 Drawing in Color: colors, designs, patterns, opacity, compositing
+- 6 Presentation Types: presentations, presentation input/output, standard presentation types
+- 7 Defining Presentation Types: new presentation types, accept/present methods, completion/history
+- 8 Presentation Translators: translator definition, menus, tester/body forms, drag-and-drop
+- 9 Application Frames: frame definition, panes, commands, layouts, frame managers
+- 10 Panes and Gadgets: pane classes, layouts, gadgets, scrolling, clim-stream-pane
+- 11 Commands: command tables, parsers, command processors, menus and keystrokes
+- 12 Menus and Dialogs: menus, dialogs, accepting-values, popup/menu workflows
+- 13 Extended Stream Output: text cursors, fresh-line, drawing as stream output
+- 14 Output Recording and Redisplay: output records, redisplay, incremental redisplay
+- 15 Extended Stream Input: gestures, pointer events, tracking pointer, input contexts
+- 16 Input Editing and Completion: input editing streams, activation/delimiter gestures, completion
+- 17 Formatted Output: tables, graphs, bordered output
+- 18 Sheets: sheet hierarchy, geometry, repaint, event protocols
+- 19 Ports, Grafts, and Mirrored Sheets: ports, grafts, mirrored sheets and native window integration
+- Appendices: glossary, implementation specifics, CLIM-SYS, CAPI integration, Liquid CLIM/Motif, streams, Windows
+
+## Lookup workflow
+- Search first: `python3 scripts/lispworks_clim_lookup.py --query "presentations"`
+- List headings: `python3 scripts/lispworks_clim_lookup.py --list-headings`
+- Load a narrow section: `python3 scripts/lispworks_clim_lookup.py --section "Chapter 7"`
+- Read the full Markdown only when the answer needs broad context or many adjacent sections.
+
+## Generated heading index
+- L1: LispWorks Common Lisp Interface Manager User Guide
+- L8:   Copyright and Trademarks
+- L64:   Preface
+- L98:   Chapter 1 Using CLIM
+- L100:     1.1 Conceptual Overview
+- L102:     1.2 Highlights of Tools and Techniques
+- L104:     1.3 How CLIM Helps You Achieve a Portable User Interface
+- L106:     1.4 What Is CLIM?
+- L108:     1.5 Testing Code Examples
+- L112:     1.1 Conceptual Overview
+- L126:     1.2 Highlights of Tools and Techniques
+- L146:     1.3 How CLIM Helps You Achieve a Portable User Interface
+- L164:     1.4 What Is CLIM?
+- L168:       1.4.1 The Core of CLIM
+- L170:       1.4.2 CLIM Facilities
+- L172:       1.4.3 Summary
+- L176:       1.4.1 The Core of CLIM
+- L178:       1.4.1.1 Application Frames
+- L180:       1.4.1.2 Panes
+- L182:       1.4.1.3 Sheets
+- L184:       1.4.1.4 Enabling Input and Output
+- L186:       1.4.1.5 Graphics
+- L188:       1.4.1.6 Text
+- L190:       1.4.1.7 Events
+- L192:       1.4.1.8 Mediums
+- L196:       1.4.1.1 Application Frames
+- L204:       1.4.1.2 Panes
+- L218:       1.4.1.3 Sheets
+- L224:       1.4.1.4 Enabling Input and Output
+- L230:       1.4.1.5 Graphics
+- L236:       1.4.1.6 Text
+- L242:       1.4.1.7 Events
+- L248:       1.4.1.8 Mediums
+- L258:       1.4.2 CLIM Facilities
+- L262:       1.4.2.1 Look and Feel
+- L264:       1.4.2.2 Controlling Look and Feel
+- L266:       1.4.2.3 Streams
+- L268:       1.4.2.4 Extended Input and Output
+- L270:       1.4.2.5 Presentations
+- L272:       1.4.2.6 Command Loop
+- L276:       1.4.2.1 Look and Feel
+- L282:       1.4.2.2 Controlling Look and Feel
+- L290:       1.4.2.3 Streams
+- L296:       1.4.2.4 Extended Input and Output
+- L304:       1.4.2.5 Presentations
+- L314:       1.4.2.6 Command Loop
+- L324:       1.4.3 Summary
+- L330:     1.5 Testing Code Examples
+- L448:   Chapter 2 Drawing Graphics
+- L450:     2.1 Conceptual Overview of Drawing Graphics
+- L452:     2.2 Examples of Using CLIM Drawing Functions
+- L454:     2.3 CLIM Drawing Functions
+- L456:     2.4 Graphics Protocols
+- L458:     2.5 General Geometric Objects in CLIM
+- L462:     2.1 Conceptual Overview of Drawing Graphics
+- L464:       2.1.1 Drawing Functions and Options
+- L466:       2.1.2 The Drawing Plane
+- L468:       2.1.3 Coordinates
+- L470:       2.1.4 Mediums, Sheets, and Streams
+- L474:       2.1.1 Drawing Functions and Options
+- L480:       2.1.2 The Drawing Plane
+- L494:       2.1.3 Coordinates
+- L508:       2.1.4 Mediums, Sheets, and Streams
+- L520:     2.2 Examples of Using CLIM Drawing Functions
+- L561:     2.3 CLIM Drawing Functions
+- L571:       2.3.1 Arguments
+- L573:       2.3.2 Compound Drawing Functions
+- L575:       2.3.3 Patterns and Stencils
+- L577:       2.3.4 Pixmaps
+- L581:       2.3.1 Arguments
+- L859:       2.3.2 Compound Drawing Functions
+- L895:       2.3.3 Patterns and Stencils
+- L1003:       2.3.4 Pixmaps
+- L1077:     2.4 Graphics Protocols
+- L1081:       2.4.1 Arguments
+- L1083:       2.4.2 General Behavior of Drawing Functions
+- L1085:       2.4.3 Medium-Specific Drawing Functions
+- L1089:       2.4.1 Arguments
+- L1099:       2.4.2 General Behavior of Drawing Functions
+- L1113:       2.4.3 Medium-Specific Drawing Functions
+- L1167:     2.5 General Geometric Objects in CLIM
+- L1169:       2.5.1 Regions in CLIM
+- L1171:       2.5.2 CLIM Point Objects
+- L1173:       2.5.3 Polygons and Polylines in CLIM
+- L1175:       2.5.4 Lines in CLIM
+- L1177:       2.5.5 Rectangles in CLIM
+- L1179:       2.5.6 Ellipses and Elliptical Arcs in CLIM
+- L1181:       2.5.7 Bounding Rectangles
+- L1185:       2.5.1 Regions in CLIM
+- L1269:       2.5.1.1 Region Predicates in CLIM
+- L1271:       2.5.1.2 Composition of CLIM Regions
+- L1275:       2.5.1.1 Region Predicates in CLIM
+- L1309:       2.5.1.2 Composition of CLIM Regions
+- L1405:       2.5.2 CLIM Point Objects
+- L1459:       2.5.3 Polygons and Polylines in CLIM
+- L1507:       2.5.3.1 Constructors for CLIM Polygons and Polylines
+- L1509:       2.5.3.2 Accessors for CLIM Polygons and Polylines
+- L1513:       2.5.3.1 Constructors for CLIM Polygons and Polylines
+- L1553:       2.5.3.2 Accessors for CLIM Polygons and Polylines
+- L1583:       2.5.4 Lines in CLIM
+- L1647:       2.5.5 Rectangles in CLIM
+- L1745:       2.5.6 Ellipses and Elliptical Arcs in CLIM
+- L1839:       2.5.6.1 Constructor Functions for Ellipses and Elliptical Arcs in CLIM
+- L1841:       2.5.6.2 Accessors for CLIM Elliptical Objects
+- L1845:       2.5.6.1 Constructor Functions for Ellipses and Elliptical Arcs in CLIM
+- L1889:       2.5.6.2 Accessors for CLIM Elliptical Objects
+- L1927:       2.5.7 Bounding Rectangles
+- L1999:       2.5.7.1 The Bounding Rectangle Protocol
+- L2001:       2.5.7.2 Bounding Rectangle Convenience Functions
+- L2005:       2.5.7.1 The Bounding Rectangle Protocol
+- L2033:       2.5.7.2 Bounding Rectangle Convenience Functions
+- L2093:   Chapter 3 The CLIM Drawing Environment
+- L2095:     3.1 CLIM Mediums
+- L2097:     3.2 Using CLIM Drawing Options
+- L2099:     3.3 CLIM Line Styles
+- L2101:     3.4 Transformations in CLIM
+- L2103:     3.5 The Transformations Used by CLIM
+- L2107:     3.1 CLIM Mediums
+- L2237:     3.2 Using CLIM Drawing Options
+- L2273:       3.2.1 Set of CLIM Drawing Options
+- L2275:       3.2.2 Using the :filled Option
+- L2279:       3.2.1 Set of CLIM Drawing Options
+- L2354:       3.2.2 Using the :filled Option
+- L2378:     3.3 CLIM Line Styles
+- L2498:     3.4 Transformations in CLIM
+- L2558:     3.5 The Transformations Used by CLIM
+- L2580:       3.5.1 CLIM Transformation Constructors
+- L2582:       3.5.2 CLIM Transformation Protocol
+- L2584:       3.5.3 CLIM Transformation Predicates
+- L2586:       3.5.4 CLIM Transformation Functions
+- L2588:       3.5.5 Applying CLIM Transformations
+- L2592:       3.5.1 CLIM Transformation Constructors
+- L2688:       3.5.2 CLIM Transformation Protocol
+- L2728:       3.5.3 CLIM Transformation Predicates
+- L2792:       3.5.4 CLIM Transformation Functions
+- L2955:       3.5.5 Applying CLIM Transformations
+- L3035:   Chapter 4 Text Styles
+- L3037:     4.1 Conceptual Overview of Text Styles
+- L3039:     4.2 CLIM Text Style Objects
+- L3041:     4.3 CLIM Text Style Functions
+- L3043:     4.4 Text Style Binding Forms
+- L3045:     4.5 Controlling Text Style Mappings
+- L3049:     4.1 Conceptual Overview of Text Styles
+- L3085:     4.2 CLIM Text Style Objects
+- L3171:     4.3 CLIM Text Style Functions
+- L3271:     4.4 Text Style Binding Forms
+- L3325:     4.5 Controlling Text Style Mappings
+- L3383:   Chapter 5 Drawing in Color
+- L3385:     5.1 Conceptual Overview of Drawing With Color
+- L3387:     5.2 CLIM Operators for Drawing in Color
+- L3389:     5.3 Predefined Color Names in LispWorks CLIM
+- L3391:     5.4 Indirect Inks
+- L3393:     5.5 Flipping Ink
+- L3395:     5.6 Examples of Simple Drawing Effects
+- L3399:     5.1 Conceptual Overview of Drawing With Color
+- L3417:       5.1.1 Color Objects
+- L3419:       5.1.2 Rendering
+- L3423:       5.1.1 Color Objects
+- L3449:       5.1.2 Rendering
+- L3457:     5.2 CLIM Operators for Drawing in Color
+- L3521:     5.3 Predefined Color Names in LispWorks CLIM
+- L3527:     5.4 Indirect Inks
+- L3547:     5.5 Flipping Ink
+- L3569:     5.6 Examples of Simple Drawing Effects
+- L3625:       5.6.1 Using Flipping Ink
+- L3629:       5.6.1 Using Flipping Ink
+- L3757:   Chapter 6 Presentation Types
+- L3759:     6.1 Conceptual Overview of CLIM Presentation Types
+- L3761:     6.2 How to Specify a CLIM Presentation Type
+- L3763:     6.3 Using CLIM Presentation Types for Output
+- L3765:     6.4 Using CLIM Presentation Types for Input
+- L3767:     6.5 Predefined Presentation Types
+- L3769:     6.6 Functions That Operate on CLIM Presentation Types
+- L3773:     6.1 Conceptual Overview of CLIM Presentation Types
+- L3775:       6.1.1 User Interaction With Application Objects
+- L3777:       6.1.2 Presentations and Presentation Types
+- L3779:       6.1.3 Output With Its Semantics Attached
+- L3781:       6.1.4 Input Context
+- L3783:       6.1.5 Inheritance
+- L3785:       6.1.6 Presentation Translators
+- L3787:       6.1.7 What the Application Programmer Does
+- L3791:       6.1.1 User Interaction With Application Objects
+- L3803:       6.1.2 Presentations and Presentation Types
+- L3827:       6.1.3 Output With Its Semantics Attached
+- L3833:       6.1.4 Input Context
+- L3839:       6.1.5 Inheritance
+- L3847:       6.1.6 Presentation Translators
+- L3855:       6.1.7 What the Application Programmer Does
+- L3866:     6.2 How to Specify a CLIM Presentation Type
+- L3928:     6.3 Using CLIM Presentation Types for Output
+- L3936:       6.3.1 CLOS Operators
+- L3938:       6.3.2 Additional Functions for Operating on Presentations in CLIM
+- L3942:       6.3.1 CLOS Operators
+- L4020:       6.3.2 Additional Functions for Operating on Presentations in CLIM
+- L4106:     6.4 Using CLIM Presentation Types for Input
+- L4270:     6.5 Predefined Presentation Types
+- L4276:       6.5.1 Basic Presentation Types
+- L4278:       6.5.2 Numeric Presentation Types
+- L4280:       6.5.3 Character and String Presentation Types
+- L4282:       6.5.4 Pathname Presentation Types
+- L4284:       6.5.5 One-Of and Some-Of Presentation Types
+- L4286:       6.5.6 Sequence Presentation Types
+- L4288:       6.5.7 Constructor Presentation Types
+- L4290:       6.5.8 Compound Presentation Types
+- L4292:       6.5.9 Command and Form Presentation Types
+- L4296:       6.5.1 Basic Presentation Types
+- L4350:       6.5.2 Numeric Presentation Types
+- L4400:       6.5.3 Character and String Presentation Types
+- L4420:       6.5.4 Pathname Presentation Types
+- L4432:       6.5.5 One-Of and Some-Of Presentation Types
+- L4574:       6.5.6 Sequence Presentation Types
+- L4600:       6.5.7 Constructor Presentation Types
+- L4624:       6.5.8 Compound Presentation Types
+- L4654:       6.5.9 Command and Form Presentation Types
+- L4700:     6.6 Functions That Operate on CLIM Presentation Types
+- L4862:   Chapter 7 Defining a New Presentation Type
+- L4864:     7.1 Conceptual Overview of Defining a New Presentation Type
+- L4866:     7.2 CLIM Operators for Defining New Presentation Types
+- L4868:     7.3 Using Views With CLIM Presentation Types
+- L4870:     7.4 Advanced Topics
+- L4874:     7.1 Conceptual Overview of Defining a New Presentation Type
+- L4910:       7.1.1 CLIM Presentation Type Inheritance
+- L4912:       7.1.2 Defining an Accept for a Structure With Several Fields
+- L4916:       7.1.1 CLIM Presentation Type Inheritance
+- L4940:       7.1.2 Defining an Accept for a Structure With Several Fields
+- L5134:     7.2 CLIM Operators for Defining New Presentation Types
+- L5166:       7.2.1 Presentation Methods in CLIM
+- L5168:       7.2.2 CLIM Operators for Defining Presentation Type Abbreviations
+- L5172:       7.2.1 Presentation Methods in CLIM
+- L5374:       7.2.2 CLIM Operators for Defining Presentation Type Abbreviations
+- L5466:     7.3 Using Views With CLIM Presentation Types
+- L5546:     7.4 Advanced Topics
+- L5624:   Chapter 8 Presentation Translators in CLIM
+- L5626:     8.1 Conceptual Overview of Presentation Translators
+- L5628:     8.2 Applicability of CLIM Presentation Translators
+- L5630:     8.3 Pointer Gestures in CLIM
+- L5632:     8.4 CLIM Operators for Defining Presentation Translators
+- L5634:     8.5 Examples of Defining Presentation Translators in CLIM
+- L5636:     8.6 Advanced Topics
+- L5640:     8.1 Conceptual Overview of Presentation Translators
+- L5676:     8.2 Applicability of CLIM Presentation Translators
+- L5702:       8.2.1 Input Contexts in CLIM
+- L5704:       8.2.2 Nested Presentations in CLIM
+- L5708:       8.2.1 Input Contexts in CLIM
+- L5732:       8.2.2 Nested Presentations in CLIM
+- L5742:     8.3 Pointer Gestures in CLIM
+- L5788:     8.4 CLIM Operators for Defining Presentation Translators
+- L5878:     8.5 Examples of Defining Presentation Translators in CLIM
+- L5880:       8.5.1 Defining a Translation from Floating Point Number to Integer
+- L5882:       8.5.2 Defining a Presentation-to-Command Translator
+- L5884:       8.5.3 Defining Presentation Translators for the Blank Area
+- L5886:       8.5.4 Defining a Presentation Action
+- L5890:       8.5.1 Defining a Translation from Floating Point Number to Integer
+- L5936:       8.5.2 Defining a Presentation-to-Command Translator
+- L5970:       8.5.3 Defining Presentation Translators for the Blank Area
+- L6006:       8.5.4 Defining a Presentation Action
+- L6044:     8.6 Advanced Topics
+- L6194:   Chapter 9 Defining Application Frames
+- L6196:     9.1 Conceptual Overview of CLIM Application Frames
+- L6198:     9.2 Defining CLIM Application Frames
+- L6200:     9.3 Initializing CLIM Application Frames
+- L6202:     9.4 Accessing Slots and Components of CLIM Application Frames
+- L6204:     9.5 Running a CLIM Application
+- L6206:     9.6 Exiting a CLIM Application
+- L6208:     9.7 Examples of CLIM Application Frames
+- L6210:     9.8 Application Frame Operators and Accessors
+- L6212:     9.9 Frame Managers
+- L6214:     9.10 Advanced Topics
+- L6218:     9.1 Conceptual Overview of CLIM Application Frames
+- L6248:     9.2 Defining CLIM Application Frames
+- L6312:       9.2.1 The Application Frame Protocol
+- L6314:       9.2.2 Using the :pane Option
+- L6316:       9.2.3 Using the :panes and :layouts Options
+- L6318:       9.2.4 Example of the :pane Option to define-application-frame
+- L6320:       9.2.5 Examples of the :panes and :layout Options to define-application-frame
+- L6322:       9.2.6 Using an :accept-values Pane in a CLIM Application Frame
+- L6326:       9.2.1 The Application Frame Protocol
+- L6370:       9.2.2 Using the :pane Option
+- L6438:       9.2.3 Using the :panes and :layouts Options
+- L6560:       9.2.4 Example of the :pane Option to define-application-frame
+- L6630:       9.2.5 Examples of the :panes and :layout Options to define-application-frame
+- L6848:       9.2.6 Using an :accept-values Pane in a CLIM Application Frame
+- L6876:     9.3 Initializing CLIM Application Frames
+- L7040:     9.4 Accessing Slots and Components of CLIM Application Frames
+- L7046:     9.5 Running a CLIM Application
+- L7070:     9.6 Exiting a CLIM Application
+- L7076:     9.7 Examples of CLIM Application Frames
+- L7080:       9.7.1 Defining a CLIM Application Frame
+- L7082:       9.7.2 Constructing a Function as Part of Running an Application
+- L7086:       9.7.1 Defining a CLIM Application Frame
+- L7276:       9.7.2 Constructing a Function as Part of Running an Application
+- L7330:     9.8 Application Frame Operators and Accessors
+- L7350:       9.8.1 CLIM Application Frame Accessors
+- L7352:       9.8.2 Operators for Running CLIM Applications
+- L7356:       9.8.1 CLIM Application Frame Accessors
+- L7510:       9.8.2 Operators for Running CLIM Applications
+- L7648:     9.9 Frame Managers
+- L7672:       9.9.1 Finding Frame Managers
+- L7674:       9.9.2 Frame Manager Operators
+- L7678:       9.9.1 Finding Frame Managers
+- L7724:       9.9.2 Frame Manager Operators
+- L7806:     9.10 Advanced Topics
+- L7860:   Chapter 10 Panes and Gadgets
+- L7862:     10.1 Panes
+- L7864:     10.2 Layout Panes
+- L7866:     10.3 Extended Stream Panes
+- L7868:     10.4 Defining A New Pane Type: Leaf Panes
+- L7870:     10.5 Gadgets
+- L7874:     10.1 Panes
+- L7884:       10.1.1 Basic Pane Construction
+- L7886:       10.1.2 Pane Initialization Options
+- L7888:       10.1.3 Pane Properties
+- L7892:       10.1.1 Basic Pane Construction
+- L7946:       10.1.2 Pane Initialization Options
+- L7974:       10.1.3 Pane Properties
+- L8002:     10.2 Layout Panes
+- L8038:       10.2.1 Layout Pane Options
+- L8040:       10.2.2 Layout Pane Classes
+- L8042:       10.2.3 Composite Pane Generic Functions
+- L8044:       10.2.4 The Layout Protocol
+- L8048:       10.2.1 Layout Pane Options
+- L8118:       10.2.2 Layout Pane Classes
+- L8264:       10.2.3 Composite Pane Generic Functions
+- L8292:       10.2.4 The Layout Protocol
+- L8468:     10.3 Extended Stream Panes
+- L8474:       10.3.1 Extended Stream Pane Options
+- L8476:       10.3.2 Extended Stream Pane Classes
+- L8478:       10.3.3 Making CLIM Extended Stream Panes
+- L8482:       10.3.1 Extended Stream Pane Options
+- L8668:       10.3.2 Extended Stream Pane Classes
+- L8718:       10.3.3 Making CLIM Extended Stream Panes
+- L8750:     10.4 Defining A New Pane Type: Leaf Panes
+- L8878:     10.5 Gadgets
+- L8886:       10.5.1 Abstract Gadgets
+- L8888:       10.5.2 Basic Gadget Classes
+- L8890:       10.5.3 Abstract Gadget Classes
+- L8892:       10.5.4 Integrating Gadgets and Output Records
+- L8896:       10.5.1 Abstract Gadgets
+- L8902:       10.5.1.1 Using Gadgets
+- L8904:       10.5.1.2 Implementing Gadgets
+- L8908:       10.5.1.1 Using Gadgets
+- L9058:       10.5.1.2 Implementing Gadgets
+- L9392:       10.5.2 Basic Gadget Classes
+- L9676:       10.5.3 Abstract Gadget Classes
+- L9684:       10.5.3.1 The Label Gadget
+- L9686:       10.5.3.2 The List-Pane and Option-Pane Gadgets
+- L9688:       10.5.3.3 The Menu-Button Gadget
+- L9690:       10.5.3.4 The Push-Button Gadget
+- L9692:       10.5.3.5 The Radio-Box and Check-Box Gadgets
+- L9694:       10.5.3.6 The Scroll-Bar Gadget
+- L9696:       10.5.3.7 The Slider Gadget
+- L9698:       10.5.3.8 The Text-Field and Text-Editor Gadgets
+- L9700:       10.5.3.9 The Toggle-Button Gadget
+- L9704:       10.5.3.1 The Label Gadget
+- L9726:       10.5.3.2 The List-Pane and Option-Pane Gadgets
+- L9798:       10.5.3.3 The Menu-Button Gadget
+- L9816:       10.5.3.4 The Push-Button Gadget
+- L9842:       10.5.3.5 The Radio-Box and Check-Box Gadgets
+- L9956:       10.5.3.6 The Scroll-Bar Gadget
+- L10060:       10.5.3.7 The Slider Gadget
+- L10120:       10.5.3.8 The Text-Field and Text-Editor Gadgets
+- L10166:       10.5.3.9 The Toggle-Button Gadget
+- L10198:       10.5.4 Integrating Gadgets and Output Records
+- L10298:   Chapter 11 Commands
+- L10300:     11.1 Introduction to CLIM Commands
+- L10302:     11.2 Defining Commands the Easy Way
+- L10304:     11.3 Command Objects
+- L10306:     11.4 CLIM Command Tables
+- L10308:     11.5 CLIM Predefined Command Tables
+- L10310:     11.6 Conditions Relating to CLIM Command Tables
+- L10312:     11.7 Styles of Interaction Supported by CLIM
+- L10314:     11.8 Command-Related Presentation Types
+- L10316:     11.9 The CLIM Command Processor
+- L10318:     11.10 Advanced Topics
+- L10322:     11.1 Introduction to CLIM Commands
+- L10364:     11.2 Defining Commands the Easy Way
+- L10386:       11.2.1 Command Names and Command Line Names
+- L10388:       11.2.2 The Command-Defining Macro
+- L10392:       11.2.1 Command Names and Command Line Names
+- L10404:       11.2.2 The Command-Defining Macro
+- L10446:     11.3 Command Objects
+- L10528:     11.4 CLIM Command Tables
+- L10636:     11.5 CLIM Predefined Command Tables
+- L10656:     11.6 Conditions Relating to CLIM Command Tables
+- L10686:     11.7 Styles of Interaction Supported by CLIM
+- L10702:     11.8 Command-Related Presentation Types
+- L10754:     11.9 The CLIM Command Processor
+- L10844:     11.10 Advanced Topics
+- L10848:       11.10.1 CLIM Command Tables
+- L10850:       11.10.2 CLIM Command Menu Interaction Style
+- L10852:       11.10.3 Mouse Interaction Via Presentation Translators
+- L10854:       11.10.4 CLIM Command Line Interaction Style
+- L10856:       11.10.5 CLIM Keystroke Interaction Style
+- L10858:       11.10.6 The CLIM Command Processor
+- L10862:       11.10.1 CLIM Command Tables
+- L10944:       11.10.2 CLIM Command Menu Interaction Style
+- L11058:       11.10.3 Mouse Interaction Via Presentation Translators
+- L11108:       11.10.4 CLIM Command Line Interaction Style
+- L11142:       11.10.5 CLIM Keystroke Interaction Style
+- L11230:       11.10.6 The CLIM Command Processor
+- L11318:   Chapter 12 Menus and Dialogs
+- L11320:     12.1 Conceptual Overview of Menus and Dialogs
+- L11322:     12.2 CLIM Menu Operators
+- L11324:     12.3 CLIM Dialog Operators
+- L11326:     12.4 Examples of Menus and Dialogs in CLIM
+- L11330:     12.1 Conceptual Overview of Menus and Dialogs
+- L11342:     12.2 CLIM Menu Operators
+- L11496:     12.3 CLIM Dialog Operators
+- L11678:     12.4 Examples of Menus and Dialogs in CLIM
+- L11680:       12.4.1 Using accepting-values
+- L11682:       12.4.2 Using accept-values-command-button
+- L11684:       12.4.3 Using : resynchronize-every-pass in accepting-values
+- L11686:       12.4.4 Using the third value from accept in accepting-values
+- L11688:       12.4.5 Using menu-choose
+- L11690:       12.4.6 Using menu-choose-from-drawer
+- L11694:       12.4.1 Using accepting-values
+- L11818:       12.4.2 Using accept-values-command-button
+- L11952:       12.4.3 Using : resynchronize-every-pass in accepting-values
+- L12034:       12.4.4 Using the third value from accept in accepting-values
+- L12214:       12.4.5 Using menu-choose
+- L12376:       12.4.6 Using menu-choose-from-drawer
+- L12508:   Chapter 13 Extended Stream Output Facilities
+- L12510:     13.1 Basic Output Streams
+- L12512:     13.2 Extended Output Streams
+- L12514:     13.3 The Text Cursor
+- L12516:     13.4 Text
+- L12518:     13.5 Attracting the User's Attention
+- L12520:     13.6 Buffering Output
+- L12522:     13.7 CLIM Window Stream Pane Functions
+- L12526:     13.1 Basic Output Streams
+- L12596:     13.2 Extended Output Streams
+- L12642:     13.3 The Text Cursor
+- L12658:       13.3.1 The Text Cursor Protocol
+- L12660:       13.3.2 The Stream Text Cursor Protocol
+- L12664:       13.3.1 The Text Cursor Protocol
+- L12726:       13.3.2 The Stream Text Cursor Protocol
+- L12760:     13.4 Text
+- L12764:       13.4.1 The Text Protocol
+- L12766:       13.4.2 Mixing Text and Graphics
+- L12768:       13.4.3 Wrapping Text Lines
+- L12772:       13.4.1 The Text Protocol
+- L12824:       13.4.2 Mixing Text and Graphics
+- L12844:       13.4.3 Wrapping Text Lines
+- L12908:     13.5 Attracting the User's Attention
+- L12918:     13.6 Buffering Output
+- L12948:     13.7 CLIM Window Stream Pane Functions
+- L12990:   Chapter 14 Output Recording and Redisplay
+- L12992:     14.1 Conceptual Overview of Output Recording
+- L12994:     14.2 CLIM Operators for Output Recording
+- L12996:     14.3 Conceptual Overview of Incremental Redisplay
+- L12998:     14.4 CLIM Operators for Incremental Redisplay
+- L13000:     14.5 Using updating-output
+- L13002:     14.6 Example of Incremental Redisplay in CLIM
+- L13006:     14.1 Conceptual Overview of Output Recording
+- L13032:     14.2 CLIM Operators for Output Recording
+- L13080:       14.2.1 The Basic Output Record Protocol
+- L13082:       14.2.2 The Output Record "Database" Protocol
+- L13084:       14.2.3 Types of Output Records
+- L13086:       14.2.4 Output Recording Streams
+- L13090:       14.2.1 The Basic Output Record Protocol
+- L13182:       14.2.2 The Output Record "Database" Protocol
+- L13240:       14.2.3 Types of Output Records
+- L13244:       14.2.3.1 Standard Output Record Classes
+- L13246:       14.2.3.2 Graphics Displayed Output Records
+- L13248:       14.2.3.3 Text Displayed Output Records
+- L13250:       14.2.3.4 Top-Level Output Records
+- L13254:       14.2.3.1 Standard Output Record Classes
+- L13266:       14.2.3.2 Graphics Displayed Output Records
+- L13298:       14.2.3.3 Text Displayed Output Records
+- L13350:       14.2.3.4 Top-Level Output Records
+- L13366:       14.2.4 Output Recording Streams
+- L13388:       14.2.4.1 The Output Recording Stream Protocol
+- L13390:       14.2.4.2 Graphics Output Recording
+- L13392:       14.2.4.3 Text Output Recording
+- L13394:       14.2.4.4 Output Recording Utilities
+- L13398:       14.2.4.1 The Output Recording Stream Protocol
+- L13458:       14.2.4.2 Graphics Output Recording
+- L13474:       14.2.4.3 Text Output Recording
+- L13512:       14.2.4.4 Output Recording Utilities
+- L13604:     14.3 Conceptual Overview of Incremental Redisplay
+- L13624:     14.4 CLIM Operators for Incremental Redisplay
+- L13686:     14.5 Using updating-output
+- L13718:     14.6 Example of Incremental Redisplay in CLIM
+- L13838:   Chapter 15 Extended Stream Input Facilities
+- L13840:     15.1 Basic Input Streams
+- L13842:     15.2 Extended Input Streams
+- L13844:     15.3 Gestures and Gesture Names
+- L13846:     15.4 The Pointer Protocol
+- L13848:     15.5 Pointer Tracking
+- L13852:     15.1 Basic Input Streams
+- L13904:     15.2 Extended Input Streams
+- L13936:       15.2.1 The Extended Input Stream Protocol
+- L13938:       15.2.2 Extended Input Stream Conditions
+- L13942:       15.2.1 The Extended Input Stream Protocol
+- L14078:       15.2.2 Extended Input Stream Conditions
+- L14120:     15.3 Gestures and Gesture Names
+- L14204:     15.4 The Pointer Protocol
+- L14274:     15.5 Pointer Tracking
+- L14564:   Chapter 16 Input Editing and Completion Facilities
+- L14566:     16.1 Input Editing
+- L14568:     16.2 Activation and Delimiter Gestures
+- L14570:     16.3 Signalling Errors Inside accept Methods
+- L14572:     16.4 Reading and Writing Tokens
+- L14574:     16.5 Completion
+- L14576:     16.6 Using with-accept-help: some examples
+- L14578:     16.7 Advanced Topics
+- L14582:     16.1 Input Editing
+- L14696:       16.1.1 Operators for Input Editing
+- L14698:       16.1.2 Input Editor Commands
+- L14702:       16.1.1 Operators for Input Editing
+- L14760:       16.1.2 Input Editor Commands
+- L14876:     16.2 Activation and Delimiter Gestures
+- L14942:     16.3 Signalling Errors Inside accept Methods
+- L14986:     16.4 Reading and Writing Tokens
+- L15036:     16.5 Completion
+- L15224:     16.6 Using with-accept-help: some examples
+- L15317:     16.7 Advanced Topics
+- L15421:   Chapter 17 Formatted Output
+- L15423:     17.1 Formatting Tables in CLIM
+- L15425:     17.2 Formatting Graphs in CLIM
+- L15427:     17.3 Formatting Text in CLIM
+- L15429:     17.4 Bordered Output in CLIM
+- L15431:     17.5 Advanced Topics
+- L15435:     17.1 Formatting Tables in CLIM
+- L15437:       17.1.1 Conceptual Overview of Formatting Tables
+- L15439:       17.1.2 CLIM Operators for Formatting Tables
+- L15441:       17.1.3 Examples of Formatting Tables
+- L15445:       17.1.1 Conceptual Overview of Formatting Tables
+- L15489:       17.1.2 CLIM Operators for Formatting Tables
+- L15637:       17.1.3 Examples of Formatting Tables
+- L15639:       17.1.3.1 Formatting a Table From a List
+- L15641:       17.1.3.2 Formatting a Table Representing a Calendar Month
+- L15643:       17.1.3.3 Formatting a Table With Regular Graphic Elements
+- L15645:       17.1.3.4 Formatting a Table With Irregular Graphics in the Cells
+- L15647:       17.1.3.5 Formatting a Table of a Sequence of Items
+- L15651:       17.1.3.1 Formatting a Table From a List
+- L15773:       17.1.3.2 Formatting a Table Representing a Calendar Month
+- L16065:       17.1.3.3 Formatting a Table With Regular Graphic Elements
+- L16131:       17.1.3.4 Formatting a Table With Irregular Graphics in the Cells
+- L16209:       17.1.3.5 Formatting a Table of a Sequence of Items
+- L16321:     17.2 Formatting Graphs in CLIM
+- L16323:       17.2.1 Conceptual Overview of Formatting Graphs
+- L16325:       17.2.2 CLIM Operators for Graph Formatting
+- L16327:       17.2.3 Examples of CLIM Graph Formatting
+- L16331:       17.2.1 Conceptual Overview of Formatting Graphs
+- L16355:       17.2.2 CLIM Operators for Graph Formatting
+- L16589:       17.2.3 Examples of CLIM Graph Formatting
+- L16691:     17.3 Formatting Text in CLIM
+- L16747:     17.4 Bordered Output in CLIM
+- L16829:     17.5 Advanced Topics
+- L16839:       17.5.1 The Table Formatting Protocol
+- L16841:       17.5.2 The Item List Formatting Protocol
+- L16843:       17.5.3 The Graph Formatting Protocol
+- L16847:       17.5.1 The Table Formatting Protocol
+- L16917:       17.5.1.1 The Row and Column Formatting Protocol
+- L16919:       17.5.1.2 The Cell Formatting Protocol
+- L16923:       17.5.1.1 The Row and Column Formatting Protocol
+- L16977:       17.5.1.2 The Cell Formatting Protocol
+- L17029:       17.5.2 The Item List Formatting Protocol
+- L17079:       17.5.3 The Graph Formatting Protocol
+- L17201:   Chapter 18 Sheets
+- L17203:     18.1 Overview of Window Facilities
+- L17205:     18.2 Basic Sheet Classes
+- L17207:     18.3 Relationships Between Sheets
+- L17209:     18.4 Sheet Geometry
+- L17211:     18.5 Sheet Protocols: Input
+- L17213:     18.6 Standard Device Events
+- L17215:     18.7 Sheet Protocols: Output
+- L17217:     18.8 Repaint Protocol
+- L17219:     18.9 Sheet Notification Protocol
+- L17223:     18.1 Overview of Window Facilities
+- L17243:       18.1.1 Properties of Sheets
+- L17245:       18.1.2 Sheet Protocols
+- L17249:       18.1.1 Properties of Sheets
+- L17271:       18.1.2 Sheet Protocols
+- L17289:     18.2 Basic Sheet Classes
+- L17315:     18.3 Relationships Between Sheets
+- L17331:       18.3.1 Sheet Relationship Functions
+- L17333:       18.3.2 Sheet Genealogy Classes
+- L17337:       18.3.1 Sheet Relationship Functions
+- L17435:       18.3.2 Sheet Genealogy Classes
+- L17457:     18.4 Sheet Geometry
+- L17461:       18.4.1 Sheet Geometry Functions
+- L17463:       18.4.2 Sheet Geometry Classes
+- L17467:       18.4.1 Sheet Geometry Functions
+- L17563:       18.4.2 Sheet Geometry Classes
+- L17585:     18.5 Sheet Protocols: Input
+- L17599:       18.5.1 Input Protocol Functions
+- L17601:       18.5.2 Input Protocol Classes
+- L17605:       18.5.1 Input Protocol Functions
+- L17677:       18.5.2 Input Protocol Classes
+- L17709:     18.6 Standard Device Events
+- L17977:     18.7 Sheet Protocols: Output
+- L17983:       18.7.1 Mediums and Output Properties
+- L17985:       18.7.2 Output Protocol Functions
+- L17987:       18.7.3 Output Protocol Classes
+- L17989:       18.7.4 Associating a Medium With a Sheet
+- L17993:       18.7.1 Mediums and Output Properties
+- L18181:       18.7.2 Output Protocol Functions
+- L18187:       18.7.3 Output Protocol Classes
+- L18209:       18.7.4 Associating a Medium With a Sheet
+- L18249:     18.8 Repaint Protocol
+- L18253:       18.8.1 Repaint Protocol Functions
+- L18255:       18.8.2 Repaint Protocol Classes
+- L18259:       18.8.1 Repaint Protocol Functions
+- L18281:       18.8.2 Repaint Protocol Classes
+- L18297:     18.9 Sheet Notification Protocol
+- L18301:       18.9.1 Relationship to Window System Change Notifications
+- L18303:       18.9.2 Sheet Geometry Notifications
+- L18307:       18.9.1 Relationship to Window System Change Notifications
+- L18337:       18.9.2 Sheet Geometry Notifications
+- L18351:   Chapter 19 Ports, Grafts, and Mirrored Sheets
+- L18353:     19.1 Introduction
+- L18355:     19.2 Ports
+- L18357:     19.3 Grafts
+- L18359:     19.4 Mirrors and Mirrored Sheets
+- L18363:     19.1 Introduction
+- L18369:     19.2 Ports
+- L18477:     19.3 Grafts
+- L18571:     19.4 Mirrors and Mirrored Sheets
+- L18581:       19.4.1 Mirror Functions
+- L18583:       19.4.2 Internal Interfaces for Native Coordinates
+- L18587:       19.4.1 Mirror Functions
+- L18619:       19.4.2 Internal Interfaces for Native Coordinates
+- L18657:       Appendices
+- L18665:   Appendix A Glossary
+- L18943:   Appendix B Implementation Specifics
+- L18945:       B.1 Setting Up Your Packages to Use CLIM
+- L18947:       B.2 CLIM Packages
+- L18949:       B.3 Liquid CLIM Specifics
+- L19013:   Appendix C The CLIM-SYS Package
+- L19019:       C.1 Resources
+- L19021:       C.2 Multi-Processing
+- L19023:       C.3 Locks
+- L19025:       C.4 Multiple-Value Setf
+- L19263:   Appendix D LispWorks CLIM and CAPI
+- L19341:   Appendix E Liquid CLIM and Motif
+- L19533:   Appendix F Common Lisp Streams
+- L19541:       F.1 Stream Classes
+- L19543:       F.2 Basic Stream Functions
+- L19545:       F.3 Character Input
+- L19547:       F.4 Character Output
+- L19549:       F.5 Binary Streams
+- L19551:       F.6 Hardcopy Streams in CLIM
+- L19917:   Appendix G Windows
+- L19919:       G.1 Window Stream Operations in CLIM
+- L19921:       G.2 Functions for Operating on Windows Directly

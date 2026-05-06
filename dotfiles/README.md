@@ -24,11 +24,12 @@ Managed packages:
 - `config`: selected editable XDG config under `~/.config`, including shell,
   desktop, terminal, GTK, KDE/LXQt, keyboard, and small tool config.
 - `keyboard`: keyboard setup scripts and Kinesis layout files.
+- `clawmacs`: Clawmacs user config and installed skills under `~/.clawmacs.d`.
 
 Runtime state, credentials, browser data, package caches, and generated Emacs
 state are not meant to live here.
 
 Private shell/API credentials should live outside this repo, for example in
 `~/.config/private/env`, which is sourced by the stowed `.bashrc` when present.
-Application state, browser profiles, chat databases, credentials, and local
-identity material are intentionally excluded from stow.
+Application state, browser profiles, chat databases, credentials, editor swap
+files, and local identity material are intentionally excluded from stow.
