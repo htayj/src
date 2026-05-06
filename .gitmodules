@@ -1,0 +1,15 @@
+[submodule "guix-config/dotfiles/.emacs.d"]
+	path = guix-config/dotfiles/.emacs.d
+	url = git@github.com:htayj/emacs.d.git
+
+[submodule "guix-config/dotfiles.back/.emacs.d"]
+	path = guix-config/dotfiles.back/.emacs.d
+	url = git@github.com:htayj/emacs.d.git
+
+[submodule "guix-config/dotfiles/.stumpwm.d.immutable/modules"]
+	path = guix-config/dotfiles/.stumpwm.d.immutable/modules
+	url = https://github.com/stumpwm/stumpwm-contrib
+
+[submodule "guix-config/dotfiles.back/.stumpwm.d.immutable/modules"]
+	path = guix-config/dotfiles.back/.stumpwm.d.immutable/modules
+	url = https://github.com/stumpwm/stumpwm-contrib

@@ -1,0 +1,61 @@
+! see also /usr/share/X11/app-deafaults/XTerm
+! ========= default font =========
+! xterm*font:     -digital-vt220-medium-r-normal-80col-*-*-*-*-*-*-iso10646-1
+! xterm*wideFont: -digital-vt220-medium-r-wide-80col-*-*-*-*-*-*-iso10646-1
+
+! TODO not sure what this does?
+! xterm*wideChars: true
+
+! ========= alternative fonts =========
+*fontMenu*fontdefault*Label: fixed_20
+! *VT100.font: -digital-vt220-medium-r-*-80col-20-*-*-*-*-100-iso10646-1
+*VT100.font: -misc-fixed-*-*-*-*-20-*-*-*-*-*-iso10646-1
+! *VT100.wideFont: -digital-vt220-medium-r-wide-80col-20-200-75-75-c-200-iso10646-1
+! *VT100.wideFont: -digital-vt220-medium-r-wide-80col-20-*-*-*-*-*-iso10646-1
+*VT100.wideFont: -*-unifont-medium-r-*-*-*-*-*-*-*-*-iso10646-*
+
+*fontMenu*font1*Label: unifont
+*VT100.font1: -*-unifont-medium-r-*-*-*-*-*-*-*-*-iso10646-*
+
+*fontMenu*font2*Label: fixed_24
+*VT100.font2: -misc-fixed-*-*-*-*-24-*-*-*-*-*-iso10646-1
+
+*fontMenu*font3*Label: unscii-16-full
+*VT100.font3: -unscii-unscii-medium-r-normal-full-16-160-75-75-c-80-iso10646-1
+
+! === exp ===
+
+XTerm*selectToClipboard: true
+! ========= key behavior =========
+XTerm.vt100.backarrowKey: false
+XTerm.ttyModes: erase ^?
+XTerm.vt100.saveLines: 4096
+XTerm.vt100.metaSendsEscape: true
+XTerm.vt100.translations: #override \n\
+    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
+
+! colors
+*background: rgb:00/00/00
+*foreground: #aaaaaa
+xterm*color0: #000000
+xterm*color1: #aa0000
+xterm*color2: #00aa00
+xterm*color3: #aa5500
+xterm*color4: #0000aa
+xterm*color5: #aa00aa
+xterm*color6: #00aaaa
+xterm*color7: #aaaaaa
+xterm*color8: #555555
+xterm*color9: #ff5555
+xterm*color10: #55ff55
+xterm*color11: #ffff55
+xterm*color12: #5555ff
+xterm*color13: #ff55ff
+xterm*color14: #55ffff
+xterm*color15: #ffffff
+
+! enable sixel
+xterm*decTerminalID: 340
+
+! fontDoublesize (class FontDoublesize)

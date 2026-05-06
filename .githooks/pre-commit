@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -n "$files" ] || exit 0
+
+if command -v gitleaks >/dev/null 2>&1; then
+    gitleaks protect --staged --redact=100 --no-banner
+fi
+
+pattern='(AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{36,255}|sk-[A-Za-z0-9]{20,}|sk-or-v1-[A-Za-z0-9]{20,}|sk_[A-Za-z0-9]{20,}|smsk_live_[A-Za-z0-9_-]{20,}|[A-Z0-9_]*(API_KEY|TOKEN|SECRET)[A-Z0-9_]*=["'\''][^"'\'']{16,}["'\'']|-----BEGIN (RSA |OPENSSH |EC |DSA |PGP )?PRIVATE KEY-----)'
+
+if printf '%s\n' "$files" |
+    xargs -r rg -n --hidden --no-messages --pcre2 "$pattern"
+then
+    printf '%s\n' "pre-commit: possible secret found in staged files" >&2
+    printf '%s\n' "Move the value to ~/.config/private/env or another ignored secret store." >&2
+    exit 1
+fi

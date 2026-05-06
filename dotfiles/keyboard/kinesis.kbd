@@ -1,0 +1,83 @@
+#| --------------------------------------------------------------------------
+
+                         KMonad: US ThinkPad P52s space cadet
+
+   This file contains US and `defsrc' configurations for a ThinkPad T430
+   with an ISO keyboard.  Copy out the `defsrc' layer to start your own
+   keyboard configuration.  Copy out the `deflayer' template to easily start
+   a new layer with matching `transparent' buttons.
+
+
+(deflayer name
+  _    _    _    _                             _    _    _    _    _    _    _
+       _    _    _    _    _    _    _    _    _    _    _    _         _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _         _
+  _    _    _    _    _    _    _    _    _    _    _    _    _         _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _              _
+  _    _    _    _              _              _    _    _         _    _    _
+                                                                   _    _    _
+)
+
+  -------------------------------------------------------------------------- |#
+;; US
+(defsrc
+  =      1    2    3    4    5    			6    7    8    9    0    -  
+  tab    q    w    e    r    t         y    u    i    o    p     \
+  esc    a    s    d    f    g         h    j    k    l    ;     ' 
+  lshift z    x    c    v    b         n    m    ,    .    /     rshift
+	       `   caps  left right               up   down [    ]
+
+             lctl  lalt                rmet rctl
+						       home                pgup
+        bspc del   end                 pgdn ent spc
+ 																																	 
+)
+
+;; press both to latch?
+(defalias
+  ;; homerow mod
+  Sf (tap-hold-next-release 200 f lshift)       ;; left homerow shift
+  Cd (tap-hold-next-release 200 d lctl)         ;; left homerow ctrl
+  Ms (tap-hold-next-release 200 s lalt)         ;; left homerow meta
+  sa (tap-hold-next-release 250 a lmet)         ;; left homehow super
+  Sj (tap-hold-next-release 200 j lshift)       ;; right homerow shift
+  Ck (tap-hold-next-release 200 k lctl)         ;; right homerow ctrl
+  Ml (tap-hold-next-release 200 l lalt)         ;; right homerow meta
+  s; (tap-hold-next-release 200 ; lmet)         ;; right homerow super
+  Hro (tap-hold-next-release 200 bspc rmet)     ;; left thumb hyper
+  Hsp (tap-hold-next-release 200 spc  rmet)     ;; right thumb hyper
+;;  Tr (tap-next-release r (layer-toggle top))         ;; left homerow top
+;;  Tu (tap-next-release u (layer-toggle top))         ;; right homerow super
+  eoam (tap-hold-next-release 200 esc ralt)    ;; escape / alt mode
+  qoam (tap-hold-next-release 200 ' ralt)       ;; quote / alt mode
+  osft (tap-hold-next-release 200 \( lshift)    ;; open round / shift
+  csft (tap-hold-next-release 200 \) rshift)    ;; close round / shift
+)
+(deflayer normal
+  =      1    2    3    4    5    			6    7    8    9    0    -  
+  tab    q    w    e    r    t         y    u    i    o    p     \
+  @eoam  @sa  @Ms  @Cd  @Sf  g         h    @Sj  @Ck  @Ml  @s;   @qoam
+  lshift z    x    c    v    b         n    m    ,    .    /     rshift
+	       `   caps  left right               up   down [    ]
+
+                  lctl  lalt                rmet  rctl
+		     			          home                pgup
+             @Hro lctl  end                 pgdn  ent @Hsp
+)
+;;(deflayer modelatch)
+;; (deflayer greek
+;;   esc  mute vold volu                          prnt slck pause home end ins del  
+;;         f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12     
+;;   grv   1    2    3    4    5    6    7    8    9    0    -     =        bspc
+;;   tab   q    w    e    r    t    y    u    i    o    p    [     ]        \
+;;   @roam @sa  @Ms  @Cd  @Sf  g    h    @Sj  @Ck  @Ml  @s;  @qoam          ret
+;;   @osf  z    x    c    v    b    n    m    ,    .    /                  @csft
+;;   wkup  lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
+;;                                                                    left down rght
+;; )
+;;(deflayer top)
+(defcfg
+    input       (device-file "/dev/input/by-id/usb-Kinesis_Kinesis_Adv360_360555127546-if01-event-kbd")
+    output      (uinput-sink "name" "optional post-init command")
+    fallthrough true)

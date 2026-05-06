@@ -1,0 +1,27 @@
+# Local secrets and credentials.
+claudeoauth.txt
+\#claudeoauth.txt\#
+.#claudeoauth.txt
+*authinfo*
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+.config/private/
+
+# Local agent/editor state.
+.claude/
+.codex
+.serena/project.local.yml
+.aider.chat.history.md
+*~
+\#*\#
+
+# Generated caches and backups.
+**/.pre-stow-backup-*/
+**/.aider.tags.cache.v4/
+**/tree-sitter/
+**/eln-cache/
+**/auto-save-list/

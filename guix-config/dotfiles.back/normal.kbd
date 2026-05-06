@@ -1,0 +1,88 @@
+#| --------------------------------------------------------------------------
+
+                         KMonad: US ThinkPad P52s space cadet
+
+   This file contains US and `defsrc' configurations for a ThinkPad T430
+   with an ISO keyboard.  Copy out the `defsrc' layer to start your own
+   keyboard configuration.  Copy out the `deflayer' template to easily start
+   a new layer with matching `transparent' buttons.
+
+
+(deflayer name
+  _    _    _    _                             _    _    _    _    _    _    _
+       _    _    _    _    _    _    _    _    _    _    _    _         _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _         _
+  _    _    _    _    _    _    _    _    _    _    _    _    _         _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _              _
+  _    _    _    _              _              _    _    _         _    _    _
+                                                                   _    _    _
+)
+
+  -------------------------------------------------------------------------- |#
+;; US
+(defsrc
+  esc  mute vold volu                          prnt slck pause home end ins del  
+       f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12      
+  grv  1    2    3    4    5    6    7    8    9    0    -     =        bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [     ]        \
+  caps a    s    d    f    g    h    j    k    l    ;    '              ret
+  lsft z    x    c    v    b    n    m    ,    .    /                   rsft
+  wkup lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
+                                                                   left down rght
+)
+
+;; press both to latch?
+(defalias
+  ;; homerow mod
+  Sf (tap-next-release f lshift)         ;; left homerow control
+  Cd (tap-next-release d lctl)         ;; left homerow meta
+  Ms (tap-next-release s lalt)         ;; left homerow super
+  sa (tap-next-release a lmet)         ;; left homehow hyper
+  Sj (tap-next-release j lshift)         ;; right homerow control
+  Ck (tap-next-release k lctl)         ;; right homerow meta
+  Ml (tap-next-release l lalt)         ;; right homerow super
+  s; (tap-next-release ; lmet)         ;; right homerow hyper
+  Tr (tap-next-release r (layer-toggle greek))         ;; left homerow top
+  Tu (tap-next-release u (layer-toggle greek))         ;; right homerow super
+  roam (tap-next-release bspc ralt)    ;; rub out / alt mode
+  qoam (tap-next-release ' ralt)       ;; quote / alt mode
+  osft (tap-next-release \( lshift)    ;; open round / shift
+  csft (tap-next-release \) rshift)    ;; close round / shift
+
+  ;;xth (tap-hold 400 x lsft)     ;; Long delay for easier testing
+  ;;thn (tap-hold-next 400 x lsft)
+  ;;tnr (tap-next-release x lsft)
+  ;;tnp (tap-next-press x lsft)
+  ;;thp (tap-hold-next-press 2000 x lsft)
+  ;;tnh (tap-hold-next-release 2000 x lsft)
+
+  ;; Used it the colemak layer
+  ;;xcp (tap-hold-next 400 esc ctl)
+)
+(deflayer normal
+  esc  mute vold volu                          prnt slck pause home end ins del  
+        f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12     
+  grv   1    2    3    4    5    6    7    8    9    0    -     =        bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [     ]        \
+  @roam @Ha  @ss  @Md  @Cf  g    h    @Cj  @Mk  @sl  @H;  @qoam          ret
+  @osft  z    x    c    v    b    n    m    ,    .    /                  @csft
+  wkup  lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
+                                                                   left down rght
+)
+;;(deflayer modelatch)
+(deflayer greek
+  esc  mute vold volu                          prnt slck pause home end ins del  
+        f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12     
+  grv   1    2    3    4    5    6    7    8    9    0    -     =        bspc
+  tab   q    w    e    r    t    y    u    i    o    p    [     ]        \
+  @roam @sa  @Ms  @Cd  @Sf  g    h    @Sj  @Ck  @Ml  @s;  @qoam          ret
+  @osf  z    x    c    v    b    n    m    ,    .    /                  @csft
+  wkup  lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
+                                                                   left down rght
+)
+;;(deflayer top)
+(defcfg
+    input       (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
+    output      (uinput-sink "name" "optional post-init command")
+    fallthrough true)
