@@ -25,7 +25,7 @@
 # ==========================
 # # The config file consists of simple key-value pairs,
 # # separated by equals signs.
-# font-family = Iosevka
+font-family = unscii
 # window-padding-x = 2
 #
 # # Spacing around the equals sign does not matter.
@@ -47,3 +47,5 @@
 # # which is explained in the docs for that config option.
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
+theme = CGA
+window-decoration = false

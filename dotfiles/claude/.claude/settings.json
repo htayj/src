@@ -1,0 +1,154 @@
+{
+  "env": {
+    "CLAUDE_CODE_MAX_RETRIES": "100"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git push --force-with-lease)",
+      "Bash(git push --force-with-lease *)",
+      "mcp__claude_ai_Atlassian__jiraRead",
+      "mcp__plugin_serena_serena__find_file",
+      "mcp__claude_ai_Atlassian__getJiraIssue",
+      "mcp__plugin_serena_serena__read_file",
+      "mcp__plugin_serena_serena__create_text_file",
+      "mcp__plugin_serena_serena__replace_content",
+      "mcp__claude_ai_Atlassian__getAccessibleAtlassianResources",
+      "mcp__plugin_serena_serena__activate_project",
+      "mcp__plugin_serena_serena__check_onboarding_performed",
+      "mcp__plugin_serena_serena__search_for_pattern",
+      "mcp__plugin_serena_serena__get_symbols_overview",
+      "mcp__plugin_serena_serena__find_symbol",
+      "Bash(npm run generate:*)",
+      "Bash(npm run compile:*)",
+      "mcp__plugin_serena_serena__list_dir",
+      "Read(//home/tay/release testing/release-testing-assets/**)",
+      "mcp__plugin_serena_serena__initial_instructions",
+      "Bash(npx vitest:*)",
+      "mcp__plugin_serena_serena__read_memory",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_tab_list",
+      "Bash(podman logs:*)",
+      "Bash(grep :*)",
+      "Bash(.claude/scripts/compile-check.sh :*)",
+      "Bash(npx tsc:*)",
+      "Bash(curl -sv http://localhost:18080/sensorStatus 2>&1)",
+      "Bash(cd packages/frontend && npx vitest run test/utils/resolutionWorkflowMatching.test.ts 2>&1; echo \"EXIT: $?\")",
+      "mcp__plugin_serena_serena__find_referencing_symbols",
+      "Bash(npx playwright:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run test:*)",
+      "Bash(grep:*)",
+      "Bash(find src/livedata -name useLiveRecords*)",
+      "Bash(~/.claude/safer-curl-localhost.sh *)",
+      "Bash(npm run server)",
+      "Bash(npm run frontend)",
+      "mcp__plugin_serena_serena__list_memories",
+      "Bash(ls:*)",
+      "Bash(jq -r \".paths | to_entries[] | .key as $path | .value | to_entries[] | \"\"\\\\\\(.key | ascii_upcase\\)\\\\t\\\\\\($path\\)\\\\t\\\\\\(.value.operationId // \"\"N/A\"\"\\)\\\\t\\\\\\(.value.summary // .value.description // \"\"N/A\"\" | split\\(\"\"\\\\n\"\"\\)[0]\\)\"\"\")",
+      "Bash(jq *)",
+      "Bash(awk:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm view:*)",
+      "Bash(wc:*)",
+      "Bash(cat ~/.claude/usage-data/session-meta/*.json)",
+      "Bash(find ~/.claude -name state* -o -name cache* -o -name *status*)",
+      "Read(//home/tay/claudetop/**)",
+      "Bash(go get:*)",
+      "Bash(gitlab-ci-local:*)",
+      "mcp__plugin_glab-mcp_glab__glab_api_get"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/enforce-safer-curl.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/guard-destructive-git.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/warn-ts-any.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/notify.sh attention"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/notify.sh stop",
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "plugin-dev@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "caveman@caveman": true,
+    "claude-code-skillsmith@taylor-plugin-marketplace": true,
+    "claude-notes@taylor-plugin-marketplace": true,
+    "dev-tools@taylor-plugin-marketplace": true,
+    "device-simulators@taylor-plugin-marketplace": true,
+    "glab-mcp@taylor-plugin-marketplace": true,
+    "personal-bash-nudges@taylor-plugin-marketplace": true,
+    "todo-pipeline@taylor-plugin-marketplace": true,
+    "typescript-patterns@taylor-plugin-marketplace": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "taylor-plugin-marketplace": {
+      "source": {
+        "source": "directory",
+        "path": "/home/tay/claude-plugin-marketplace"
+      }
+    }
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  },
+  "effortLevel": "xhigh",
+  "autoDreamEnabled": true,
+  "preferredNotifChannel": "ghostty",
+  "skipAutoPermissionPrompt": true,
+  "tui": "fullscreen"
+}

@@ -6,7 +6,7 @@ It is intentionally separate from `/home/tay/src/guix-config/dotfiles`.
 Install all packages:
 
 ```sh
-stow -d ~/src/dotfiles -t ~ home x11 stumpwm emacs config keyboard
+stow -d ~/src/dotfiles -t ~ home x11 stumpwm emacs config keyboard claude
 ```
 
 Install one package:
@@ -25,6 +25,10 @@ Managed packages:
   desktop, terminal, GTK, KDE/LXQt, keyboard, and small tool config.
 - `keyboard`: keyboard setup scripts and Kinesis layout files.
 - `clawmacs`: Clawmacs user config and installed skills under `~/.clawmacs.d`.
+- `claude`: curated Claude Code config under `~/.claude` (CLAUDE.md,
+  settings.json, keybindings.json, hooks, statusline, safer-curl wrapper).
+  Per-host and per-project overrides go in `~/.claude/.claude/settings.local.json`
+  (untracked) per Claude Code's override convention.
 
 Runtime state, credentials, browser data, package caches, and generated Emacs
 state are not meant to live here.

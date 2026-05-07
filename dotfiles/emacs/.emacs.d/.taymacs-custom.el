@@ -11,9 +11,6 @@
     "#b2b2b2"])
  '(auth-source-save-behavior nil)
  '(browse-url-secondary-browser-function 'eaf-open-browser)
- '(code-review-gitlab-base-url "git.codemettle.com")
- '(code-review-gitlab-graphql-host "git.codemettle.com/api")
- '(code-review-gitlab-host "git.codemettle.com/api")
  '(company-idle-delay 2.0)
  '(counsel-find-file-at-point t)
  '(counsel-switch-buffer-preview-virtual-buffers nil)
@@ -41,8 +38,6 @@
  '(eww-search-prefix "https://duckduckgo.com/lite/?q=")
  '(forge-alist
    '(("github.com" "api.github.com" "github.com" forge-github-repository)
-     ("git.codemettle.com" "git.codemettle.com/api/v4"
-      "git.codemettle.com" forge-gitlab-repository)
      ("gitlab.com" "gitlab.com/api/v4" "gitlab.com"
       forge-gitlab-repository)
      ("salsa.debian.org" "salsa.debian.org/api/v4" "salsa.debian.org"
@@ -139,8 +134,7 @@
  '(rainbow-delimiters-max-face-count 7)
  '(rmail-primary-inbox-list '("/var/spool/mail/tay"))
  '(safe-local-variable-values
-   '((flymake-eslint-project-root . "/home/tay/terminus/gui")
-     (projectile-project-compilation-cmd
+   '((projectile-project-compilation-cmd
       . "npx lerna run compile --stream")
      (projectile-project-test-cmd . "npx lerna run test --stream")
      (projectile-project-package-cmd . "../script/build")

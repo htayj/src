@@ -1,2 +1,8 @@
-XTerm*utf8: always
-XTerm*metaSendsEscape: true
+xterm*background: black
+xterm*foreground: white
+xterm*font:       -*-vt220_80col_Normal_rwidth50-*-*-*-20-*
+XTerm.vt100.metaSendsEscape: true
+XTerm.vt100.backarrowKey: false
+XTerm.ttyModes: erase ^?
+XTerm.vt100.saveLines: 4096
+XTerm.vt100.scrollBar: false
