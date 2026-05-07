@@ -1,0 +1,5 @@
+! work-specific Xresources overrides — merged on top of ~/.Xresources
+! by ~/.xinitrc.
+!
+! Empty by default. Add laptop-only DPI / font tweaks here if the
+! shared font names ever stop matching what's installed on this host.

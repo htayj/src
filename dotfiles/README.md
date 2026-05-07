@@ -6,7 +6,7 @@ It is intentionally separate from `/home/tay/src/guix-config/dotfiles`.
 Install all packages:
 
 ```sh
-stow -d ~/src/dotfiles -t ~ home x11 stumpwm emacs config keyboard
+stow -d ~/src/dotfiles -t ~ home x11 stumpwm emacs config keyboard claude
 ```
 
 Install one package:
@@ -25,11 +25,31 @@ Managed packages:
   desktop, terminal, GTK, KDE/LXQt, keyboard, and small tool config.
 - `keyboard`: keyboard setup scripts and Kinesis layout files.
 - `clawmacs`: Clawmacs user config and installed skills under `~/.clawmacs.d`.
+- `claude`: curated Claude Code config under `~/.claude` (CLAUDE.md,
+  settings.json, keybindings.json, hooks, statusline, safer-curl wrapper).
+  Per-host and per-project overrides go in `~/.claude/.claude/settings.local.json`
+  (untracked) per Claude Code's override convention.
+
+## Per-host fragments
+
+Most files in this repo are shared across hosts; bits that diverge per
+machine live in dedicated fragment files matched by hostname. Each host
+gets its own fragment; only the matching one is read on each machine.
+
+| File / directory                                       | Convention                                 |
+| ------------------------------------------------------ | ------------------------------------------ |
+| `home/.bashrc.d/host-<hostname>`                       | Sourced by `.bashrc` when hostname matches |
+| `x11/.xinitrc.d/host-<hostname>`                       | Sourced by `.xinitrc`; `exec`s the WM      |
+| `x11/.Xresources.host-<hostname>`                      | Layered onto `.Xresources` via `xrdb -merge` |
+| `stumpwm/.stumpwm.d/host-<hostname>.lisp`              | Loaded by `.stumpwmrc` via `(machine-instance)` |
+| `emacs/.emacs.d/host-<hostname>.el`                    | Loaded by `init.el` via `(system-name)`    |
+
+Adding a new host: pick a hostname, drop empty fragment files at each of
+the paths above, then fill in only what differs from the shared base.
 
 Runtime state, credentials, browser data, package caches, and generated Emacs
 state are not meant to live here.
 
-Private shell/API credentials should live outside this repo, for example in
-`~/.config/private/env`, which is sourced by the stowed `.bashrc` when present.
-Application state, browser profiles, chat databases, credentials, editor swap
-files, and local identity material are intentionally excluded from stow.
+Private shell/API credentials should live outside this repo. Application
+state, browser profiles, chat databases, credentials, editor swap files,
+and local identity material are intentionally excluded from stow.

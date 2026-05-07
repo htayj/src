@@ -1,0 +1,9 @@
+# basedserv xinit fragment — sourced by ~/.xinitrc.
+
+[ -x "$HOME/.screenlayout/g9andcrt.sh" ] && "$HOME/.screenlayout/g9andcrt.sh"
+
+# basedserv launches stumpwm via sbcl + asdf (no system stumpwm binary).
+exec sbcl --no-userinit --non-interactive \
+     --eval '(require :asdf)' \
+     --eval '(asdf:load-system "stumpwm")' \
+     --eval '(stumpwm:stumpwm)'

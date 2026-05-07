@@ -1,0 +1,2 @@
+# Host-specific bash fragment for work.
+# Sourced by ~/.bashrc only when $HOSTNAME == work.

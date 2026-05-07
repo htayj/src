@@ -7,33 +7,38 @@
 ! xterm*wideChars: true
 
 ! ========= alternative fonts =========
-*fontMenu*fontdefault*Label: fixed_20
-! *VT100.font: -digital-vt220-medium-r-*-80col-20-*-*-*-*-100-iso10646-1
-*VT100.font: -misc-fixed-*-*-*-*-20-*-*-*-*-*-iso10646-1
+*fontMenu*fontdefault*Label: unscii-full
+*VT100.font: -*-unscii-medium-r-*-full-16-*-*-*-*-*-iso10646-*
 ! *VT100.wideFont: -digital-vt220-medium-r-wide-80col-20-200-75-75-c-200-iso10646-1
 ! *VT100.wideFont: -digital-vt220-medium-r-wide-80col-20-*-*-*-*-*-iso10646-1
 *VT100.wideFont: -*-unifont-medium-r-*-*-*-*-*-*-*-*-iso10646-*
 
-*fontMenu*font1*Label: unifont
-*VT100.font1: -*-unifont-medium-r-*-*-*-*-*-*-*-*-iso10646-*
+*fontMenu*font1*Label: vt220_40pt
+*VT100.font1: -digital-vt220-medium-r-normal-80col-40-*-*-*-*-*-iso10646-1
 
-*fontMenu*font2*Label: fixed_24
-*VT100.font2: -misc-fixed-*-*-*-*-24-*-*-*-*-*-iso10646-1
+*fontMenu*font2*Label: unifont
+*VT100.font2: -gnu-unifont-medium-r-*-*-16-*-*-*-*-*-iso10646-*
 
-*fontMenu*font3*Label: unscii-16-full
-*VT100.font3: -unscii-unscii-medium-r-normal-full-16-160-75-75-c-80-iso10646-1
+*fontMenu*font3*Label: vt220_20pt
+*VT100.font3: -digital-vt220-medium-r-normal-80col-20-200-75-75-*-100-iso10646-1
+*fontMenu*font4*Label: unscii-tall
+*VT100.font4: -*-unscii-medium-r-normal-tall-16-*-*-*-*-*-iso10646-*
+*fontMenu*font5*Label: unscii-square
+*VT100.font5: -*-unscii-medium-r-normal-*-8-*-*-*-*-*-iso10646-*
+*fontMenu*font6*Label: unscii-square-large
+*VT100.font6: -*-unscii-medium-r-normal-*-17-*-*-*-*-*-iso10646-*
 
 ! === exp ===
 
-XTerm*selectToClipboard: true
 ! ========= key behavior =========
 XTerm.vt100.backarrowKey: false
 XTerm.ttyModes: erase ^?
 XTerm.vt100.saveLines: 4096
 XTerm.vt100.metaSendsEscape: true
-XTerm.vt100.translations: #override \n\
-    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
-    Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
+
+! ========= scrollbar =========
+! Off — tmux history-limit covers scrollback, mouse-wheel works in tmux.
+XTerm.vt100.scrollBar: false
 
 ! colors
 *background: rgb:00/00/00
@@ -57,5 +62,27 @@ xterm*color15: #ffffff
 
 ! enable sixel
 xterm*decTerminalID: 340
+
+! ========= modifyOtherKeys =========
+! xterm sends distinct CSI u sequences for Ctrl+<digit>, Ctrl+Shift+<letter>,
+! and other modifier combos that the legacy CSI table cant represent.
+! Emacs uses these for `C-(`, `C-,`, `C-1` argument prefixes etc.
+! Level 1 is the conservative setting; level 2 is more aggressive
+! (sends sequences for everything ctrl/shifted).
+XTerm.vt100.modifyOtherKeys: 1
+
+! ========= clipboard: Ctrl-Shift-C / Ctrl-Shift-V =========
+! Default xterm copy/paste is middle-click (selection) and Shift+Ins
+! (clipboard). Add the GUI-conventional Ctrl-Shift-C / Ctrl-Shift-V
+! bindings on top. The #override prefix layers ours on the built-in
+! translation table rather than replacing it, so default mouse
+! selection / Shift-Ins still work.
+XTerm.vt100.translations: #override \n\
+    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
+
+! Make new selections land on the CLIPBOARD selection (not just PRIMARY)
+! so Ctrl-Shift-V actually has something to paste after a drag-select.
+XTerm.vt100.selectToClipboard: true
 
 ! fontDoublesize (class FontDoublesize)

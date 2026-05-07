@@ -3,29 +3,33 @@
 ;; Here is a sample .stumpwmrc file
 
 (in-package :stumpwm)
-(setf *module-dir*  "/run/current-system/profile/share/common-lisp/sbcl/")
-(init-load-path *module-dir*)
-(run-shell-command "emacs --daemon")
 
-(run-shell-command "~/generic_setup.sh")
+;; Per-host fragment — sourced early so it can set *module-dir* and other
+;; load-path tweaks before the rest of this file calls (load-module ...).
+(let ((host-file (merge-pathnames
+                  (format nil ".stumpwm.d/host-~a.lisp" (machine-instance))
+                  (user-homedir-pathname))))
+  (when (probe-file host-file)
+    (load host-file)))
+
+;; (run-shell-command "emacs --daemon")
 
 ;; change the prefix key to something else
 (set-prefix-key (kbd "s-x"))
 
-;;(ql:quickload :slynk)
-;;(ql:quickload "xml-emitter")
+;; (ql:quickload :slynk)
 ;; prompt the user for an interactive command. The first arg is an
 ;; optional initial contents.
-;;(defcommand colon1 (&optional (initial "")) (:rest)
-;;  (let ((cmd (read-one-line (current-screen) ": " :initial-input initial)))
-;;    (when cmd
-;;      (eval-command cmd t))))
+(defcommand colon1 (&optional (initial "")) (:rest)
+  (let ((cmd (read-one-line (current-screen) ": " :initial-input initial)))
+    (when cmd
+      (eval-command cmd t))))
 
-;;(defcommand slynk (port) ((:string "Port number: "))
-;;  (sb-thread:make-thread
-;;   (lambda ()
-;;     (slynk:create-server :port (parse-integer port) :dont-close t))
-;;   :name "slynk-manual"))
+;; (defcommand slynk (port) ((:string "Port number: "))
+;;   (sb-thread:make-thread
+;;    (lambda ()
+;;      (slynk:create-server :port (parse-integer port) :dont-close t))
+;;    :name "slynk-manual"))
 
 ;; toggle window floating
 (defcommand my-toggle-float ()
@@ -45,25 +49,22 @@ hidden behind the previously displayed window."
                            (title-re-p w name)
                            (select-window-by-number (window-number w))))
 
-;;(defcommand slynk (port) ((:string "Port number: "))
-;;  (sb-thread:make-thread
-;;   (lambda ()
-;;     (slynk:create-server :port (parse-integer port) :dont-close t))
-;;   :name "slynk-manual"))
+;; (defcommand slynk (port) ((:string "Port number: "))
+;;   (sb-thread:make-thread
+;;    (lambda ()
+;;      (slynk:create-server :port (parse-integer port) :dont-close t))
+;;    :name "slynk-manual"))
 
 ;; Read some doc
 (define-key *root-map* (kbd "d") "exec gv")
 ;;; open emacs client
                                         ;(define-key *root-map* (kbd "e") "exec emacsclient")
 ;; Browse somewhere
-;; (define-key *root-map* (kbd "b") "colon1 exec firefox http://www.")
+(define-key *root-map* (kbd "b") "colon1 exec firefox http://www.")
 ;; Ssh somewhere
-;;(define-key *root-map* (kbd "C-s") "colon1 exec xterm -e ssh ")
-;;(define-key *root-map* (kbd "C-s") "colon1 exec xterm -e ssh ")
+(define-key *root-map* (kbd "C-s") "colon1 exec xterm -e ssh ")
 ;; Lock screen
 (define-key *root-map* (kbd "s-l") "exec slock")
-(define-key *root-map* (kbd "s-l") "exec slock")
-(define-key *root-map* (kbd "c") "exec ghostty")
 (define-key *root-map* (kbd "s-o") "exec scrot -s")
 
 ;;; marking windows with ;
@@ -115,40 +116,34 @@ hidden behind the previously displayed window."
 ;;; application launcher
 (define-key *top-map* (kbd "s-SPC") "exec rofi -config ~/.config/rofi/NsCDE.rasi -show drun")
 
-(define-key *top-map* (kbd "s-SunProps") "show-window-properties")
 ;;; mouseover focus
 (setf *mouse-focus-policy* :click)
 
 ;;; TODO: replicate C-x C-B 
 
-;; next few commented lines were working on nix
 ;; modules
+;; (load-module "stumptray")
+(list-modules)
+(ql:quickload "cl-diskspace")
+;; on GNU/linux only
+(ql:quickload "cl-mount-info")
+(load-module "mpd")
+(load-module "hostname")
+(load-module "disk")
+(load-module "mem")
+                                        ;(ql:quickload "xembed")
+                                        ;(load-module "stumptray")
+;; (install-modules)
+;; (load-path)
+;;; connect to mpd
+                                        ;(stumpwm:run-commands "mpd-connect")
+
+(define-key *top-map* (kbd "s-M") '*mpd-map*)
+                                        ;(stumptray::stumptray)
 
 
-
-;;(load-module "mpd")
-
-;;(define-key *top-map* (kbd "s-M") 'mpd:*mpd-map*)
-
-
-;; (setf *disk-usage-paths* (list "/" "/mnt/nas"))
-;; ;;; modeline 
-;; (setf *mode-line-background-color* "#000"
-;;       *mode-line-foreground-color* "#aaa"
-;;       *mode-line-border-color* "#aa5500"
-;;       *mode-line-timeout* 5
-;;       *mode-line-border-width* 1
-;;       *mode-line-pad-x* 1
-;;       *mode-line-pad-y* 1)
-;; (setf *screen-mode-line-format* (list "[" '(:eval (RUN-SHELL-COMMAND "date '+%F %H:%M'|tr -d [:cntrl:]" T)) "] [%n]  %w ^> [" '(:eval (RUN-SHELL-COMMAND "hostname -I |tr -d [:cntrl:]" T)) "][%C][%M][%m] [tay@%h] %T"))
-
-
-;; (group-current-window)
-;; (group-sync-all-heads (current-group))
-
-
-
-
+(setf *disk-usage-paths* (list "/" "/mnt/nas"))
+;;; modeline 
 (setf *mode-line-background-color* "#000"
       *mode-line-foreground-color* "#aaa"
       *mode-line-border-color* "#aa5500"
@@ -156,39 +151,34 @@ hidden behind the previously displayed window."
       *mode-line-border-width* 1
       *mode-line-pad-x* 1
       *mode-line-pad-y* 1)
-(setf *screen-mode-line-format* (list
-																 "["
-																 '(:eval (RUN-SHELL-COMMAND "date '+%F %H:%M'|tr -d [:cntrl:]" T)) "] "
-																 "[%n] "
-																 " %w ^> "
-																 "[%D]"
-																 "[%M]"
-																 "[%m]"
-																 " [tay@%h] "
-																 "%T"))
+(setf *screen-mode-line-format* (list "[" '(:eval (RUN-SHELL-COMMAND "date '+%F %H:%M'|tr -d [:cntrl:]" T)) "] [%n]  %w ^> [%D][%M][%m] [tay@%h] %T"))
+
+                                        ;(mode-line)
+;; (stumpwm:toggle-mode-line (stumpwm:current-screen) (stumpwm:current-head))
+;; (load-module "stumptray")
 
 
 ;; Web jump (works for DuckDuckGo and Imdb)
-;; (defmacro make-web-jump (name prefix)
-;;   `(defcommand ,(intern name) (search) ((:rest ,(concatenate 'string name " search: ")))
-;;      (nsubstitute #\+ #\Space search)
-;;      (run-shell-command (concatenate 'string ,prefix search))))
+(defmacro make-web-jump (name prefix)
+  `(defcommand ,(intern name) (search) ((:rest ,(concatenate 'string name " search: ")))
+     (nsubstitute #\+ #\Space search)
+     (run-shell-command (concatenate 'string ,prefix search))))
 
-;; (make-web-jump "duckduckgo" "firefox https://duckduckgo.com/?q=")
-;; (make-web-jump "imdb" "firefox http://www.imdb.com/find?q=")
+(make-web-jump "duckduckgo" "firefox https://duckduckgo.com/?q=")
+(make-web-jump "imdb" "firefox http://www.imdb.com/find?q=")
 
 ;; C-t M-s is a terrble binding, but you get the idea.
-;; (define-key *root-map* (kbd "M-s") "duckduckgo")
-;; (define-key *root-map* (kbd "i") "imdb")
+(define-key *root-map* (kbd "M-s") "duckduckgo")
+(define-key *root-map* (kbd "i") "imdb")
 
 ;; Message window font
-;;(set-font "-digital-vt220-medium-r-normal-80col-20-200-75-75-*-100-iso10646-1")
+(set-font "-digital-vt220-medium-r-normal-80col-20-200-75-75-*-100-iso10646-1")
 
 
 ;;; Define window placement policy...
 
 ;; Clear rules
-;; (clear-window-placement-rules)
+(clear-window-placement-rules)
 
 ;;; style
 
@@ -247,33 +237,3 @@ hidden behind the previously displayed window."
 ;; (define-frame-preference "Emacs"
 ;;   (1 t t :restore "emacs-editing-dump" :title "...xdvi")
 ;;   (0 t t :create "emacs-dump" :class "Emacs"))
-
-(message "screen: ~a
-head: ~a
-group: ~a
-frame: ~a
-window: ~a" (current-screen) (current-head) (current-group) (current-frame) (current-window))
-(head-by-number (current-screen) 1)
-;;(window-centroid (current-window))
-
-
-;;(run-shell-command "autorandr --change")
-(run-shell-command "xterm")
-
-;;; connect to mpd
-;;(stumpwm:run-commands "mpd-connect")
-
-;;(load-module "mem")
-
-;;(load-module "notify")
-;;(notify:notify-server-toggle)
-;;(mode-line)
-;;(load-module "stumptray")
-;;(stumpwm:toggle-mode-line (stumpwm:current-screen) (stumpwm:current-head))
-;;(stumptray::stumptray)
-
-;; (setf notify:*notify-server-title-color* "^6"
-;;       notify:*notify-server-body-color* "^7"
-;;       notify:*notify-server-max-title-lines* 3
-;; 			notify:*notify-server-max-body-lines* 10
-;; 			notify:*notify-server-max-line-length* 20)

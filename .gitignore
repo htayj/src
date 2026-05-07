@@ -13,6 +13,8 @@ claudeoauth.txt
 
 # Local agent/editor state.
 .claude/
+!dotfiles/claude/.claude/
+!dotfiles/claude/.claude/**
 .codex
 .serena/project.local.yml
 .aider.chat.history.md

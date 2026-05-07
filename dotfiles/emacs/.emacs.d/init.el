@@ -28,7 +28,6 @@
 ;; (require 'package)
 ;; (setq package-enable-at-startup nil)
 ;; TODO maybe move the rest out of early-init?
-
 ;; (setq package-archives '(("ELPA"  . "http://tromey.com/elpa/")
 ;;                          ("gnu"   . "http://elpa.gnu.org/packages/")
 ;;                          ("melpa" . "https://melpa.org/packages/")
@@ -57,11 +56,6 @@
 
 ;; have to install org early for some reason
 (straight-use-package 'org)
-
-;; Load the packaged compat library before packages like Vertico so Emacs
-;; doesn't fall back to the older built-in compat.el.
-(use-package compat
-  :demand t)
 ;; =============================================================================
 ;; Custom use-package bindings
 ;; =============================================================================
@@ -72,27 +66,41 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(global-subword-mode t)
-(setq kill-whole-line t)
-(setq indent-tabs-mode nil)
-
+(global-auto-revert-mode 1)
 
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
+(global-unset-key (kbd "<menu>"))
 
+(set-face-attribute 'default nil
+                    :foundry "DIGITAL"
+										:family "vt220"
+                    :height 150
+                    :inverse-video nil
+										:box nil
+										:strike-through nil
+										:overline nil
+										:underline nil
+										:slant 'normal
+										:weight 'medium
+										:width 'normal  )
+
+;; (set-face-attribute 'default nil
+;;                     :foundry "GNU" :family "unifont"
+;;                     :height 120
+;;                    :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'medium  :width 'normal  )
 (set-fontset-font t nil (font-spec :size 20 :name "vt220" ))
 (set-fontset-font t nil (font-spec :size 16 :name "unifont"))
 
+;; use camelCase word delim
+(global-subword-mode 1)
 
-;; auto close parens
-(setq electric-pair-pairs '(
-                            (?\{ . ?\})
-                            (?\( . ?\))
-                            (?\[ . ?\])
-                            (?\" . ?\")))
-(electric-pair-mode t)
-
-;; which key for discoverability
+;; which key
 (which-key-mode 1)
+
+(use-package s)
+;; set backup directory so that we dont litter around every directory
+(setq backup-directory-alist '(("." . "~/.emacs-file-backups")))
+
 ;; =============================================================================
 ;; irc
 ;; =============================================================================
@@ -105,7 +113,7 @@
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 (setq erc-interpret-mirc-color t)
 (setq erc-modules
-      '(completion log notifications hl-nicks netsplit fill button match readonly networks ring autojoin noncommands irccontrols move-to-prompt stamp menu list))
+			'(completion log notifications hl-nicks netsplit fill button match track readonly networks ring autojoin noncommands irccontrols move-to-prompt stamp menu list))
 '(erc-prompt-for-password nil)
 (add-to-list 'erc-mode-hook (lambda ()
                               (set (make-local-variable 'scroll-conservatively) 100)))
@@ -121,9 +129,24 @@
 (setq erc-autojoin-timing 'ident)
 
 (setq erc-track-exclude
-      '("##latinitas" "##latin" "#EsperantoAmeriko#1" "#kulupupitokipona#1"))
+			'("##latinitas" "##latin" "#EsperantoAmeriko#1" "#kulupupitokipona#1"))
 (setq erc-interpret-mirc-color t)
+;; (erc :server "irc.gazellegames.net" :port 6667 :user "wx0069" :nick "wx0069" :password "noirc7979")
 
+(use-package znc
+  :config
+  (let ((username "tay")
+        (password "umdroms1"))
+    (setq znc-servers
+          '(("192.168.1.242" 6667 t
+             ((GGn username password)
+              (aither username password)))))))
+;; circe for znc
+
+(defun znc-password (server)
+  (with-temp-buffer
+    (insert-file-contents-literally my-credentials-file)
+    (plist-get (read (buffer-string)) :password)))
 ;; =============================================================================
 ;; emacs 29 included treesit and eglot
 ;; =============================================================================
@@ -140,30 +163,25 @@
 ;;eglot config
 (require 'eglot)
 (add-to-list 'eglot-server-programs
-             '((tsx-mode) "typescript-language-server --stdio"))
+             '((tsx-mode) "~/.nvm/versions/node/v18.14.2/bin/typescript-language-server" "--stdio"))
 (add-to-list 'eglot-server-programs
-             '((tsx-ts-mode) "typescript-language-server --stdio"))
+             '((tsx-ts-mode) "~/.nvm/versions/node/v18.14.2/bin/typescript-language-server" "--stdio"))
+(add-to-list 'eglot-server-programs
+             '((typescript-ts-mode) "~/.nvm/versions/node/v18.14.2/bin/typescript-language-server" "--stdio"))
+;; (add-to-list 'eglot-server-programs
+;;              '((js-json-mode) "vscode-json-languageserver" "--stdio"))
+;; (add-to-list 'eglot-server-programs
+;;              '((tsx-mode) "npx typescript-language-server""--stdio"))
+;; (add-to-list 'eglot-server-programs
+;;              '((tsx-ts-mode) "npx typescript-language-server" "--stdio"))
 (add-to-list 'eglot-server-programs
              '((js-json-mode) "vscode-json-languageserver" "--stdio"))
-(add-to-list 'eglot-server-programs
-             '((typst-ts-mode) "tinymist"))
-(add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
 
 (add-hook 'typescript-ts-mode-hook 'eglot-ensure)
 (add-hook 'tsx-ts-mode-hook 'eglot-ensure)
-(add-hook 'nix-mode-hook 'eglot-ensure)
-(add-hook 'typst-ts-mode-hook 'eglot-ensure)
-
+(add-hook 'js-json-mode-hook 'eglot-ensure)
 
 (use-package markdown-mode) ;; required for eglot eldoc
-
-;; show eldoc in a popup to prevent resizing minibuffer
-;; (use-package eldoc-box
-;;   :straight t
-;;   :config
-;;   (add-hook 'eglot-managed-mode-hook #'eldoc-box-hover-at-point-mode t)
-;;   (add-hook 'lsp-managed-mode-hook #'eldoc-box-hover-at-point-mode t)
-;;   (add-hook 'emacs-lisp-mode-hook #'eldoc-box-hover-at-point-mode t))
 ;; =============================================================================
 ;; handle delimiters
 ;; =============================================================================
@@ -175,14 +193,15 @@
   :straight t
   :init
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-(use-package colorful-mode
-  :custom
-  (colorful-use-prefix t)
-  (colorful-only-strings 'only-prog)
-  (css-fontify-colors nil)
-  :config
-  (global-colorful-mode t)
-  (add-to-list 'global-colorful-modes 'yaml-mode) )
+;; =============================================================================
+;; evil mode
+;; =============================================================================
+(load-file "~/.emacs.d/evil.el")
+
+;; =============================================================================
+;; meow mode
+;; =============================================================================
+;;(load-file "~/.emacs.d/meow.el")
 
 ;; =============================================================================
 ;; ibuffer
@@ -190,6 +209,75 @@
 (use-package ibuffer
   :bind
   ("C-x b" . ibuffer))
+
+
+;; =============================================================================
+;; AI tools
+;; =============================================================================
+
+(use-package eat
+  :straight (:host codeberg :repo "akib/emacs-eat" :files ("*.el" ("term" "term/*.el") "*.texi"
+                                                           "*.ti" ("terminfo/e" "terminfo/e/*")
+                                                           ("terminfo/65" "terminfo/65/*")
+                                                           ("integration" "integration/*")
+                                                           (:exclude ".dir-locals.el" "*-tests.el")))
+  :config
+  (evil-collection-eat-setup)
+  (evil-collection-define-key 'normal 'eat-mode-map
+    "p" 'eat-yank
+    "P" 'eat-yank)
+  (defun eat--auto-scroll-to-bottom ()
+    (when eat-terminal
+      (let ((pos (eat-term-display-cursor eat-terminal)))
+        (goto-char pos)
+        (dolist (window (get-buffer-window-list nil nil t))
+          (set-window-point window pos)))))
+  (add-hook 'eat-update-hook #'eat--auto-scroll-to-bottom))
+
+(use-package claude-code
+  :straight (:host github :repo "stevemolitor/claude-code.el")
+  :after eat
+  :config
+  (claude-code-mode)
+  :bind-keymap ("C-c c" . claude-code-command-map)
+  :custom
+  (claude-code-terminal-backend 'eat)
+  (claude-code-term-name "eat-truecolor")
+  (claude-code-display-window-fn #'switch-to-buffer)
+  (claude-code-process-environment-functions
+   '((lambda (_buf _dir) '("COLORTERM=truecolor")))))
+
+;; model context provider
+;; (use-package mcp
+;;   :straight (:host github :repo "lizqwerscott/mcp.el" :files ("*.el"))
+;;   :ensure t
+;;   :after gptel
+;;   :custom (mcp-hub-servers
+;;            '(("filesystem-emacs" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/.emacs.d/")))))
+;;   :config (require 'mcp-hub)
+;;   :hook (after-init . mcp-hub-start-all-server))
+;; (setq mcp-hub-servers
+;;       '(("filesystem-emacs" . (:command "npx" :args ("-y" "@modelcontextprotocol/server-filesystem" "~/.emacs.d/")))))
+
+;; (setq mcp-default-server "filesystem-emacs")
+
+;; copilot autocomplete
+;; (use-package copilot
+;;   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+;;   :ensure t
+;;   :hook (prog-mode . copilot-mode)
+;;   :bind (:map copilot-completion-map
+;;               ("C-M-<tab>" . 'copilot-accept-completion)
+;;               ("C-M-w" . 'copilot-accept-completion-by-word))
+;;   :config
+;;   (add-to-list 'copilot-major-mode-alist '("typescript-ts" . "typescript"))
+;;   (add-to-list 'copilot-major-mode-alist '("tsx-ts" . "typescriptreact")))
+
+;; copilot agentic interface
+;; (use-package copilot-chat
+;;   :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+;;   :after (request org markdown-mode))
+
 
 ;; =============================================================================
 ;; completion framework
@@ -201,6 +289,9 @@
   ("C-x C-b" . switch-to-buffer)
   :init
   (vertico-mode))
+;; todo: add directory up
+;; "C-h" (cmds! (eq 'file (vertico--metadata-get 'category)) #'vertico-directory-up)
+;; "C-l" (cmds! (eq 'file (vertico--metadata-get 'category)) #'+vertico/enter-or-preview))
 
 ;; fuzzy find
 (use-package orderless
@@ -218,7 +309,7 @@
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
-							("M-A" . marginalia-cycle))
+              ("M-A" . marginalia-cycle))
 
   :init
   (marginalia-mode))
@@ -238,7 +329,7 @@
          ("C-x C-b" . consult-buffer)                ;; orig. switch-to-buffer
          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+         ;; ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
          ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
          ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
          ;; Custom M-# bindings for fast register access
@@ -312,7 +403,7 @@
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep consult-man
    consult-bookmark consult-recent-file consult-xref
-	 ;;   consult--source-bookmark consult--source-file-register
+   consult--source-bookmark consult--source-file-register
    consult--source-recent-file consult--source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
@@ -327,7 +418,6 @@
   )
 ;; TODO embark
 
-(use-package web-mode)
 ;; autocomplete in buffer
 (use-package corfu
   ;; Optional customizations
@@ -335,6 +425,18 @@
 
   (corfu-auto t)               ;; Enable auto completion
   (corfu-preselect 'directory) ;; Select the first candidate, except for directories
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+
+  ;; Enable Corfu only for certain modes. See also `global-corfu-modes'.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
   :init
 
   ;; Recommended: Enable Corfu globally.  Recommended since many modes provide
@@ -346,12 +448,6 @@
   ;; (corfu-history-mode)
   (corfu-popupinfo-mode))
 
-
-(use-package sudo-edit
-  :straight t
-  :bind
-  ("s-e" . sudo-edit))
-
 ;; =============================================================================
 ;; magit
 ;; =============================================================================
@@ -362,175 +458,64 @@
   (setq git-commit-summary-max-length 180))
 
 ;; =============================================================================
-;; programming languages
+;; tramp
 ;; =============================================================================
-;; purescript
-(use-package purescript-mode)
-;; (use-package psc-ide
-;; :config
-;; (add-hook 'purescript-mode-hook
-;;     (lambda ()
-;;       (psc-ide-mode)
-;;       (company-mode)
-;;       (flycheck-mode)
-;;       (turn-on-purescript-indentation))
-;; 		)
-;; )
-
-(use-package slime
-  :preface
-  ;; Prefer the Guix-packaged SLIME over any straight checkout.
-  (setq load-path
-        (let (filtered)
-          (dolist (path load-path (nreverse filtered))
-            (unless (and path
-                         (string-match-p
-                          "/straight/\\(build\\|repos\\)/slime\\(?:/\\|$\\)"
-                          path))
-              (push path filtered)))))
-  (defun my/guix-host-executable (program)
-    "Return PROGRAM from PATH or common Guix profile locations."
-    (let ((home (or (getenv "HOME") (expand-file-name "~"))))
-      (or (executable-find program)
-          (catch 'found
-            (dolist (candidate
-                     (list (expand-file-name
-                            (concat ".guix-home/profile/bin/" program)
-                            home)
-                           (expand-file-name
-                            (concat ".guix-profile/bin/" program)
-                            home)
-                           (concat "/run/current-system/profile/bin/" program)
-                           (concat "/etc/profiles/per-user/"
-                                   (user-login-name)
-                                   "/bin/"
-                                   program)))
-              (when (file-executable-p candidate)
-                (throw 'found candidate)))))))
-  :straight nil
-  :ensure nil
-  :commands (slime slime-selector)
-  :bind (("C-c s" . slime)
-         ("C-c C-s" . slime-selector))
-  :init
-  (let* ((slime-library (locate-library "slime"))
-         (slime-root (and slime-library
-                          (file-name-directory slime-library)))
-         (sbcl (my/guix-host-executable "sbcl")))
-    (setq slime-contribs '(slime-repl
-                           slime-autodoc
-                           slime-asdf
-                           slime-tramp
-                           slime-indentation
-                           slime-scratch)
-          ;; Avoid `slime-c-p-c' here: on this host it sometimes leaves
-          ;; Emacs calling `swank:completions' before that contrib is active.
-          slime-completion-at-point-functions
-          '(slime-filename-completion slime-simple-completion-at-point)
-          slime-complete-symbol-function nil
-          slime-repl-history-file (locate-user-emacs-file ".slime-history.eld"))
-    (when slime-root
-      (setq slime-path slime-root)
-      (add-to-list 'load-path (expand-file-name "contrib" slime-root)))
-    (when sbcl
-      (setq inferior-lisp-program sbcl
-            slime-default-lisp 'sbcl
-            slime-lisp-implementations
-            `((sbcl (,sbcl "--dynamic-space-size" "2048"))))))
-  :config
-  (slime-setup slime-contribs)
-  (add-hook 'slime-mode-hook #'slime-autodoc-mode)
-  (unless inferior-lisp-program
-    (display-warning
-     'init
-     "SLIME is enabled, but SBCL was not found in PATH or a standard Guix profile."
-     :warning)))
-;; org mode
-(use-package org
-	:config
-	(org-babel-do-load-languages
-	 'org-babel-load-languages
-	 '(;; (rec . t)
-		 (shell . t))))
+;; (add-to-list 'tramp-remote-path
+;;              '(tramp-own-remote-path
+;;                tramp-default-remote-path
+;;                "/bin" "/usr/bin"
+;;                "/sbin" "/usr/sbin" "/usr/local/bin"
+;;                "/usr/local/sbin" "/local/bin"
+;;                "/local/freeware/bin" "/local/gnu/bin"
+;;                "/usr/freeware/bin" "/usr/pkg/bin"
+;;                "/usr/contrib/bin" "/opt/bin" "/opt/sbin"
+;;                "/opt/local/bin" "/opt/homebrew/bin"
+;;                "/opt/homebrew/sbin"
+;;                "/run/current-system/profile/bin"))
+;; (add-to-list 'tramp-methods
+;; 	           '("guix"
+;; 	             (tramp-login-program "nsenter")
+;; 	             (tramp-login-args (("-a" "-t" "%h")
+;; 				                          ("/run/current-system/profile/bin/bash" "--login")))
+;; 	             (tramp-remote-shell "/run/current-system/profile/bin/bash")
+;; 	             (tramp-remote-shell-args ("-c"))))
+;; =============================================================================
+;; ocaml
+;; =============================================================================
+(use-package tuareg
+  :ensure t
+  :mode ("\\.ml\\'" . tuareg-mode))
 
 
-;; nix mode
-(use-package nix-mode
-  :mode "\\.nix\\'")
-
-(use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :config
-  (add-hook 'purescript-mode-hook #'lsp))
-
-(use-package typst-ts-mode
-  :straight '(:type git :host codeberg :repo "meow_king/typst-ts-mode")
-  :custom
-  (typst-ts-watch-options nil)
-  (typst-ts-mode-enable-raw-blocks-highlight t)
-  :config
-  (keymap-set typst-ts-mode-map "C-c C-c" #'typst-ts-tmenu))
-
-(use-package nushell-ts-mode
-  :straight '(:type git :host github :repo "herbertjones/nushell-ts-mode"))
-
-(with-eval-after-load 'ob-rec (org-babel-do-load-languages
-															 'org-babel-load-languages
-															 '((rec . t)
-																 (shell . t))))
-(with-eval-after-load 'eglot
-  (with-eval-after-load 'typst-ts-mode
-    (add-to-list 'eglot-server-programs
-								 `((typst-ts-mode) .
-									 ,(eglot-alternatives `(,typst-ts-lsp-download-path
-																					"tinymist"
-																					"typst-lsp"))))))
-
-(use-package paredit
-	:config
-	(enable-paredit-mode)
-	:hook
-	(emacs-lisp-mode . enable-paredit-mode)
-	(lisp-mode . enable-paredit-mode)
-	(typescript-ts-mode . enable-paredit-mode)
-	(org-mode . enable-paredit-mode))
-
-;; disable bell sound 
-(setq visible-bell 1)
+(use-package ocaml-eglot
+  :ensure t
+  :after tuareg
+  :hook
+  (tuareg-mode . ocaml-eglot)
+  (ocaml-eglot . eglot-ensure))
 
 ;; =============================================================================
 ;; prot's themes
 ;; =============================================================================
 ;; (use-package standard-themes)
 ;; (use-package ef-themes)
-;; (use-package base16-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'base16- t))
 
-;;(load "default" 'noerror 'nomessage)
 ;; use modus as fallback
 (use-package modus-themes
   :config
   (load-theme 'modus-vivendi t))
-(set-face-attribute 'default nil :height 160)
+
 ;; =============================================================================
 ;; other themes
 ;; =============================================================================
-
-;; (use-package xresources-theme
-;;   :straight '(:type git :host github :repo "martenlienen/xresources-theme")
-;; 	:config
-;;   (load-theme 'xresources t)	)
 ;; (use-package cyberpunk-theme
 ;;   :config
 ;;   (load-theme 'cyberpunk t))
 ;; use moe as the main theme
-;; (setq moe-dark-bg "#000")
-;; (use-package moe-theme
-;;   :config
-;;   (load-theme 'moe-dark t)
+(setq moe-dark-bg "#000")
+(use-package moe-theme
+  :config
+  (load-theme 'moe-dark t))
 
 ;; add color to compilation
 (defun my/ansi-colorize-buffer ()
@@ -538,90 +523,79 @@
     (ansi-color-apply-on-region (point-min) (point-max))))
 (add-hook 'compilation-filter-hook 'my/ansi-colorize-buffer)
 
+;;(use-package ement
+;;  :straight (ement :type git :host github :repo "alphapapa/ement.el")
+;;  :config (ement-connect :user-id "@tay:vexillomancy.org"
+;;												 :uri-prefix "http://localhost:8008"
+;;												 :password
+;;												 (auth-source-pick-first-password
+;;													:host "matrix.vexillomancy.org"
+;;													:user "tay")))
 (use-package apheleia
   :config
-  (setf (alist-get 'tsx-ts-mode apheleia-mode-alist)
-				'(dprint))
-  (setf (alist-get 'typescript-ts-mode apheleia-mode-alist)
-				'(dprint))
-  (setf (alist-get 'json-ts-mode apheleia-mode-alist)
-				'(dprint))
-  (setf (alist-get 'js-ts-mode apheleia-mode-alist)
-				'(dprint))
-  (apheleia-global-mode 1))
+  (apheleia-global-mode +1))
+(setq tab-width 2)
+(setq indent-tabs-mode nil)
 
 
-(use-package expand-region
-	:bind (("C-;" . er/expand-region)))
 
-;;
-
-(setq display-time-24hr-format nil)
-(setq display-time-format "%H:%M %m/%d")
-(display-time-mode 1)
-(with-eval-after-load 'ox-latex
-	(add-to-list 'org-latex-classes
-							 '("extarticle"
-								 "\\documentclass{extarticle}"
-								 ("\\section{%s}" . "\\section*{%s}")
-								 ("\\subsection{%s}" . "\\subsection*{%s}")
-								 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-								 ("\\subparagaph{%s}" . "\\subparagraph*{%s}"))))
-;; (defun clear-undo-tree ()
-;;   (interactive)
-;;   (setq buffer-undo-tree nil))
-
-(use-package org-transclusion
-  :bind (("S-<f12>" . org-transclusion-add)
-         ("C-c t m" . org-transclusion-transient-menu)))
-(use-package s)
-(use-package dash)
-(use-package openclaw
-  :straight (openclaw :type git :host github :repo "Kyvero-Vexus/openclaw.el")
-	:ensure t
-  :config
-  (setq openclaw-gateway-url "ws://localhost:18789")
-	(setq openclaw-gateway-token "454083ef305f1a54c6cd9a2a65f85cd3a29633428f12dcd3"))
-;; =============================================================================
-;; window manager features
-;; =============================================================================
-;;(load-file "~/.emacs.d/wm.el")
-;; =============================================================================
-;; terminal emulator
-;; =============================================================================
-;;(straight-use-package
-;; '(eat :type git
-;;       :host codeberg
-;;       :repo "akib/emacs-eat"
-;;       :files ("*.el" ("term" "term/*.el") "*.texi"
-;;               "*.ti" ("terminfo/e" "terminfo/e/*")
-;;               ("terminfo/65" "terminfo/65/*")
-;;               ("integration" "integration/*")
-;;               (:exclude ".dir-locals.el" "*-tests.el"))))
-;;
-(setq password-cache-expiry nil)
-;; (use-package ement
-;;   :straight (ement :type git :host github :repo "alphapapa/ement.el")
-;;   :config (ement-connect :user-id "@tay:vexillomancy.org"
-;; 			 :uri-prefix "http://localhost:8008"
-;; 			 :password
-;; 			 (auth-source-pick-first-password
-;; 			  :host "matrix.vexillomancy.org"
-;; 			  :user "tay")))
-;; =============================================================================
-;; ai
-;; =============================================================================
-(load-file "~/.emacs.d/ai.el")
-(load-file "~/.emacs.d/evil.el")
-;; guix
-(use-package guix
-	:straight nil 
-	:ensure nil
-	:bind (("H-A-g" . guix)))
-(use-package stumpwm-mode)
 
 
 ;;; init.el ends here
-(setq custom-file "~/emacs-custom.el")
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(claude-code-confirm-kill nil)
+ '(custom-safe-themes
+   '("3b2ae1d19f5843cdc5833266b76e6367744932d96c5ddd713ede9797a2bd93fe"
+     "8899e88d19a37d39c7187f4bcb5bb596fba990728ef963420b93e2aea5d1666a"
+     "a1c18db2838b593fba371cb2623abd8f7644a7811ac53c6530eebdf8b9a25a8d"
+     "ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0"
+     "cee5c56dc8b95b345bfe1c88d82d48f89e0f23008b0c2154ef452b2ce348da37"
+     "1ad12cda71588cc82e74f1cabeed99705c6a60d23ee1bb355c293ba9c000d4ac"
+     "0b41a4a9f81967daacd737f83d3eac7e3112d642e3f786cf7613de4da97a830a"
+     "aa545934ce1b6fd16b4db2cf6c2ccf126249a66712786dd70f880806a187ac0b"
+     default))
+ '(erc-accidental-paste-threshold-seconds 5)
+ '(erc-ask-about-multiline-input t)
+ '(erc-fill-column 110)
+ '(erc-insert-timestamp-function 'erc-insert-timestamp-left)
+ '(erc-modules
+   '(button completion fill log match menu move-to-prompt nicks
+            notifications scrolltobottom stamp hl-nicks netsplit fill
+            button match track readonly networks ring autojoin
+            noncommands irccontrols move-to-prompt stamp menu list))
+ '(erc-pals '("Ammonium8755" "FlowPlay"))
+ '(erc-timestamp-intangible t)
+ '(erc-timestamp-only-if-changed-flag nil)
+ '(erc-timestamp-use-align-to nil)
+ '(indent-tabs-mode nil)
+ '(safe-local-variable-values
+   '((projectile-project-compilation-cmd
+      . "npx lerna run compile --stream")
+     (projectile-project-test-cmd . "npx lerna run test --stream")
+     (projectile-project-package-cmd . "../script/build")
+     (projectile-project-configure-cmd
+      . "npx lerna run clean && npm run bootstrap && npx lerna run compile --stream")
+     (projectile-project-run-cmd . "npm run dev")
+     (combobulate-highlight-queries-alist
+      (:language tsx :query
+                 "(program\12 (import_statement\12  (import_clause\12   (named_imports\12    (import_specifier (identifier) @hl.default)))))"))))
+ '(tab-width 2))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
-(load custom-file)
+;; Per-host fragment — loaded last so a machine can override anything
+;; above it. File path: ~/.emacs.d/host-<system-name>.el.
+(let ((host-file (expand-file-name (format "host-%s.el" (system-name))
+                                   user-emacs-directory)))
+  (when (file-exists-p host-file)
+    (load host-file nil 'nomessage)))
+
+

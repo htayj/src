@@ -5,16 +5,18 @@ FullScreen=false
 LockSidebar=true
 ShowSidebar=true
 
+[MainWindow]
+1920x1200 screen: Height=1160
+1920x1200 screen: Width=1920
+1920x1200 screen: XPosition=0
+1920x1200 screen: YPosition=0
+2 screens: Height=510
+2 screens: Width=1920
+2 screens: XPosition=0
+2 screens: YPosition=0
+HDMI-1 eDP-1=HDMI-1
+eDP-1=eDP-1
+
 [Recent Files]
-File1[$e]=$HOME/Downloads/guix-refcard.pdf
-File2[$e]=/gnu/store/n27zp90171qgl4fvcf0kfc6czmy1v9r6-guix-manual/en/guix.pdf
-File3[$e]=$HOME/reference/external_docs/genera/Symbolics Development Environment_files/smblue_rock.gif
-File4[$e]=$HOME/reference/external_docs/genera/Symbolics Development Environment_files/presentation-inspector.gif
-File5[$e]=$HOME/Downloads/AI_WP_210.pdf
-File6[$e]=$HOME/Downloads/Using-Your-Symbolics-Computer.pdf
-Name1[$e]=guix-refcard.pdf
-Name2[$e]=guix.pdf
-Name3[$e]=smblue_rock.gif
-Name4[$e]=presentation-inspector.gif
-Name5[$e]=AI_WP_210.pdf
-Name6[$e]=Using-Your-Symbolics-Computer.pdf
+File1[$e]=$HOME/Downloads/flagazine.pdf
+Name1[$e]=flagazine.pdf

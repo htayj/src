@@ -1,4 +1,5 @@
 [user]
-	email = hardy.taylor.j@gmail.com
-[init]
-	defaultBranch = main
+	name = Taylor Hardy
+	email = taylor.hardy@codemettle.com
+[maintenance]
+	repo = /home/tay/.emacs.d
