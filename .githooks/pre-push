@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Pre-push: refuse to push if gitleaks finds anything in the commits being
+# pushed. Reads stdin for `<local_ref> <local_sha> <remote_ref> <remote_sha>`
+# tuples, one per ref, per `git help githooks`.
+
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+    cat >&2 <<'EOF'
+pre-push: gitleaks not installed.
+
+  Fedora:        sudo dnf install gitleaks
+  Arch / Endeavour: sudo pacman -S gitleaks
+  go install:    go install github.com/gitleaks/gitleaks/v8@latest
+
+This hook is mandatory; install gitleaks or push will keep failing.
+EOF
+    exit 1
+fi
+
+zero='0000000000000000000000000000000000000000'
+fail=0
+
+while IFS=' ' read -r local_ref local_sha remote_ref remote_sha; do
+    [ -z "${local_sha:-}" ] && continue
+
+    # Branch deletion: nothing to scan.
+    if [ "$local_sha" = "$zero" ]; then
+        continue
+    fi
+
+    if [ "$remote_sha" = "$zero" ]; then
+        # New branch: scan every commit reachable from local_sha that
+        # isn't already on a remote branch. Limits noise on first push.
+        range="$local_sha --not --remotes"
+    else
+        range="$remote_sha..$local_sha"
+    fi
+
+    echo "pre-push: gitleaks scanning $local_ref ($range)" >&2
+    if ! gitleaks detect --no-banner --redact --log-opts="$range"; then
+        echo "pre-push: gitleaks found leaks in $local_ref; push aborted." >&2
+        fail=1
+    fi
+done
+
+exit "$fail"
