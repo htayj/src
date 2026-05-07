@@ -1,8 +1,4 @@
 # work xinit fragment — sourced by ~/.xinitrc.
 
-# Add laptop-only font paths so xterm/stumpwm can find them.
-[ -d "$HOME/.local/share/fonts/digital/bdf" ] && xset +fp "$HOME/.local/share/fonts/digital/bdf/"
-[ -d "$HOME/.local/share/fonts/unscii" ]      && xset +fp "$HOME/.local/share/fonts/unscii/"
-
 # work uses the system stumpwm binary, wrapped in ssh-agent.
 exec ssh-agent /usr/local/bin/stumpwm

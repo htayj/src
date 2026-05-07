@@ -8,6 +8,10 @@ if command -v gnome-keyring-daemon >/dev/null 2>&1; then
     export GNOME_KEYRING_CONTROL SSH_AUTH_SOCK GPG_AGENT_INFO GNOME_KEYRING_PID
 fi
 
+# Add bdf / bitmap font dirs to the X font path when present.
+[ -d "$HOME/.local/share/fonts/digital/bdf" ] && xset +fp "$HOME/.local/share/fonts/digital/bdf/"
+[ -d "$HOME/.local/share/fonts/unscii" ]      && xset +fp "$HOME/.local/share/fonts/unscii/"
+
 # Merge X resources, then layer host-specific overrides if present.
 [ -r "$HOME/.Xresources" ] && xrdb -merge "$HOME/.Xresources"
 [ -r "$HOME/.Xresources.host-$(hostname)" ] && xrdb -merge "$HOME/.Xresources.host-$(hostname)"

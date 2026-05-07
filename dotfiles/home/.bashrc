@@ -15,6 +15,11 @@ export PATH
 # Uncomment the following line if you don't like systemctl's auto-paging feature:
 # export SYSTEMD_PAGER=
 
+# Inside a `guix shell` / `guix environment`, mark the prompt with [env].
+if [ -n "$GUIX_ENVIRONMENT" ]; then
+    PS1='\u@\h \w [env]\$ '
+fi
+
 # User specific aliases and functions.
 # Files matching `host-*` are only sourced when the suffix matches the
 # current hostname; that's how per-machine fragments stay co-located in

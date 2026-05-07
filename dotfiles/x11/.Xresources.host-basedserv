@@ -1,17 +1,5 @@
 ! basedserv-specific Xresources overrides — merged on top of ~/.Xresources
 ! by ~/.xinitrc.
 !
-! Uses font names that match basedserv's actual installed font tree.
-
-*fontMenu*fontdefault*Label: fixed_20
-*VT100.font: -misc-fixed-*-*-*-*-20-*-*-*-*-*-iso10646-1
-*VT100.wideFont: -*-unifont-medium-r-*-*-*-*-*-*-*-*-iso10646-*
-
-*fontMenu*font1*Label: unifont
-*VT100.font1: -*-unifont-medium-r-*-*-*-*-*-*-*-*-iso10646-*
-
-*fontMenu*font2*Label: fixed_24
-*VT100.font2: -misc-fixed-*-*-*-*-24-*-*-*-*-*-iso10646-1
-
-*fontMenu*font3*Label: unscii-16-full
-*VT100.font3: -unscii-unscii-medium-r-normal-full-16-160-75-75-c-80-iso10646-1
+! Empty: both hosts now use the shared font set. Add basedserv-only
+! tweaks here if any future override is needed.
