@@ -1,12 +1,14 @@
 #| --------------------------------------------------------------------------
 
-                         KMonad: US ThinkPad P52s space cadet
+                         kanata: built-in laptop keyboard
 
-   This file contains US and `defsrc' configurations for a ThinkPad T430
-   with an ISO keyboard.  Copy out the `defsrc' layer to start your own
-   keyboard configuration.  Copy out the `deflayer' template to easily start
-   a new layer with matching `transparent' buttons.
+   Active host: work. Bound to the i8042 PS/2 evdev node via `linux-dev'
+   in the (defcfg) block at the bottom; kanata-launch.sh picks this file
+   when invoked with `normal'.
 
+   The `defsrc' layer below mirrors a US ThinkPad-style internal layout
+   (function row + 6-row alpha + arrow cluster). Copy a `deflayer'
+   template to add a new layer with matching `transparent' buttons (`_').
 
 (deflayer name
   _    _    _    _                             _    _    _    _    _    _    _
@@ -18,7 +20,6 @@
   _    _    _    _              _              _    _    _         _    _    _
                                                                    _    _    _
 )
-
   -------------------------------------------------------------------------- |#
 ;; US
 (defsrc
@@ -33,22 +34,27 @@
 )
 
 ;; press both to latch?
+;; NOTE: KMonad's `tap-next-release` translated to kanata's
+;; `tap-hold-release` with 200/200 ms timings (matching the Advantage
+;; configs). Bindings whose tap value is a literal char that doesn't
+;; map cleanly (`(` / `)`) are commented out — kanata wants `S-9`/`S-0`
+;; or a (macro ...) form there; pick one when you wire those keys back.
 (defalias
   ;; homerow mod
-  Sf (tap-next-release f lshift)         ;; left homerow control
-  Cd (tap-next-release d lctl)         ;; left homerow meta
-  Ms (tap-next-release s lalt)         ;; left homerow super
-  sa (tap-next-release a lmet)         ;; left homehow hyper
-  Sj (tap-next-release j lshift)         ;; right homerow control
-  Ck (tap-next-release k lctl)         ;; right homerow meta
-  Ml (tap-next-release l lalt)         ;; right homerow super
-  s; (tap-next-release ; lmet)         ;; right homerow hyper
-  Tr (tap-next-release r (layer-toggle greek))         ;; left homerow top
-  Tu (tap-next-release u (layer-toggle greek))         ;; right homerow super
-  roam (tap-next-release bspc ralt)    ;; rub out / alt mode
-  qoam (tap-next-release ' ralt)       ;; quote / alt mode
-  osft (tap-next-release \( lshift)    ;; open round / shift
-  csft (tap-next-release \) rshift)    ;; close round / shift
+  Sf (tap-hold-release 200 200 f lshift)         ;; left homerow control
+  Cd (tap-hold-release 200 200 d lctl)           ;; left homerow meta
+  Ms (tap-hold-release 200 200 s lalt)           ;; left homerow super
+  sa (tap-hold-release 200 200 a lmet)           ;; left homehow hyper
+  Sj (tap-hold-release 200 200 j lshift)         ;; right homerow control
+  Ck (tap-hold-release 200 200 k lctl)           ;; right homerow meta
+  Ml (tap-hold-release 200 200 l lalt)           ;; right homerow super
+  s; (tap-hold-release 200 200 ; lmet)           ;; right homerow hyper
+  Tr (tap-hold-release 200 200 r (layer-toggle greek))   ;; left homerow top
+  Tu (tap-hold-release 200 200 u (layer-toggle greek))   ;; right homerow super
+  roam (tap-hold-release 200 200 bspc ralt)      ;; rub out / alt mode
+  qoam (tap-hold-release 200 200 ' ralt)         ;; quote / alt mode
+  ;; osft (tap-hold-release 200 200 S-9 lshift) ;; open round / shift
+  ;; csft (tap-hold-release 200 200 S-0 rshift) ;; close round / shift
 
   ;;xth (tap-hold 400 x lsft)     ;; Long delay for easier testing
   ;;thn (tap-hold-next 400 x lsft)
@@ -61,28 +67,27 @@
   ;;xcp (tap-hold-next 400 esc ctl)
 )
 (deflayer normal
-  esc  mute vold volu                          prnt slck pause home end ins del  
-        f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12     
+  esc  mute vold volu                          prnt slck pause home end ins del
+        f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12
   grv   1    2    3    4    5    6    7    8    9    0    -     =        bspc
   tab   q    w    e    r    t    y    u    i    o    p    [     ]        \
-  @roam @Ha  @ss  @Md  @Cf  g    h    @Cj  @Mk  @sl  @H;  @qoam          ret
-  @osft  z    x    c    v    b    n    m    ,    .    /                  @csft
+  @roam @sa  @Ms  @Cd  @Sf  g    h    @Sj  @Ck  @Ml  @s;  @qoam          ret
+  lsft  z    x    c    v    b    n    m    ,    .    /                   rsft
   wkup  lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
                                                                    left down rght
 )
 ;;(deflayer modelatch)
 (deflayer greek
-  esc  mute vold volu                          prnt slck pause home end ins del  
-        f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12     
+  esc  mute vold volu                          prnt slck pause home end ins del
+        f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11   f12
   grv   1    2    3    4    5    6    7    8    9    0    -     =        bspc
   tab   q    w    e    r    t    y    u    i    o    p    [     ]        \
   @roam @sa  @Ms  @Cd  @Sf  g    h    @Sj  @Ck  @Ml  @s;  @qoam          ret
-  @osf  z    x    c    v    b    n    m    ,    .    /                  @csft
+  lsft  z    x    c    v    b    n    m    ,    .    /                   rsft
   wkup  lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
                                                                    left down rght
 )
 ;;(deflayer top)
 (defcfg
-    input       (device-file "/dev/input/by-path/platform-i8042-serio-0-event-kbd")
-    output      (uinput-sink "name" "optional post-init command")
-    fallthrough true)
+    process-unmapped-keys yes
+    linux-dev /dev/input/by-path/platform-i8042-serio-0-event-kbd)

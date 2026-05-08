@@ -1,0 +1,20 @@
+[Unit]
+Description=kanata keyboard remapper (%I)
+Documentation=https://github.com/jtroo/kanata
+# Wait for a graphical session so uinput / X are ready when we attach.
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/kanata-launch.sh %i
+# When the target keyboard isn't plugged in, kanata exits immediately;
+# keep retrying on a slow cadence rather than burning a hot loop.
+Restart=on-failure
+RestartSec=60s
+# Disable the default 5-failures-in-10s burst limit so the retry loop
+# survives an indefinitely-unplugged keyboard.
+StartLimitBurst=0
+
+[Install]
+WantedBy=default.target
