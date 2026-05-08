@@ -1,11 +1,13 @@
 #| --------------------------------------------------------------------------
 
-                         KMonad: US ThinkPad P52s space cadet
+                         kanata: Kinesis Advantage 360
 
-   This file contains US and `defsrc' configurations for a ThinkPad T430
-   with an ISO keyboard.  Copy out the `defsrc' layer to start your own
-   keyboard configuration.  Copy out the `deflayer' template to easily start
-   a new layer with matching `transparent' buttons.
+   Active host: basedserv. Bound to the Adv360 evdev node via `linux-dev'
+   below; `kb_setup.sh' picks this file when $HOSTNAME == basedserv.
+
+   The `defsrc' layer below mirrors the Advantage 360's physical layout
+   (split halves + thumb clusters). Copy a `deflayer' template to add a
+   new layer with matching `transparent' buttons (`_').
 
 (deflayer name
   _    _    _    _                             _    _    _    _    _    _    _

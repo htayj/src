@@ -12,4 +12,5 @@ xsetroot -solid black
 
 #setxkbmap -layout 'us(intl)' || true
 #xmodmap ~/.Xmodmap || true
-#kanata -c ~/kinesis.kanata.kbd & 
+# kanata launch lives in kb_setup.sh now (host-aware: advantage360 on
+# basedserv, advantage2 on work).
