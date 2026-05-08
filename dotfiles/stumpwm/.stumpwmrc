@@ -71,7 +71,8 @@ Falls back to a small static list if localectl isn't available."
 
 (defcommand select-keymap () ()
   "Pick an X11 keyboard layout from a menu and apply it via setxkbmap.
-The currently active layout is prefixed with `* ' in the menu."
+The currently active layout is prefixed with `* ' in the menu. The menu
+height is capped so long layout lists stay on-screen and scroll."
   (let* ((current (current-xkb-layout))
          (codes   (available-xkb-layouts))
          (entries (mapcar (lambda (code)
@@ -84,6 +85,7 @@ The currently active layout is prefixed with `* ' in the menu."
                                      (and current (string= (second e) current)))
                                    entries)
                       0))
+         (*menu-maximum-height* 20)
          (choice (select-from-menu (current-screen) entries
                                    (format nil "X11 layout (current: ~a): "
                                            (or current "?"))
