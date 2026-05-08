@@ -39,6 +39,61 @@
       (unfloat-this)
       (float-this)))
 
+;; ===========================================================================
+;; X11 keymap selection
+;; ===========================================================================
+(defun chomp (s)
+  "Trim trailing newlines / whitespace from a shell-command result."
+  (string-trim '(#\Space #\Tab #\Newline #\Return) s))
+
+(defun split-lines (s)
+  (loop for start = 0 then (1+ end)
+        for end = (position #\Newline s :start start)
+        for line = (subseq s start (or end (length s)))
+        unless (zerop (length line))
+          collect line
+        while end))
+
+(defun current-xkb-layout ()
+  "Return the active X11 layout (e.g. \"us\"), or NIL if it can't be parsed."
+  (let* ((raw (run-shell-command "setxkbmap -query 2>/dev/null | awk '/^layout:/ {print $2}'" t))
+         (val (and raw (chomp raw))))
+    (and val (not (zerop (length val))) val)))
+
+(defun available-xkb-layouts ()
+  "Return a list of X11 layout codes from `localectl list-x11-keymap-layouts'.
+Falls back to a small static list if localectl isn't available."
+  (let ((raw (run-shell-command "localectl list-x11-keymap-layouts 2>/dev/null" t)))
+    (cond
+      ((and raw (not (zerop (length (chomp raw)))))
+       (split-lines raw))
+      (t '("us" "gb" "dvorak" "colemak" "de" "fr" "es" "it" "ru" "jp")))))
+
+(defcommand select-keymap () ()
+  "Pick an X11 keyboard layout from a menu and apply it via setxkbmap.
+The currently active layout is prefixed with `* ' in the menu."
+  (let* ((current (current-xkb-layout))
+         (codes   (available-xkb-layouts))
+         (entries (mapcar (lambda (code)
+                            (list (if (and current (string= code current))
+                                      (format nil "* ~a" code)
+                                      (format nil "  ~a" code))
+                                  code))
+                          codes))
+         (initial (or (position-if (lambda (e)
+                                     (and current (string= (second e) current)))
+                                   entries)
+                      0))
+         (choice (select-from-menu (current-screen) entries
+                                   (format nil "X11 layout (current: ~a): "
+                                           (or current "?"))
+                                   initial)))
+    (when choice
+      (let* ((code (second choice))
+             (rc (run-shell-command (format nil "setxkbmap ~a" code) t)))
+        (declare (ignore rc))
+        (message "X11 layout set to ~a" code)))))
+
 (defun show-window-with-name (name)
   "name is a regexp.
 I would prefer to use (raise-window w), so that the focus is
@@ -66,6 +121,8 @@ hidden behind the previously displayed window."
 ;; Lock screen
 (define-key *root-map* (kbd "s-l") "exec slock")
 (define-key *root-map* (kbd "s-o") "exec scrot -s")
+;; X11 keymap picker
+(define-key *root-map* (kbd "K") "select-keymap")
 
 ;;; marking windows with ;
 (define-key *top-map* (kbd "s-;") "mark")
