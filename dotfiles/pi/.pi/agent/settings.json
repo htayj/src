@@ -1,0 +1,23 @@
+{
+  "lastChangelogVersion": "0.73.1",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": true,
+  "enabledModels": [
+    "openai-codex/gpt-5.5",
+    "openai-codex/gpt-5.3-codex",
+    "openai-codex/gpt-5.4",
+    "openai-codex/gpt-5.3-codex-spark"
+  ],
+  "packages": [
+    "/home/tay/.pi/agent/packages/general-dev-suite",
+    "npm:pi-intercom",
+    "npm:pi-subagents",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:pi-web-access",
+    "npm:pi-powerline-footer",
+    "npm:pi-smart-fetch"
+  ],
+  "workingVibe": "lisp machine"
+}

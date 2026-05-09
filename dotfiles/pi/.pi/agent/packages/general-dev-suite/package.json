@@ -1,0 +1,24 @@
+{
+  "name": "general-dev-suite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Generalized pi package converted from repo-specific Claude Code development plugins: workflows, skills, safe GitLab/notes tools, and bash nudges.",
+  "keywords": [
+    "pi-package"
+  ],
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "typebox": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions"
+    ],
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./prompts"
+    ]
+  }
+}

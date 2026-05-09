@@ -6,7 +6,7 @@ It is intentionally separate from `/home/tay/src/guix-config/dotfiles`.
 Install all packages:
 
 ```sh
-stow -d ~/src/dotfiles -t ~ home x11 stumpwm emacs config keyboard claude
+stow -d ~/src/dotfiles -t ~ home x11 stumpwm emacs config keyboard claude pi
 ```
 
 Install one package:
@@ -29,6 +29,10 @@ Managed packages:
   settings.json, keybindings.json, hooks, statusline, safer-curl wrapper).
   Per-host and per-project overrides go in `~/.claude/.claude/settings.local.json`
   (untracked) per Claude Code's override convention.
+- `pi`: Pi Coding Agent global config under `~/.pi/agent`, including
+  `settings.json`, custom subagents/chains, and the local `general-dev-suite`
+  package. Runtime state, auth, sessions, binaries, and intercom sockets are
+  intentionally excluded.
 
 ## Per-host fragments
 

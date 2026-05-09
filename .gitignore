@@ -15,6 +15,9 @@ claudeoauth.txt
 .claude/
 !dotfiles/claude/.claude/
 !dotfiles/claude/.claude/**
+.pi/
+!dotfiles/pi/.pi/
+!dotfiles/pi/.pi/**
 .codex
 .serena/project.local.yml
 .aider.chat.history.md

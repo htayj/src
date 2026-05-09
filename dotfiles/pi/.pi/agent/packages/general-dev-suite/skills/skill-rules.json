@@ -1,0 +1,93 @@
+{
+  "skills": {
+    "tdd": {
+      "priority": "high",
+      "description": "Use TDD for behavior-changing implementation work.",
+      "promptTriggers": {
+        "keywords": [
+          "implement",
+          "fix",
+          "add",
+          "change behavior",
+          "bug",
+          "feature"
+        ],
+        "intentPatterns": [
+          "\\b(write|add|update).*test",
+          "\\bbug\\b"
+        ]
+      }
+    },
+    "build-test-procedures": {
+      "priority": "critical",
+      "description": "Discover and run project-specific build/test commands before handoff.",
+      "promptTriggers": {
+        "keywords": [
+          "build",
+          "compile",
+          "typecheck",
+          "test",
+          "verify",
+          "lint",
+          "run the app"
+        ],
+        "intentPatterns": [
+          "\\b(implement|fix|add|refactor|migrate)\\b"
+        ]
+      }
+    },
+    "add-rest-endpoint": {
+      "priority": "high",
+      "description": "Use contract-first API endpoint workflow.",
+      "promptTriggers": {
+        "keywords": [
+          "endpoint",
+          "rest api",
+          "route",
+          "openapi",
+          "api handler"
+        ]
+      }
+    },
+    "e2e-test": {
+      "priority": "medium",
+      "description": "Use stable E2E testing workflow.",
+      "promptTriggers": {
+        "keywords": [
+          "e2e",
+          "playwright",
+          "cypress",
+          "browser test",
+          "end-to-end"
+        ]
+      }
+    },
+    "frontend-design": {
+      "priority": "medium",
+      "description": "Use UI/accessibility/design-system checklist.",
+      "promptTriggers": {
+        "keywords": [
+          "ui",
+          "ux",
+          "component",
+          "frontend",
+          "accessibility",
+          "form",
+          "modal"
+        ]
+      }
+    },
+    "notes": {
+      "priority": "low",
+      "description": "Capture decisions and session summaries in notes.",
+      "promptTriggers": {
+        "keywords": [
+          "note",
+          "remember",
+          "daily log",
+          "decision"
+        ]
+      }
+    }
+  }
+}
