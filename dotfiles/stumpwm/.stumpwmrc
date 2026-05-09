@@ -294,12 +294,12 @@ hidden behind the previously displayed window."
 ;; Lock screen
 (define-key *root-map* (kbd "s-l") "exec slock")
 
-(defcommand screenshot-selection-to-clipboard () ()
-  "Select a rectangle with scrot and copy the screenshot PNG to the X clipboard."
+(defcommand screenshot-selection-copy-path () ()
+  "Select a rectangle with scrot, save it, and copy the screenshot path."
   (run-shell-command
-   "sh -lc 'tmp=$(mktemp --suffix=.png); trap \"rm -f \\\"$tmp\\\"\" EXIT; scrot -s \"$tmp\" && xclip -selection clipboard -target image/png -i \"$tmp\"'"))
+   "sh -lc 'dir=$HOME/Pictures/Screenshots; mkdir -p \"$dir\"; file=$dir/screenshot-$(date +%Y%m%d-%H%M%S).png; scrot -s \"$file\" && printf %s \"$file\" | xclip -selection clipboard'"))
 
-(define-key *root-map* (kbd "s-o") "screenshot-selection-to-clipboard")
+(define-key *root-map* (kbd "s-o") "screenshot-selection-copy-path")
 ;; X11 keymap picker
 (define-key *root-map* (kbd "K") "select-keymap")
 
