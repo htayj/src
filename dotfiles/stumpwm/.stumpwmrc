@@ -4,6 +4,13 @@
 
 (in-package :stumpwm)
 
+;; Ensure Quicklisp is available before any ql:quickload forms below.
+(unless (find-package :ql)
+  (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
+                                         (user-homedir-pathname))))
+    (when (probe-file quicklisp-init)
+      (load quicklisp-init))))
+
 ;; Per-host fragment — sourced early so it can set *module-dir* and other
 ;; load-path tweaks before the rest of this file calls (load-module ...).
 (let ((host-file (merge-pathnames
