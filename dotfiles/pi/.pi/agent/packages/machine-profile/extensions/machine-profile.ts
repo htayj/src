@@ -1,4 +1,5 @@
 import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
+import { Buffer } from "node:buffer";
 
 const MACHINE_PROFILE = `
 <machine-profile>
@@ -17,6 +18,7 @@ Local machine preferences and resources:
 
 const USAGE_STATUS_KEY = "provider-usage";
 const OPENROUTER_CREDITS_URL = "https://openrouter.ai/api/v1/credits";
+const CODEX_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage";
 const FUNDS_REFRESH_MS = 5 * 60 * 1000;
 
 type HeaderMap = Record<string, string>;
@@ -30,6 +32,12 @@ type LimitCandidate = {
 };
 
 type FundsState = {
+  provider: string;
+  value: string;
+  updatedAt: number;
+};
+
+type SubscriptionState = {
   provider: string;
   value: string;
   updatedAt: number;
@@ -263,6 +271,80 @@ function readNumber(obj: Record<string, unknown>, key: string): number | undefin
   return undefined;
 }
 
+function readNestedRecord(obj: Record<string, unknown>, key: string): Record<string, unknown> | undefined {
+  const value = obj[key];
+  return isRecord(value) ? value : undefined;
+}
+
+function extractChatGptAccountId(token: string): string | undefined {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8"));
+    const authClaims = payload?.["https://api.openai.com/auth"];
+    return typeof authClaims?.chatgpt_account_id === "string" ? authClaims.chatgpt_account_id : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function statusFromUsageWindows(rateLimit: Record<string, unknown> | undefined): string | undefined {
+  if (!rateLimit) return undefined;
+
+  const primary = readNestedRecord(rateLimit, "primary_window");
+  const secondary = readNestedRecord(rateLimit, "secondary_window");
+  const primaryUsed = primary ? readNumber(primary, "used_percent") : undefined;
+  const secondaryUsed = secondary ? readNumber(secondary, "used_percent") : undefined;
+
+  const parts: string[] = [];
+  if (primaryUsed !== undefined) parts.push(`S ${formatPercentRemainingFromUsed(primaryUsed)}`);
+  if (secondaryUsed !== undefined) parts.push(`L ${formatPercentRemainingFromUsed(secondaryUsed)}`);
+  return parts.length > 0 ? parts.join(" ") : undefined;
+}
+
+function selectCodexUsageRateLimit(payload: Record<string, unknown>, modelId: string): Record<string, unknown> | undefined {
+  const normalizedModel = modelId.trim().toLowerCase();
+  const additional = Array.isArray(payload.additional_rate_limits) ? payload.additional_rate_limits : [];
+  const matching = additional.find((entry) => {
+    if (!isRecord(entry)) return false;
+    const limitName = typeof entry.limit_name === "string" ? entry.limit_name.toLowerCase() : undefined;
+    return limitName === normalizedModel;
+  });
+
+  if (isRecord(matching)) return readNestedRecord(matching, "rate_limit");
+  return readNestedRecord(payload, "rate_limit");
+}
+
+async function fetchCodexSubscriptionStatus(ctx: ExtensionContext, signal?: AbortSignal): Promise<SubscriptionState | undefined> {
+  const model = ctx.model;
+  if (!model || model.provider !== "openai-codex") return undefined;
+  if (!ctx.modelRegistry.isUsingOAuth(model)) return undefined;
+
+  const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
+  if (!auth.ok || !auth.apiKey) return undefined;
+
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${auth.apiKey}`,
+    "User-Agent": "pi (provider-usage)",
+  };
+  const accountId = extractChatGptAccountId(auth.apiKey);
+  if (accountId) headers["ChatGPT-Account-Id"] = accountId;
+
+  const response = await fetch(CODEX_USAGE_URL, { headers, signal });
+  if (!response.ok) return undefined;
+
+  const payload = await response.json();
+  if (!isRecord(payload)) return undefined;
+
+  const rateLimit = selectCodexUsageRateLimit(payload, model.id);
+  const value = statusFromUsageWindows(rateLimit);
+  if (!value) return undefined;
+
+  return {
+    provider: model.provider,
+    value,
+    updatedAt: Date.now(),
+  };
+}
+
 async function fetchOpenRouterFunds(ctx: ExtensionContext, signal?: AbortSignal): Promise<FundsState | undefined> {
   const model = ctx.model;
   if (!model || model.provider !== "openrouter") return undefined;
@@ -300,12 +382,39 @@ function modelKey(ctx: ExtensionContext): string | undefined {
 
 export default function (pi: ExtensionAPI) {
   let fundsState: FundsState | undefined;
+  let subscriptionState: SubscriptionState | undefined;
   let lastFundsFetch = 0;
+  let lastSubscriptionFetch = 0;
   let activeModelKey: string | undefined;
   let refreshTimer: ReturnType<typeof setInterval> | undefined;
 
   function clearProviderUsage(ctx: ExtensionContext): void {
     ctx.ui.setStatus(USAGE_STATUS_KEY, undefined);
+  }
+
+  async function refreshSubscription(ctx: ExtensionContext, force = false): Promise<void> {
+    const model = ctx.model;
+    if (!model || !ctx.modelRegistry.isUsingOAuth(model)) return;
+
+    const now = Date.now();
+    if (!force && subscriptionState?.provider === model.provider && now - lastSubscriptionFetch < FUNDS_REFRESH_MS) {
+      ctx.ui.setStatus(USAGE_STATUS_KEY, subscriptionState.value);
+      return;
+    }
+
+    lastSubscriptionFetch = now;
+    try {
+      const next = await fetchCodexSubscriptionStatus(ctx, ctx.signal);
+      if (next) {
+        subscriptionState = next;
+        ctx.ui.setStatus(USAGE_STATUS_KEY, next.value);
+      } else if (!subscriptionState || subscriptionState.provider !== model.provider) {
+        clearProviderUsage(ctx);
+      }
+    } catch {
+      // Keep this quiet; usage/funds display should never interrupt normal Pi work.
+      if (!subscriptionState || subscriptionState.provider !== model.provider) clearProviderUsage(ctx);
+    }
   }
 
   async function refreshFunds(ctx: ExtensionContext, force = false): Promise<void> {
@@ -338,7 +447,9 @@ export default function (pi: ExtensionAPI) {
     if (key !== activeModelKey) {
       activeModelKey = key;
       fundsState = undefined;
+      subscriptionState = undefined;
       lastFundsFetch = 0;
+      lastSubscriptionFetch = 0;
       clearProviderUsage(ctx);
     }
 
@@ -348,7 +459,9 @@ export default function (pi: ExtensionAPI) {
       return;
     }
 
-    if (!ctx.modelRegistry.isUsingOAuth(model)) {
+    if (ctx.modelRegistry.isUsingOAuth(model)) {
+      await refreshSubscription(ctx, force);
+    } else {
       await refreshFunds(ctx, force);
     }
   }
