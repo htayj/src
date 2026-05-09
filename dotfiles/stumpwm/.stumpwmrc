@@ -293,7 +293,13 @@ hidden behind the previously displayed window."
 (define-key *root-map* (kbd "C-s") "colon1 exec xterm -e ssh ")
 ;; Lock screen
 (define-key *root-map* (kbd "s-l") "exec slock")
-(define-key *root-map* (kbd "s-o") "exec scrot -s")
+
+(defcommand screenshot-selection-to-clipboard () ()
+  "Select a rectangle with scrot and copy the screenshot PNG to the X clipboard."
+  (run-shell-command
+   "sh -lc 'tmp=$(mktemp --suffix=.png); trap \"rm -f \\\"$tmp\\\"\" EXIT; scrot -s \"$tmp\" && xclip -selection clipboard -target image/png -i \"$tmp\"'"))
+
+(define-key *root-map* (kbd "s-o") "screenshot-selection-to-clipboard")
 ;; X11 keymap picker
 (define-key *root-map* (kbd "K") "select-keymap")
 
