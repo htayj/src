@@ -1,0 +1,40 @@
+{
+  "imports": [
+    "claude-code"
+  ],
+  "mcpServers": {
+    "dorxng": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/home/tay/projects/dorxng-mcp",
+        "run",
+        "dorxng-mcp"
+      ],
+      "cwd": "/home/tay/projects/dorxng-mcp",
+      "lifecycle": "lazy",
+      "idleTimeout": 10,
+      "directTools": [
+        "dorxng_search",
+        "dorxng_search_and_store",
+        "dorxng_query_database",
+        "dorxng_get_dorking_guidance",
+        "dorxng_get_setup_info"
+      ]
+    },
+    "mobygames": {
+      "command": "node",
+      "args": [
+        "/home/tay/projects/mobygames-mcp/dist/index.js"
+      ],
+      "cwd": "/home/tay/projects/mobygames-mcp",
+      "env": {
+        "MOBYGAMES_API_KEY": "${MOBYGAMES_API_KEY}",
+        "MOBYGAMES_DOWNLOADS_DIR": "${MOBYGAMES_DOWNLOADS_DIR}"
+      },
+      "lifecycle": "lazy",
+      "idleTimeout": 10,
+      "directTools": true
+    }
+  }
+}
