@@ -9,8 +9,8 @@
 xset fp rehash >/dev/null 2>&1 || true
 
 # User-level XKB layout converted from ~/.Xmodmap. This keeps the Space Cadet
-# Greek/APL layer on ISO_Level3_Shift and the top/math layer on ISO_Level5_Shift
-# without installing anything under /usr/share/X11/xkb.
+# Greek/APL layer on the old Mode_switch key and the top/math layer on the old
+# ISO_Level3_Shift key, without installing anything under /usr/share/X11/xkb.
 if [ -n "${DISPLAY:-}" ] && [ -r "$HOME/.config/xkb/keymap/spacecadet.xkb" ] && command -v xkbcomp >/dev/null 2>&1; then
     xkbcomp -I"$HOME/.config/xkb" -w 0 "$HOME/.config/xkb/keymap/spacecadet.xkb" "$DISPLAY" >/dev/null 2>&1 || true
 fi
