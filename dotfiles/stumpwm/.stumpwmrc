@@ -243,6 +243,9 @@ hidden behind the previously displayed window."
 (defparameter *tay-unscii-font-dir*
   (namestring (merge-pathnames ".local/share/fonts/unscii/"
                                (user-homedir-pathname))))
+(defparameter *tay-digital-font-dir*
+  (namestring (merge-pathnames ".local/share/fonts/digital/pcf/"
+                               (user-homedir-pathname))))
 (defparameter *tay-unscii-core-fonts*
   '("-unscii-unscii-medium-r-normal-full-16-160-75-75-c-80-iso10646-1"
     "-*-unscii-medium-r-*-full-16-*-*-*-*-*-iso10646-*"))
@@ -265,6 +268,7 @@ hidden behind the previously displayed window."
     (xlib:invalid-font () nil)
     (error () nil)))
 
+(tay-add-core-font-dir *tay-digital-font-dir*)
 (tay-add-core-font-dir *tay-unscii-font-dir*)
 (unless (some #'tay-try-set-font *tay-unscii-core-fonts*)
   (tay-try-set-font *tay-fallback-core-font*))
