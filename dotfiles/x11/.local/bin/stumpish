@@ -1,0 +1,32 @@
+#!/bin/sh
+# Dotfiles-managed wrapper for StumpWM's contrib stumpish.
+# Also discovers the active SDDM-launched X session when DISPLAY/XAUTHORITY
+# are not present in this shell.
+
+if [ -z "${DISPLAY:-}" ] || [ -z "${XAUTHORITY:-}" ]; then
+    pid="$(pgrep -u "$(id -u)" stumpwm 2>/dev/null | head -n 1)"
+    if [ -n "$pid" ] && [ -r "/proc/$pid/environ" ]; then
+        env_dump="$(tr '\0' '\n' < "/proc/$pid/environ")"
+        if [ -z "${DISPLAY:-}" ]; then
+            DISPLAY="$(printf '%s\n' "$env_dump" | sed -n 's/^DISPLAY=//p' | head -n 1)"
+            export DISPLAY
+        fi
+        if [ -z "${XAUTHORITY:-}" ]; then
+            XAUTHORITY="$(printf '%s\n' "$env_dump" | sed -n 's/^XAUTHORITY=//p' | head -n 1)"
+            export XAUTHORITY
+        fi
+    fi
+fi
+
+for stumpish in \
+    "$HOME/.stumpwm.d.immutable/modules/util/stumpish/stumpish" \
+    "$HOME/.emacs.d/straight/repos/stumpwm-contrib/util/stumpish/stumpish" \
+    /usr/share/stumpwm/contrib/util/stumpish/stumpish
+ do
+    if [ -x "$stumpish" ]; then
+        exec "$stumpish" "$@"
+    fi
+ done
+
+echo "stumpish: could not find installed StumpWM contrib stumpish" >&2
+exit 127
