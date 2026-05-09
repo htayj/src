@@ -1,0 +1,32 @@
+# Dunst notification configuration.
+# See dunst(5).
+
+[global]
+    # Show notifications on the monitor containing the focused window.
+    # Falls back to `monitor` if the window manager does not expose focus info.
+    follow = keyboard
+    monitor = 0
+
+    # Top center of the active display.
+    origin = top-center
+    offset = (0, 20)
+
+    # Keep the notification chrome black too.
+    frame_color = "#000000"
+    separator_color = "#000000"
+
+[urgency_low]
+    background = "#000000"
+    foreground = "#ffffff"
+    timeout = 10
+
+[urgency_normal]
+    background = "#000000"
+    foreground = "#ffffff"
+    timeout = 10
+
+[urgency_critical]
+    background = "#000000"
+    foreground = "#ffffff"
+    frame_color = "#000000"
+    timeout = 0
