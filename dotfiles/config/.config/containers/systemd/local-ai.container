@@ -1,0 +1,26 @@
+[Unit]
+Description=LocalAI API container
+Documentation=https://localai.io/installation/containers/index.html
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+ContainerName=local-ai
+Image=localai/localai:latest
+Pull=newer
+PublishPort=127.0.0.1:8080:8080
+Volume=%h/.local/share/localai/models:/models
+Volume=%h/.local/share/localai/data:/data
+Volume=%h/.local/share/localai/configuration:/configuration
+Environment=DEBUG=false
+HealthCmd=curl -f http://localhost:8080/readyz
+HealthInterval=1m
+HealthRetries=5
+HealthStartPeriod=20m
+
+[Service]
+Restart=on-failure
+TimeoutStartSec=30m
+
+[Install]
+WantedBy=default.target
