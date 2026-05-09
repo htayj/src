@@ -136,8 +136,82 @@ function pickByWindow(candidates: LimitCandidate[], window: "short" | "long"): L
   return window === "short" ? sorted[0] : sorted[sorted.length - 1];
 }
 
-function subscriptionStatusFromHeaders(rawHeaders: Record<string, string>): string | undefined {
+type CodexRateLimitSnapshot = {
+  limitId: string;
+  limitName?: string;
+  primaryUsedPercent?: number;
+  secondaryUsedPercent?: number;
+};
+
+function formatPercentRemainingFromUsed(usedPercent: number): string {
+  const remaining = Math.max(0, Math.min(100, 100 - usedPercent));
+  return `${Math.round(remaining)}%`;
+}
+
+function normalizeLimitId(name: string): string {
+  return name.trim().toLowerCase().replace(/_/g, "-");
+}
+
+function codexLimitIdFromHeader(headerName: string): string | undefined {
+  const suffix = "-primary-used-percent";
+  const prefix = headerName.endsWith(suffix) ? headerName.slice(0, -suffix.length) : undefined;
+  if (!prefix?.startsWith("x-")) return undefined;
+  return normalizeLimitId(prefix.slice(2));
+}
+
+function collectCodexRateLimits(headers: HeaderMap): CodexRateLimitSnapshot[] {
+  const limitIds = new Set<string>(["codex"]);
+  for (const key of Object.keys(headers)) {
+    const limitId = codexLimitIdFromHeader(key);
+    if (limitId) limitIds.add(limitId);
+  }
+
+  const snapshots: CodexRateLimitSnapshot[] = [];
+  for (const limitId of limitIds) {
+    const prefix = `x-${limitId}`;
+    const primaryUsedPercent = parseNumber(headers[`${prefix}-primary-used-percent`]);
+    const secondaryUsedPercent = parseNumber(headers[`${prefix}-secondary-used-percent`]);
+    const limitName = headers[`${prefix}-limit-name`]?.trim() || undefined;
+
+    if (primaryUsedPercent !== undefined || secondaryUsedPercent !== undefined) {
+      snapshots.push({ limitId, limitName, primaryUsedPercent, secondaryUsedPercent });
+    }
+  }
+
+  return snapshots;
+}
+
+function selectCodexRateLimit(snapshots: CodexRateLimitSnapshot[], modelId?: string): CodexRateLimitSnapshot | undefined {
+  if (snapshots.length === 0) return undefined;
+  const normalizedModel = modelId?.trim().toLowerCase();
+  if (normalizedModel) {
+    const matchingName = snapshots.find((snapshot) => snapshot.limitName?.toLowerCase() === normalizedModel);
+    if (matchingName) return matchingName;
+  }
+  return snapshots.find((snapshot) => snapshot.limitId === "codex") ?? snapshots[0];
+}
+
+function codexSubscriptionStatusFromHeaders(headers: HeaderMap, modelId?: string): string | undefined {
+  const snapshot = selectCodexRateLimit(collectCodexRateLimits(headers), modelId);
+  if (!snapshot) return undefined;
+
+  const parts: string[] = [];
+  if (snapshot.primaryUsedPercent !== undefined) {
+    parts.push(`S ${formatPercentRemainingFromUsed(snapshot.primaryUsedPercent)}`);
+  }
+  if (snapshot.secondaryUsedPercent !== undefined) {
+    parts.push(`L ${formatPercentRemainingFromUsed(snapshot.secondaryUsedPercent)}`);
+  }
+
+  return parts.length > 0 ? parts.join(" ") : undefined;
+}
+
+function subscriptionStatusFromHeaders(rawHeaders: Record<string, string>, modelId?: string): string | undefined {
   const headers = normalizeHeaders(rawHeaders);
+
+  const codexStatus = codexSubscriptionStatusFromHeaders(headers, modelId);
+  if (codexStatus) return codexStatus;
+
   const candidates = collectLimitCandidates(headers);
   if (candidates.length === 0) return undefined;
 
@@ -306,7 +380,7 @@ export default function (pi: ExtensionAPI) {
     if (!model) return;
 
     if (ctx.modelRegistry.isUsingOAuth(model)) {
-      const status = subscriptionStatusFromHeaders(event.headers);
+      const status = subscriptionStatusFromHeaders(event.headers, model.id);
       if (status) ctx.ui.setStatus(USAGE_STATUS_KEY, status);
       return;
     }
