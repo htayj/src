@@ -32,8 +32,8 @@
     (when cmd
       (eval-command cmd t))))
 
-;;; Vertico/Ivy/Helm-style command picker for `colon'.
-(defparameter *tay-colon-menu-height* 20)
+;;; Vertico/Ivy/Helm-style completion for StumpWM prompts.
+(defparameter *tay-completion-menu-height* 20)
 
 (defun tay-whitespace-char-p (char)
   (find char " \t\n\r"))
@@ -51,25 +51,72 @@
       string))
 
 (defun tay-command-menu-label (command-name)
-  "Return COMMAND-NAME with a short doc annotation for the command menu."
+  "Return COMMAND-NAME with a short doc annotation for command menus."
   (let* ((command (get-command-structure command-name))
          (doc (and command (documentation (command-name command) 'function))))
     (if (and doc (not (tay-string-blank-p doc)))
         (format nil "~A  —  ~A" command-name (tay-ellipsize (tay-first-line doc) 80))
         command-name)))
 
-(defun tay-colon-command-entries (&optional initial-input)
-  "Return menu entries of the form (LABEL COMMAND-NAME)."
-  (let* ((prefix (and initial-input
-                      (string-trim " " initial-input)))
-         (commands (if (and prefix (plusp (length prefix)))
-                       (remove-if-not (lambda (command)
-                                        (search prefix command :test #'char-equal))
-                                      (all-commands))
-                       (all-commands))))
-    (mapcar (lambda (command)
-              (list (tay-command-menu-label command) command))
-            commands)))
+(defun tay-completion-object-string (object)
+  (etypecase object
+    (string object)
+    (symbol (string-downcase object))
+    (character (string object))
+    (t (princ-to-string object))))
+
+(defun tay-completion-label (object &key command-labels)
+  (let ((string (tay-completion-object-string object)))
+    (if command-labels
+        (tay-command-menu-label string)
+        string)))
+
+(defun tay-completion-entries (completions &key initial-input command-labels)
+  "Return menu entries of the form (LABEL VALUE) for static COMPLETIONS."
+  (let* ((prefix (and initial-input (string-trim " " initial-input)))
+         (objects (if (and prefix (plusp (length prefix)))
+                      (remove-if-not (lambda (object)
+                                       (search prefix
+                                               (tay-completion-object-string object)
+                                               :test #'char-equal))
+                                     completions)
+                      completions)))
+    (mapcar (lambda (object)
+              (list (tay-completion-label object :command-labels command-labels)
+                    (tay-completion-object-string object)))
+            objects)))
+
+(defun tay-menu-completing-read (screen prompt completions
+                                 &key (initial-input "") require-match command-labels)
+  "Read a completion using StumpWM's vertical filtering menu.
+
+This is for static completion lists.  Dynamic completers such as shell
+program completion still use StumpWM's original one-line completion so
+TAB-style dynamic expansion keeps working."
+  (if (listp completions)
+      (let* ((*menu-maximum-height* *tay-completion-menu-height*)
+             (entries (tay-completion-entries completions
+                                               :initial-input initial-input
+                                               :command-labels command-labels))
+             (selection (and entries
+                             (select-from-menu screen entries prompt))))
+        (cond (selection (second selection))
+              (require-match nil)
+              ((and initial-input (plusp (length initial-input))) initial-input)
+              (t nil)))
+      (tay-original-completing-read screen prompt completions
+                                    :initial-input initial-input
+                                    :require-match require-match)))
+
+(unless (fboundp 'tay-original-completing-read)
+  (setf (symbol-function 'tay-original-completing-read)
+        (symbol-function 'completing-read)))
+
+(defun completing-read (screen prompt completions &key (initial-input "") require-match)
+  "Use vertical completion menus for static completion prompts."
+  (tay-menu-completing-read screen prompt completions
+                            :initial-input initial-input
+                            :require-match require-match))
 
 (defun tay-command-line-has-arguments-p (input)
   "Return true when INPUT contains a command plus non-blank argument text."
@@ -95,12 +142,13 @@ it can still be edited before evaluation."
          (when (plusp (length cmd))
            (eval-command cmd t))))
       (t
-       (let* ((*menu-maximum-height* *tay-colon-menu-height*)
-              (entries (tay-colon-command-entries initial))
-              (selection (select-from-menu (current-screen) entries "M-x:")))
-         (unless selection
+       (let ((cmd (tay-menu-completing-read (current-screen) "M-x:" (all-commands)
+                                            :initial-input initial
+                                            :require-match t
+                                            :command-labels t)))
+         (unless cmd
            (throw 'error :abort))
-         (eval-command (second selection) t))))))
+         (eval-command cmd t))))))
 
 ;; (defcommand slynk (port) ((:string "Port number: "))
 ;;   (sb-thread:make-thread
