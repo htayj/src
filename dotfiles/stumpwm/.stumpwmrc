@@ -240,11 +240,22 @@ hidden behind the previously displayed window."
 ;; Message/input/modeline font.  StumpWM's built-in renderer uses legacy
 ;; core-X fonts, not fontconfig/Xft.  Use unscii only when the X server can
 ;; actually open it; otherwise fall back rather than breaking config reloads.
+(defparameter *tay-unscii-font-dir*
+  (namestring (merge-pathnames ".local/share/fonts/unscii/"
+                               (user-homedir-pathname))))
 (defparameter *tay-unscii-core-fonts*
-  '("-*-unscii-medium-r-*-full-16-*-*-*-*-*-iso10646-*"
-    "-misc-unscii-thin-r-normal--16-160-75-75-m-80-iso10646-1"))
+  '("-unscii-unscii-medium-r-normal-full-16-160-75-75-c-80-iso10646-1"
+    "-*-unscii-medium-r-*-full-16-*-*-*-*-*-iso10646-*"))
 (defparameter *tay-fallback-core-font*
   "-digital-vt220-medium-r-normal-80col-20-200-75-75-*-100-iso10646-1")
+
+(defun tay-add-core-font-dir (dir)
+  "Add DIR to the X core font path, ignoring failures outside X sessions."
+  (when (probe-file dir)
+    (run-shell-command
+     (format nil "xset +fp ~s >/dev/null 2>&1; xset fp rehash >/dev/null 2>&1"
+             dir)
+     t)))
 
 (defun tay-try-set-font (font)
   "Try FONT for StumpWM, returning NIL instead of signaling CLX font errors."
@@ -254,6 +265,7 @@ hidden behind the previously displayed window."
     (xlib:invalid-font () nil)
     (error () nil)))
 
+(tay-add-core-font-dir *tay-unscii-font-dir*)
 (unless (some #'tay-try-set-font *tay-unscii-core-fonts*)
   (tay-try-set-font *tay-fallback-core-font*))
 
