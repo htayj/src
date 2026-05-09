@@ -6,8 +6,9 @@ Wants=network-online.target
 
 [Container]
 ContainerName=local-ai
-Image=localai/localai:latest
+Image=localai/localai:latest-gpu-nvidia-cuda-13
 Pull=newer
+AddDevice=nvidia.com/gpu=all
 PublishPort=127.0.0.1:8080:8080
 Volume=%h/.local/share/localai/models:/models
 Volume=%h/.local/share/localai/data:/data
