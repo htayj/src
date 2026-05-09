@@ -8,11 +8,8 @@ if command -v gnome-keyring-daemon >/dev/null 2>&1; then
     export GNOME_KEYRING_CONTROL SSH_AUTH_SOCK GPG_AGENT_INFO GNOME_KEYRING_PID
 fi
 
-# Add bitmap/core-X font dirs when present.
-[ -d "$HOME/.local/share/fonts/digital/bdf" ] && xset +fp "$HOME/.local/share/fonts/digital/bdf/"
-[ -d "$HOME/.local/share/fonts/digital/pcf" ] && xset +fp "$HOME/.local/share/fonts/digital/pcf/"
-[ -d "$HOME/.local/share/fonts/unscii" ]      && xset +fp "$HOME/.local/share/fonts/unscii/"
-xset fp rehash >/dev/null 2>&1 || true
+# Shared X session setup; SDDM sources ~/.xprofile directly.
+[ -r "$HOME/.xprofile" ] && . "$HOME/.xprofile"
 
 # Merge X resources, then layer host-specific overrides if present.
 [ -r "$HOME/.Xresources" ] && xrdb -merge "$HOME/.Xresources"

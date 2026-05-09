@@ -1,0 +1,9 @@
+# Shared X session setup.
+# SDDM's Xsession sources ~/.xprofile; ~/.xinitrc sources it too.
+
+# Add bitmap/core-X font dirs when present. These are needed by legacy X core
+# font clients such as StumpWM's built-in renderer and xterm XLFD fallbacks.
+[ -d "$HOME/.local/share/fonts/digital/bdf" ] && xset +fp "$HOME/.local/share/fonts/digital/bdf/"
+[ -d "$HOME/.local/share/fonts/digital/pcf" ] && xset +fp "$HOME/.local/share/fonts/digital/pcf/"
+[ -d "$HOME/.local/share/fonts/unscii" ]      && xset +fp "$HOME/.local/share/fonts/unscii/"
+xset fp rehash >/dev/null 2>&1 || true
