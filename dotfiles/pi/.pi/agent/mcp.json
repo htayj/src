@@ -35,6 +35,17 @@
       "lifecycle": "lazy",
       "idleTimeout": 10,
       "directTools": true
+    },
+    "ggn": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "source /home/tay/.local/share/private-env.d/ggn.sh 2>/dev/null || true; exec node /home/tay/projects/ggn-mcp/src/server.js"
+      ],
+      "cwd": "/home/tay/projects/ggn-mcp",
+      "lifecycle": "lazy",
+      "idleTimeout": 10,
+      "directTools": true
     }
   }
 }
