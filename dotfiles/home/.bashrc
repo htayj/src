@@ -37,6 +37,16 @@ if [ -d ~/.bashrc.d ]; then
 	unset rc
 fi
 
+# Private, machine-local shell environment. Keep credentials outside the
+# stow-managed dotfiles repo; files here should be mode 0600.
+if [ -d "$HOME/.local/share/private-env.d" ]; then
+	for rc in "$HOME"/.local/share/private-env.d/*.sh; do
+		[ -f "$rc" ] || continue
+		. "$rc"
+	done
+	unset rc
+fi
+
 # Fedora EOL warning
 _fedora_eol=$(. /etc/os-release && echo "${SUPPORT_END:-}")
 if [[ -n "$_fedora_eol" ]]; then
