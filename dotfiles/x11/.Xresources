@@ -11,8 +11,7 @@
 ! Prefer Xft/fontconfig so package-manager-installed OTF/TTF fonts are usable
 ! without manually adding legacy core-X font paths with `xset fp`.
 XTerm*renderFont: true
-XTerm*faceName: unscii:style=16-full
-XTerm*faceSize: 12
+XTerm*faceName: unscii:style=16-full:pixelsize=16:antialias=false
 ! Keep the XLFD/core-font resources as fallback/menu entries for hosts that
 ! install bitmap fonts into the X server font path.
 *VT100.font: -*-unscii-medium-r-*-full-16-*-*-*-*-*-iso10646-*
