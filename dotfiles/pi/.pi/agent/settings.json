@@ -24,5 +24,17 @@
   "skills": [
     "~/.codex/skills"
   ],
-  "workingVibe": "lisp machine"
+  "workingVibe": "lisp machine",
+  "powerline": {
+    "preset": "default",
+    "customItems": [
+      {
+        "id": "provider-usage",
+        "statusKey": "provider-usage",
+        "position": "right",
+        "prefix": "usage",
+        "color": "accent"
+      }
+    ]
+  }
 }
