@@ -11,6 +11,7 @@ Pull=newer
 AddDevice=nvidia.com/gpu=all
 PublishPort=127.0.0.1:8080:8080
 Volume=%h/.local/share/localai/models:/models
+Volume=%h/.local/share/localai/backends:/backends
 Volume=%h/.local/share/localai/data:/data
 Volume=%h/.local/share/localai/configuration:/configuration
 Environment=DEBUG=false
