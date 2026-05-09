@@ -17,7 +17,12 @@
     "npm:@juicesharp/rpiv-todo",
     "npm:pi-web-access",
     "npm:pi-powerline-footer",
-    "npm:pi-smart-fetch"
+    "npm:pi-smart-fetch",
+    "/home/tay/.pi/agent/packages/machine-profile",
+    "/home/tay/.pi/agent/packages/codex-profile"
+  ],
+  "skills": [
+    "~/.codex/skills"
   ],
   "workingVibe": "lisp machine"
 }

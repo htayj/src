@@ -16,11 +16,12 @@ The default stance: build in CLIM style first, use McCLIM docs for concrete beha
 Start with the smallest resource that answers the question. Do not load full manuals unless bounded lookup is not enough.
 
 1. Read `references/mcclim-application-guide.md` for architecture, canonical mechanisms, and when to deviate.
-2. Read `references/merged-source-map.md` to choose the right corpus.
-3. Use `scripts/mcclim_docs_lookup.py` for bounded search or section extraction across the unified corpus.
-4. Use `references/manual-index.md` and `references/documentation-modules-index.md` for detailed McCLIM manual/module routing.
-5. Use copied source-bundle scripts under `sources/` only when a specialized lookup is better than the unified lookup.
-6. Open full reference files directly only when a bounded extract does not provide enough context.
+2. Read `references/mcclim-application-source-repos.md` when you need concrete implementation patterns from real McCLIM applications or when manual guidance is too abstract.
+3. Read `references/merged-source-map.md` to choose the right corpus.
+4. Use `scripts/mcclim_docs_lookup.py` for bounded search or section extraction across the unified corpus.
+5. Use `references/manual-index.md` and `references/documentation-modules-index.md` for detailed McCLIM manual/module routing.
+6. Use copied source-bundle scripts under `sources/` only when a specialized lookup is better than the unified lookup.
+7. Open full reference files directly only when a bounded extract does not provide enough context.
 
 Common commands from the skill directory:
 
@@ -48,6 +49,7 @@ python3 sources/presentation-based-interfaces/scripts/presentation_interface_loo
 ## Resource Map
 
 - `references/mcclim-application-guide.md`: first stop for building well-formed McCLIM applications; includes concepts, canonical choices, presentation-interface design, and deviation rules.
+- `references/mcclim-application-source-repos.md`: local map of cloned real-world McCLIM applications and reusable components under `~/reference/external_src/`; use for concrete patterns and examples.
 - `references/merged-source-map.md`: first stop for deciding which retained corpus to use.
 - `references/manual-index.md`: first stop for routing a task to the right manual section.
 - `references/documentation-modules-index.md`: first stop for routing a task to source `Documentation/` modules.
@@ -78,6 +80,7 @@ python3 sources/presentation-based-interfaces/scripts/presentation_interface_loo
    - **dynamic UI**: redisplay, `updating-output`, output record ownership, pane invalidation
    - **substrate/internal**: sheets, mediums, ports, grafts, mirrors, events, repaint, backend work
    - **editor/app frameworks**: ESA, Drei, Listener, Clouseau, Debugger, Graphic Forms
+   - **application source examples**: real-world McCLIM application frame/pane/command/presentation patterns from local reference repositories
    - **comparison/portability**: CLIM spec, Franz guide, LispWorks guide, McCLIM-specific divergence
 2. Read the application guide for the canonical starting point.
 3. Search or extract the smallest relevant source section.
@@ -93,12 +96,16 @@ python3 sources/presentation-based-interfaces/scripts/presentation_interface_loo
    - Drei for text editing substrate work.
 5. Cross-check portable CLIM semantics with the CLIM spec corpus when behavior is not purely McCLIM-specific.
 6. Use McCLIM manual, source modules, and examples for concrete implementation details.
-7. Use Franz and LispWorks guides as supplemental wording or vendor comparison, not as proof of McCLIM behavior.
-8. Use presentation-interface sources to design semantic UI structure, then express it with McCLIM presentations/translators/commands.
-9. State whether advice or code is portable CLIM, McCLIM-specific, vendor-specific, or inferred from implementation notes.
+7. Search local application source references in `~/reference/external_src/` when you need a concrete pattern from a working app; start with `references/mcclim-application-source-repos.md`.
+8. Use Franz and LispWorks guides as supplemental wording or vendor comparison, not as proof of McCLIM behavior.
+9. Use presentation-interface sources to design semantic UI structure, then express it with McCLIM presentations/translators/commands.
+10. State whether advice or code is portable CLIM, McCLIM-specific, vendor-specific, or inferred from implementation notes.
 
 ## High-Value Lookups
 
+- Real application source map: read `references/mcclim-application-source-repos.md`
+- Search application frames in references: `rg "define-application-frame" ~/reference/external_src/codeberg.org/McCLIM/McCLIM ~/reference/external_src/github.com ~/reference/external_src/codeberg.org ~/reference/external_src/gitlab.com`
+- Search presentations/commands in references: `rg "define-presentation|define-.*-command|define-command" ~/reference/external_src/codeberg.org/McCLIM/McCLIM ~/reference/external_src/github.com ~/reference/external_src/codeberg.org ~/reference/external_src/gitlab.com`
 - Canonical application guide: `python3 scripts/mcclim_docs_lookup.py --doc app-guide --section "Canonical Concepts"`
 - Unified source map: `python3 scripts/mcclim_docs_lookup.py --doc source-map --section "When To Use Each Corpus"`
 - First app: `--section "The first application"`

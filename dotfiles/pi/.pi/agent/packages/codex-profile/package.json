@@ -1,0 +1,15 @@
+{
+  "name": "codex-profile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pi adaptation layer for the local ~/.codex configuration, skills, memories, rules, and project-specific preferences.",
+  "keywords": ["pi-package", "codex"],
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": ["./extensions"],
+    "skills": ["./skills"],
+    "prompts": ["./prompts"]
+  }
+}

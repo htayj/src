@@ -1,0 +1,15 @@
+{
+  "name": "machine-profile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local Pi machine profile: dotfiles workflow, reference source/docs locations, and system preferences.",
+  "keywords": ["pi-package"],
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": ["./extensions"],
+    "skills": ["./skills"],
+    "prompts": ["./prompts"]
+  }
+}
