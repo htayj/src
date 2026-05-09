@@ -7,3 +7,10 @@
 [ -d "$HOME/.local/share/fonts/digital/pcf" ] && xset +fp "$HOME/.local/share/fonts/digital/pcf/"
 [ -d "$HOME/.local/share/fonts/unscii" ]      && xset +fp "$HOME/.local/share/fonts/unscii/"
 xset fp rehash >/dev/null 2>&1 || true
+
+# User-level XKB layout converted from ~/.Xmodmap. This keeps the Space Cadet
+# Greek/APL layer on ISO_Level3_Shift and the top/math layer on ISO_Level5_Shift
+# without installing anything under /usr/share/X11/xkb.
+if [ -n "${DISPLAY:-}" ] && [ -r "$HOME/.config/xkb/keymap/spacecadet.xkb" ] && command -v xkbcomp >/dev/null 2>&1; then
+    xkbcomp -I"$HOME/.config/xkb" -w 0 "$HOME/.config/xkb/keymap/spacecadet.xkb" "$DISPLAY" >/dev/null 2>&1 || true
+fi

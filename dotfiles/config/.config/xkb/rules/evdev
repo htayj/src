@@ -14,5 +14,5 @@
   * = pc(pc104)
 
 ! model layout = symbols
-  * spacecadet = inet(evdev)+spacecadet(base)+spacecadet(greek):2
+  * spacecadet = pc+inet(evdev)+spacecadet(base)
   * * = pc+%l%(v)+inet(evdev)
