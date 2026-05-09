@@ -150,6 +150,51 @@ it can still be edited before evaluation."
            (throw 'error :abort))
          (eval-command cmd t))))))
 
+(defun tay-screen-windows (&optional (screen (current-screen)))
+  "Return all unique windows on SCREEN, across all groups."
+  (let (windows)
+    (dolist (group (screen-groups screen) (nreverse windows))
+      (dolist (window (group-windows group))
+        (pushnew window windows :test #'eq)))))
+
+(defun tay-global-window-label (window)
+  "Return a menu label for WINDOW including its group and class."
+  (let ((group (window-group window)))
+    (format nil "[~A:~A] #~A ~A~@[  —  ~A~]"
+            (group-map-number group)
+            (group-name group)
+            (window-number window)
+            (window-name window)
+            (window-class window))))
+
+(defun tay-global-window-entries ()
+  "Return menu entries of the form (LABEL WINDOW) for all windows."
+  (mapcar (lambda (window)
+            (list (tay-global-window-label window) window))
+          (sort (tay-screen-windows)
+                #'string-lessp
+                :key #'tay-global-window-label)))
+
+(defcommand (pull-global-window tile-group) () ()
+  "Select a window from any group and pull it into the current frame."
+  (let* ((*menu-maximum-height* *tay-completion-menu-height*)
+         (entries (tay-global-window-entries))
+         (selection (and entries
+                         (select-from-menu (current-screen) entries "Pull window:"))))
+    (cond
+      ((null entries)
+       (message "No windows."))
+      (selection
+       (let ((window (second selection))
+             (target-group (current-group))
+             (target-frame (tile-group-current-frame (current-group))))
+         (unless (eq (window-group window) target-group)
+           (move-window-to-group window target-group))
+         (pull-window window target-frame)
+         (message "Pulled: ~A" (window-name window))))
+      (t
+       (throw 'error :abort)))))
+
 ;; (defcommand slynk (port) ((:string "Port number: "))
 ;;   (sb-thread:make-thread
 ;;    (lambda ()
@@ -243,6 +288,7 @@ hidden behind the previously displayed window."
                                         ;(define-key *root-map* (kbd "e") "exec emacsclient")
 ;; Browse somewhere
 (define-key *root-map* (kbd "b") "colon1 exec firefox http://www.")
+(define-key *root-map* (kbd "s-b") "pull-global-window")
 ;; Ssh somewhere
 (define-key *root-map* (kbd "C-s") "colon1 exec xterm -e ssh ")
 ;; Lock screen
