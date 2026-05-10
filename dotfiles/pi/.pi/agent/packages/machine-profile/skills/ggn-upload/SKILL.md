@@ -1,6 +1,6 @@
 ---
 name: ggn-upload
-description: Use when preparing, reviewing, or troubleshooting GazelleGames (GGn) torrent uploads: duplicate checks, group vs release fields, game/OST/e-book metadata, images/screenshots, tags, release types, .torrent piece size, post-upload seeding, or GGn wiki/API lookups.
+description: "Use when preparing, reviewing, or troubleshooting GazelleGames (GGn) torrent uploads: duplicate checks, group vs release fields, game/OST/e-book metadata, images/screenshots, tags, release types, .torrent piece size, post-upload seeding, or GGn wiki/API lookups."
 ---
 # GGn Uploads
 
