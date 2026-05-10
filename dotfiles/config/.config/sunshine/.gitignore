@@ -1,0 +1,5 @@
+# Runtime/generated Sunshine files. Do not commit credentials or logs.
+credentials/
+sunshine.log
+sunshine_state.json
+*.log

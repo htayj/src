@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# Start an isolated Sunshine streaming desktop:
+#   1. Xvfb provides a virtual X11 screen for Sunshine to capture.
+#   2. Gamescope runs fullscreen on that virtual screen.
+#   3. Sunshine-launched apps are pointed at Gamescope's inner Wayland/Xwayland
+#      display via apps.json, so they show up inside the captured Gamescope
+#      window and never touch the normal :0 desktop.
+width="${SUNSHINE_GAMESCOPE_WIDTH:-1920}"
+height="${SUNSHINE_GAMESCOPE_HEIGHT:-1080}"
+refresh="${SUNSHINE_GAMESCOPE_REFRESH:-60}"
+config="${SUNSHINE_CONFIG:-$HOME/.config/sunshine/sunshine.conf}"
+xvfb_display="${SUNSHINE_XVFB_DISPLAY:-:99}"
+inner_display="${SUNSHINE_GAMESCOPE_INNER_DISPLAY:-:1}"
+wayland_display="${SUNSHINE_GAMESCOPE_WAYLAND_DISPLAY:-gamescope-0}"
+settle_seconds="${SUNSHINE_GAMESCOPE_SETTLE_SECONDS:-3}"
+
+xvfb_pid=""
+gamescope_pid=""
+
+cleanup() {
+  local status=$?
+  trap - EXIT INT TERM
+  [[ -n "${gamescope_pid}" ]] && kill "${gamescope_pid}" 2>/dev/null || true
+  [[ -n "${xvfb_pid}" ]] && kill "${xvfb_pid}" 2>/dev/null || true
+  wait "${gamescope_pid:-}" 2>/dev/null || true
+  wait "${xvfb_pid:-}" 2>/dev/null || true
+  exit "${status}"
+}
+trap cleanup EXIT INT TERM
+
+# Remove only a stale lock for the private Xvfb display. If the display is live,
+# xdpyinfo will succeed and we abort rather than disturbing another server.
+if xdpyinfo -display "${xvfb_display}" >/dev/null 2>&1; then
+  echo "Sunshine Gamescope display ${xvfb_display} is already in use" >&2
+  exit 1
+fi
+lock="/tmp/.X${xvfb_display#:}-lock"
+[[ -e "${lock}" ]] && rm -f "${lock}"
+
+/usr/bin/Xvfb "${xvfb_display}" \
+  -screen 0 "${width}x${height}x24" \
+  -nolisten tcp \
+  -noreset &
+xvfb_pid=$!
+
+for _ in {1..50}; do
+  xdpyinfo -display "${xvfb_display}" >/dev/null 2>&1 && break
+  sleep 0.1
+done
+xdpyinfo -display "${xvfb_display}" >/dev/null 2>&1
+
+DISPLAY="${xvfb_display}" /usr/bin/gamescope \
+  --backend sdl \
+  -b \
+  --xwayland-count 1 \
+  --expose-wayland \
+  --force-windows-fullscreen \
+  -W "${width}" -H "${height}" \
+  -w "${width}" -h "${height}" \
+  -r "${refresh}" \
+  -- /usr/bin/sleep infinity &
+gamescope_pid=$!
+
+# Wait until Gamescope's inner display is accepting clients before Sunshine can
+# launch apps into it.
+for _ in {1..100}; do
+  if WAYLAND_DISPLAY="${wayland_display}" DISPLAY="${inner_display}" xdpyinfo >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.1
+done
+sleep "${settle_seconds}"
+
+/usr/bin/env \
+  DISPLAY="${xvfb_display}" \
+  XDG_SESSION_TYPE=x11 \
+  SUNSHINE_GAMESCOPE_INNER_DISPLAY="${inner_display}" \
+  SUNSHINE_GAMESCOPE_WAYLAND_DISPLAY="${wayland_display}" \
+  /usr/bin/sunshine "${config}"
