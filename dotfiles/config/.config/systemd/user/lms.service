@@ -1,0 +1,15 @@
+[Unit]
+Description=LM Studio local inference server
+Documentation=https://lmstudio.ai/docs/app/api
+After=default.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/.lmstudio/bin/lms server start --port 1234 --bind 127.0.0.1
+ExecStop=%h/.lmstudio/bin/lms server stop
+TimeoutStartSec=60s
+TimeoutStopSec=30s
+
+[Install]
+WantedBy=default.target
