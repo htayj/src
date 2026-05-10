@@ -54,6 +54,14 @@
 (use-package straight
   :custom (straight-use-package-by-default t))
 
+;; Emacs 30 ships an older built-in `compat' that `use-package' loads before
+;; straight is bootstrapped.  Newer straight packages (e.g. Vertico/Corfu) may
+;; call functions from compat-31 such as `set-local'; require that layer from
+;; straight explicitly so find-file/completion does not fail with
+;; "void-function set-local".
+(straight-use-package 'compat)
+(require 'compat-31)
+
 ;; have to install org early for some reason
 (straight-use-package 'org)
 ;; =============================================================================
