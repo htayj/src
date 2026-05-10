@@ -46,6 +46,12 @@
       "lifecycle": "lazy",
       "idleTimeout": 10,
       "directTools": true
+    },
+    "oracle": {
+      "command": "oracle-mcp",
+      "args": [],
+      "lifecycle": "lazy",
+      "idleTimeout": 10
     }
   }
 }
