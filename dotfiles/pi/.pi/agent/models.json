@@ -1,0 +1,39 @@
+{
+  "providers": {
+    "lmstudio": {
+      "baseUrl": "http://localhost:1234/v1",
+      "api": "openai-completions",
+      "apiKey": "lm-studio",
+      "compat": {
+        "supportsDeveloperRole": false,
+        "supportsReasoningEffort": false
+      },
+      "models": [
+        {
+          "id": "qwen/qwen3.6-35b-a3b",
+          "name": "Qwen 3.6 35B A3B (LM Studio)",
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        },
+        {
+          "id": "google/gemma-4-31b",
+          "name": "Gemma 4 31B (LM Studio)",
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        },
+        {
+          "id": "qwen/qwen3.5-9b",
+          "name": "Qwen 3.5 9B (LM Studio)",
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        },
+        {
+          "id": "google/gemma-4-e4b",
+          "name": "Gemma 4 E4B (LM Studio)",
+          "contextWindow": 131072,
+          "maxTokens": 32768
+        }
+      ]
+    }
+  }
+}
