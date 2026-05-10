@@ -62,7 +62,15 @@
       (list "C-g" 'nyxt/mode/vi:switch-to-vi-normal-mode
             "escape" nil)))))
 
-;; Prompts/minibuffers are closer to Emacs than web pages, so keep Emacs-style
-;; line editing there instead of starting prompts in vi insert mode.
+;; Prompts/minibuffers are closer to Emacs than web pages, so force Emacs-style
+;; line editing there instead of inheriting vi normal/insert modes.
 (define-configuration prompt-buffer
-  ((default-modes (pushnew 'nyxt/mode/emacs:emacs-mode %slot-value%))))
+  ((default-modes
+    (let ((modes (remove-if
+                  (lambda (mode)
+                    (member mode
+                            '(nyxt/mode/vi:vi-normal-mode
+                              nyxt/mode/vi:vi-insert-mode)
+                            :test #'eq))
+                  %slot-value%)))
+      (pushnew 'nyxt/mode/emacs:emacs-mode modes)))))
