@@ -17,8 +17,9 @@
         },
         {
           "id": "google/gemma-4-31b",
-          "name": "Gemma 4 31B (LM Studio)",
-          "contextWindow": 131072,
+          "name": "Gemma 4 31B Vision (LM Studio)",
+          "input": ["text", "image"],
+          "contextWindow": 262144,
           "maxTokens": 32768
         },
         {
