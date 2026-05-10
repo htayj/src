@@ -1,0 +1,24 @@
+{
+  "env": {
+    "PATH": "$(PATH):$(HOME)/.local/bin"
+  },
+  "apps": [
+    {
+      "name": "Desktop HDR",
+      "image-path": "desktop.png"
+    },
+    {
+      "name": "Steam Big Picture HDR",
+      "detached": [
+        "env DISPLAY=:1 WAYLAND_DISPLAY=gamescope-0 XDG_SESSION_TYPE=wayland ENABLE_GAMESCOPE_WSI=1 DXVK_HDR=1 setsid steam steam://open/bigpicture"
+      ],
+      "prep-cmd": [
+        {
+          "do": "",
+          "undo": "env DISPLAY=:1 WAYLAND_DISPLAY=gamescope-0 XDG_SESSION_TYPE=wayland setsid steam steam://close/bigpicture"
+        }
+      ],
+      "image-path": "steam.png"
+    }
+  ]
+}

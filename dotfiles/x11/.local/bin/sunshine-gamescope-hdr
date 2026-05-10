@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage: sunshine-gamescope-hdr [--yes]
+
+Start the disruptive HDR Sunshine mode using gamescope's DRM backend.
+Run this from a real TTY after leaving/stopping the graphical desktop, e.g.:
+
+  1. Ctrl+Alt+F3 and log in
+  2. sudo systemctl stop display-manager.service
+  3. sunshine-gamescope-hdr --yes
+  4. When finished: Ctrl+C, then run sunshine-sdr-mode and restart your desktop
+
+Environment overrides:
+  SUNSHINE_HDR_WIDTH=1920
+  SUNSHINE_HDR_HEIGHT=1080
+  SUNSHINE_HDR_REFRESH=60
+  SUNSHINE_HDR_OUTPUT=DP-1          # empty string lets gamescope choose
+  SUNSHINE_HDR_CONFIG=$HOME/.config/sunshine/sunshine-hdr.conf
+  SUNSHINE_HDR_OUTPUT_NAME=...      # optional Sunshine KMS output_name override
+  SUNSHINE_HDR_ALLOW_GRAPHICAL=1    # bypass DISPLAY refusal; not recommended
+USAGE
+}
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ -n "${DISPLAY:-}" && "${SUNSHINE_HDR_ALLOW_GRAPHICAL:-0}" != "1" ]]; then
+  cat >&2 <<'EOF'
+Refusing to start HDR mode from a graphical X/Wayland session.
+This mode needs DRM master on a real VT and will interfere with the active desktop.
+Switch to a TTY and stop the display manager first, or set SUNSHINE_HDR_ALLOW_GRAPHICAL=1 to override.
+EOF
+  exit 64
+fi
+
+if [[ "${1:-}" != "--yes" ]]; then
+  cat <<'EOF'
+WARNING: HDR mode uses gamescope's DRM backend on a real output.
+It is expected to take over the display/VT and may disrupt the desktop.
+EOF
+  read -r -p "Start HDR mode now? [y/N] " answer
+  [[ "${answer}" =~ ^[Yy]$ ]] || exit 0
+fi
+
+width="${SUNSHINE_HDR_WIDTH:-1920}"
+height="${SUNSHINE_HDR_HEIGHT:-1080}"
+refresh="${SUNSHINE_HDR_REFRESH:-60}"
+preferred_output="${SUNSHINE_HDR_OUTPUT-DP-1}"
+config="${SUNSHINE_HDR_CONFIG:-$HOME/.config/sunshine/sunshine-hdr.conf}"
+wayland_display="${SUNSHINE_HDR_WAYLAND_DISPLAY:-gamescope-0}"
+x_display="${SUNSHINE_HDR_XWAYLAND_DISPLAY:-:1}"
+
+# Avoid port/capture conflicts with the normal isolated SDR service.
+systemctl --user stop sunshine.service >/dev/null 2>&1 || true
+
+sunshine_args=("${config}")
+if [[ -n "${SUNSHINE_HDR_OUTPUT_NAME:-}" ]]; then
+  sunshine_args+=("output_name=${SUNSHINE_HDR_OUTPUT_NAME}")
+fi
+
+gamescope_args=(
+  --backend drm
+  --hdr-enabled
+  --hdr-itm-enabled
+  --xwayland-count 1
+  --expose-wayland
+  --force-windows-fullscreen
+  -W "${width}" -H "${height}"
+  -w "${width}" -h "${height}"
+  -r "${refresh}"
+)
+
+if [[ -n "${preferred_output}" ]]; then
+  gamescope_args+=(--prefer-output "${preferred_output}")
+fi
+
+exec /usr/bin/env \
+  ENABLE_GAMESCOPE_WSI=1 \
+  DXVK_HDR=1 \
+  /usr/bin/gamescope "${gamescope_args[@]}" -- \
+  /usr/bin/env \
+    DISPLAY="${x_display}" \
+    WAYLAND_DISPLAY="${wayland_display}" \
+    XDG_SESSION_TYPE=wayland \
+    ENABLE_GAMESCOPE_WSI=1 \
+    DXVK_HDR=1 \
+    /usr/bin/sunshine "${sunshine_args[@]}"

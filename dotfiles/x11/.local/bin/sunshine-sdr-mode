@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Return to the normal non-disruptive Sunshine service that captures the
+# isolated Xvfb + gamescope SDR virtual display.
+systemctl --user daemon-reload
+systemctl --user restart sunshine.service
+systemctl --user --no-pager --plain status sunshine.service | sed -n '1,40p'
