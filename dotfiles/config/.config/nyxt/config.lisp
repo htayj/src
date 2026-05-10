@@ -53,6 +53,15 @@
         "C-M-t" 'copy-title)
       map))))
 
+;; Use C-g instead of Escape to leave vi insert mode, matching Emacs/Evil
+;; muscle memory.  Unbinding Escape lets it pass through to web pages.
+(define-configuration nyxt/mode/vi:vi-insert-mode
+  ((keyscheme-map
+    (define-keyscheme-map "vi-insert-mode-c-g" (list :import %slot-value%)
+      keyscheme:vi-insert
+      (list "C-g" 'nyxt/mode/vi:switch-to-vi-normal-mode
+            "escape" nil)))))
+
 ;; Prompts/minibuffers are closer to Emacs than web pages, so keep Emacs-style
 ;; line editing there instead of starting prompts in vi insert mode.
 (define-configuration prompt-buffer
