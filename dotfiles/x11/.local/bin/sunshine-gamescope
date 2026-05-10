@@ -16,6 +16,8 @@ inner_display="${SUNSHINE_GAMESCOPE_INNER_DISPLAY:-:1}"
 wayland_display="${SUNSHINE_GAMESCOPE_WAYLAND_DISPLAY:-gamescope-0}"
 settle_seconds="${SUNSHINE_GAMESCOPE_SETTLE_SECONDS:-3}"
 
+mkdir -p "$HOME/.local/state/sunshine"
+
 xvfb_pid=""
 gamescope_pid=""
 

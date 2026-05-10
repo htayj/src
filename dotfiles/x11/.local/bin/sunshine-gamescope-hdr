@@ -55,6 +55,8 @@ config="${SUNSHINE_HDR_CONFIG:-$HOME/.config/sunshine/sunshine-hdr.conf}"
 wayland_display="${SUNSHINE_HDR_WAYLAND_DISPLAY:-gamescope-0}"
 x_display="${SUNSHINE_HDR_XWAYLAND_DISPLAY:-:1}"
 
+mkdir -p "$HOME/.local/state/sunshine"
+
 # Avoid port/capture conflicts with the normal isolated SDR service.
 systemctl --user stop sunshine.service >/dev/null 2>&1 || true
 
