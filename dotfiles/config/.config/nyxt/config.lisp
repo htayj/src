@@ -62,15 +62,52 @@
       (list "C-g" 'nyxt/mode/vi:switch-to-vi-normal-mode
             "escape" nil)))))
 
-;; Prompts/minibuffers are closer to Emacs than web pages, so force Emacs-style
-;; line editing there instead of inheriting vi normal/insert modes.
+;; Prompts/minibuffers need an insert-style keyscheme so plain text is forwarded
+;; to the prompt input.  Use vi-insert there, but teach that keyscheme the Emacs
+;; prompt-editing/navigation bindings below.
+(define-configuration nyxt/mode/prompt-buffer:prompt-buffer-mode
+  ((keyscheme-map
+    (define-keyscheme-map "prompt-buffer-vi-insert-emacs-keys" (list :import %slot-value%)
+      keyscheme:vi-insert
+      (list
+       "C-p" 'nyxt/mode/prompt-buffer:previous-suggestion
+       "C-n" 'nyxt/mode/prompt-buffer:next-suggestion
+       "M-<" 'nyxt/mode/prompt-buffer:first-suggestion
+       "M-," 'nyxt/mode/prompt-buffer:first-suggestion-within-source
+       "M->" 'nyxt/mode/prompt-buffer:last-suggestion
+       "M-." 'nyxt/mode/prompt-buffer:last-suggestion-within-source
+       "M-v" 'nyxt/mode/prompt-buffer:previous-page
+       "C-v" 'nyxt/mode/prompt-buffer:next-page
+       "M-p" 'nyxt/mode/prompt-buffer:previous-source
+       "M-n" 'nyxt/mode/prompt-buffer:next-source
+       "C-e" 'nyxt/mode/prompt-buffer:move-end-of-input
+       "C-a" 'nyxt/mode/prompt-buffer:move-start-of-input
+       "C-b" 'nyxt/mode/input-edit:cursor-backwards
+       "C-f" 'nyxt/mode/input-edit:cursor-forwards
+       "C-d" 'nyxt/mode/input-edit:delete-forwards
+       "M-b" 'nyxt/mode/input-edit:cursor-backwards-word
+       "M-f" 'nyxt/mode/input-edit:cursor-forwards-word
+       "C-backspace" 'nyxt/mode/input-edit:delete-backwards-word
+       "M-backspace" 'nyxt/mode/input-edit:delete-backwards-word
+       "M-d" 'nyxt/mode/input-edit:delete-forwards-word
+       "C-x h" 'select-all
+       "M-w" 'nyxt/mode/prompt-buffer:copy-selection
+       "C-y" 'paste
+       "C-w" 'cut
+       "C-j" 'nyxt/mode/prompt-buffer:run-action-on-current-suggestion)))))
+
 (define-configuration prompt-buffer
   ((default-modes
     (let ((modes (remove-if
                   (lambda (mode)
                     (member mode
-                            '(nyxt/mode/vi:vi-normal-mode
-                              nyxt/mode/vi:vi-insert-mode)
+                            '(nyxt/mode/emacs:emacs-mode
+                              nyxt/mode/vi:vi-normal-mode)
                             :test #'eq))
                   %slot-value%)))
-      (pushnew 'nyxt/mode/emacs:emacs-mode modes)))))
+      (pushnew 'nyxt/mode/vi:vi-insert-mode modes)))
+   (override-map
+    (let ((map (make-keymap "prompt-buffer-emacs-override-map")))
+      (define-key map
+        "C-g" 'nyxt/mode/prompt-buffer:quit-prompt-buffer)
+      map))))
