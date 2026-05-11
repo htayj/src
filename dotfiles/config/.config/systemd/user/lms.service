@@ -6,7 +6,7 @@ After=default.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=%h/.lmstudio/bin/lms server start --port 1234 --bind 127.0.0.1
+ExecStart=%h/.lmstudio/bin/lms server start --port 1234 --bind 0.0.0.0
 ExecStop=%h/.lmstudio/bin/lms server stop
 TimeoutStartSec=60s
 TimeoutStopSec=30s
