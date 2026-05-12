@@ -104,6 +104,24 @@ xkb_symbols "base" {
     replace key <LVL5> { type="ONE_LEVEL", [ ISO_Level5_Shift ] };
     override key <ZEHA> { type[Group1]="ONE_LEVEL", symbols[Group1]=[ ISO_Level3_Shift ] };
 
+    // Modifier slot layout (final, after resolving inherited bindings):
+    //   Mod1: Alt_L (LALT) + Alt_L (RALT) -- thumb Alts; apps see "Alt", Emacs uses as Meta
+    //   Mod2: Hyper_L (RWIN)
+    //   Mod3: ISO_Level5_Shift (LVL3, LVL5) -- "Top" / math+APL layer
+    //   Mod4: Super_L (LWIN)
+    //   Mod5: ISO_Level3_Shift (ZEHA) -- "Greek" layer
+    //
+    // Expected xkbcomp warning when this file loads:
+    //   "Key <LVL3> added to map for multiple modifiers, Using Mod3, ignoring Mod5"
+    // Why: /usr/share/X11/xkb/symbols/pc unconditionally does
+    //   modifier_map Mod5 { <LVL3> };
+    // and our keymap includes "pc+...+spacecadet(base)". xkb's modifier_map
+    // statements accumulate across included files; there is no portable
+    // "remove from modifier_map" syntax, and an explicit Mod-slot beats both
+    // None and any other Mod-slot. xkbcomp resolves the conflict in favour
+    // of our Mod3 binding (verified via xmodmap: LVL3 ends up on Mod3 only,
+    // Mod5 contains only ZEHA), so the warning is informational and the
+    // final state is correct.
     modifier_map None    { <CAPS>, <RCTL>, <NMLK> };
     modifier_map Control { <LCTL> };
     modifier_map Mod1    { <LALT>, <RALT> };
