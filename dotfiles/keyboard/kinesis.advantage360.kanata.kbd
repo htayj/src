@@ -69,12 +69,6 @@ layout: {zmk_keyboard: adv360}
 	top (arbitrary-code 84) ;; iso level 3
 	rtop (tap-hold-release 200 200 ent @top)
 	gdel (tap-hold-release 200 200 del @gr)
-
-  ;; LevelSeven: emit caps (kc 58); XKB has CAPS on the Lock bit emitting
-  ;; VoidSymbol, so the press behaves as a hold-only LevelSeven modifier.
-	lvl7  (arbitrary-code 58)
-	rend  (tap-hold-release 200 200 end  @lvl7)
-	rpgdn (tap-hold-release 200 200 pgdn @lvl7)
 )
 (deflayer normal
   =      1    2    3    4    5    	    		6    7    8    9    0    -  
@@ -85,7 +79,7 @@ layout: {zmk_keyboard: adv360}
 
                   @gr   lrld                rmet  @top
 		     			          home                pgup
-             @Hro @gdel @rend               @rpgdn @rtop @Hsp
+             @Hro @gdel end                 pgdn  @rtop @Hsp
 )
 ;;(deflayer modelatch)
 ;; (deflayer greek
