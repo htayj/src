@@ -22,7 +22,7 @@
 ;; (run-shell-command "emacs --daemon")
 
 ;; change the prefix key to something else
-(set-prefix-key (kbd "s-x"))
+(set-prefix-key (kbd "A-x"))
 
 ;; (ql:quickload :slynk)
 ;; prompt the user for an interactive command. The first arg is an
@@ -288,69 +288,69 @@ hidden behind the previously displayed window."
                                         ;(define-key *root-map* (kbd "e") "exec emacsclient")
 ;; Browse somewhere
 (define-key *root-map* (kbd "b") "colon1 exec firefox http://www.")
-(define-key *root-map* (kbd "s-b") "pull-global-window")
+(define-key *root-map* (kbd "A-b") "pull-global-window")
 ;; Ssh somewhere
 (define-key *root-map* (kbd "C-s") "colon1 exec xterm -e ssh ")
 ;; Lock screen
-(define-key *root-map* (kbd "s-l") "exec slock")
+(define-key *root-map* (kbd "A-l") "exec slock")
 
 (defcommand screenshot-selection-copy-path () ()
   "Select a rectangle with scrot, save it, and copy the screenshot path."
   (run-shell-command
    "sh -lc 'dir=$HOME/Pictures/Screenshots; mkdir -p \"$dir\"; file=$dir/screenshot-$(date +%Y%m%d-%H%M%S).png; scrot -s \"$file\" && printf %s \"$file\" | xclip -selection clipboard'"))
 
-(define-key *root-map* (kbd "s-o") "screenshot-selection-copy-path")
+(define-key *root-map* (kbd "A-o") "screenshot-selection-copy-path")
 ;; X11 keymap picker
 (define-key *root-map* (kbd "K") "select-keymap")
 
 ;;; marking windows with ;
-(define-key *top-map* (kbd "s-;") "mark")
+(define-key *top-map* (kbd "A-;") "mark")
 ;;; i3 type bindings
 ;;; focus frames using vim binds
-(define-key *top-map* (kbd "s-l") "move-focus right")
-(define-key *top-map* (kbd "s-h") "move-focus left")
-(define-key *top-map* (kbd "s-j") "move-focus down")
-(define-key *top-map* (kbd "s-k") "move-focus up")
+(define-key *top-map* (kbd "A-l") "move-focus right")
+(define-key *top-map* (kbd "A-h") "move-focus left")
+(define-key *top-map* (kbd "A-j") "move-focus down")
+(define-key *top-map* (kbd "A-k") "move-focus up")
 
 ;;; move windows between frames using s-S-[vim movement] 
-(define-key *top-map* (kbd "s-L") "move-window right")
-(define-key *top-map* (kbd "s-H") "move-window left")
-(define-key *top-map* (kbd "s-J") "move-window down")
-(define-key *top-map* (kbd "s-K") "move-window up")
+(define-key *top-map* (kbd "A-L") "move-window right")
+(define-key *top-map* (kbd "A-H") "move-window left")
+(define-key *top-map* (kbd "A-J") "move-window down")
+(define-key *top-map* (kbd "A-K") "move-window up")
 
 ;;; next and prev window
-(define-key *top-map* (kbd "s-n") "pull-hidden-next")
-(define-key *top-map* (kbd "s-p") "pull-hidden-previous")
+(define-key *top-map* (kbd "A-n") "pull-hidden-next")
+(define-key *top-map* (kbd "A-p") "pull-hidden-previous")
 
 ;;; float control
-(define-key *top-map* (kbd "s-f") "my-toggle-float")
+(define-key *top-map* (kbd "A-f") "my-toggle-float")
 
 ;;; focus a group using s-[number]
-(define-key *top-map* (kbd "s-1") "gnew one")
-(define-key *top-map* (kbd "s-2") "gnew two")
-(define-key *top-map* (kbd "s-3") "gnew three")
-(define-key *top-map* (kbd "s-4") "gnew four")
-(define-key *top-map* (kbd "s-5") "gnew five")
-(define-key *top-map* (kbd "s-6") "gnew six")
-(define-key *top-map* (kbd "s-7") "gnew seven")
-(define-key *top-map* (kbd "s-8") "gnew eight")
-(define-key *top-map* (kbd "s-9") "gnew nine")
-(define-key *top-map* (kbd "s-0") "gnew Default")
+(define-key *top-map* (kbd "A-1") "gnew one")
+(define-key *top-map* (kbd "A-2") "gnew two")
+(define-key *top-map* (kbd "A-3") "gnew three")
+(define-key *top-map* (kbd "A-4") "gnew four")
+(define-key *top-map* (kbd "A-5") "gnew five")
+(define-key *top-map* (kbd "A-6") "gnew six")
+(define-key *top-map* (kbd "A-7") "gnew seven")
+(define-key *top-map* (kbd "A-8") "gnew eight")
+(define-key *top-map* (kbd "A-9") "gnew nine")
+(define-key *top-map* (kbd "A-0") "gnew Default")
 
 ;;; move window to a group using s-S-[number]
-(define-key *top-map* (kbd "s-!") "gmove one")
-(define-key *top-map* (kbd "s-@") "gmove two")
-(define-key *top-map* (kbd "s-#") "gmove three")
-(define-key *top-map* (kbd "s-$") "gmove four")
-(define-key *top-map* (kbd "s-%") "gmove five")
-(define-key *top-map* (kbd "s-^") "gmove six")
-(define-key *top-map* (kbd "s-&") "gmove seven")
-(define-key *top-map* (kbd "s-*") "gmove eight")
-(define-key *top-map* (kbd "s-(") "gmove nine")
-(define-key *top-map* (kbd "s-)") "gmove Default")
+(define-key *top-map* (kbd "A-!") "gmove one")
+(define-key *top-map* (kbd "A-@") "gmove two")
+(define-key *top-map* (kbd "A-#") "gmove three")
+(define-key *top-map* (kbd "A-$") "gmove four")
+(define-key *top-map* (kbd "A-%") "gmove five")
+(define-key *top-map* (kbd "A-^") "gmove six")
+(define-key *top-map* (kbd "A-&") "gmove seven")
+(define-key *top-map* (kbd "A-*") "gmove eight")
+(define-key *top-map* (kbd "A-(") "gmove nine")
+(define-key *top-map* (kbd "A-)") "gmove Default")
 
 ;;; application launcher
-(define-key *top-map* (kbd "s-SPC") "exec rofi -config ~/.config/rofi/NsCDE.rasi -show drun")
+(define-key *top-map* (kbd "A-SPC") "exec rofi -config ~/.config/rofi/NsCDE.rasi -show drun")
 
 ;;; mouseover focus
 (setf *mouse-focus-policy* :click)
@@ -374,7 +374,7 @@ hidden behind the previously displayed window."
 ;;; connect to mpd
                                         ;(stumpwm:run-commands "mpd-connect")
 
-(define-key *top-map* (kbd "s-M") '*mpd-map*)
+(define-key *top-map* (kbd "A-M") '*mpd-map*)
                                         ;(stumptray::stumptray)
 
 
