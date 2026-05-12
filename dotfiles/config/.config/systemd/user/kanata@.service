@@ -15,6 +15,14 @@ RestartSec=60s
 # Disable the default 5-failures-in-10s burst limit so the retry loop
 # survives an indefinitely-unplugged keyboard.
 StartLimitBurst=0
+# Re-apply the user XKB keymap after kanata's uinput device appears.
+# X auto-applies the default us layout to any newly-attached keyboard
+# device, which overrides our custom spacecadet map for the kanata
+# virtual keyboard. The leading '-' makes ExecStartPost non-fatal if
+# xkbcomp can't reach the server (e.g. service starts before login).
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/run/user/1000/gdm/Xauthority
+ExecStartPost=-/bin/bash -c 'sleep 2 && /usr/bin/xkbcomp -I%h/.config/xkb -w 0 %h/.config/xkb/keymap/spacecadet.xkb "$DISPLAY"'
 
 [Install]
 WantedBy=default.target
