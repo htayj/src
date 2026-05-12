@@ -273,7 +273,9 @@ xkb_symbols "base" {
     replace key <CAPS> { type="ONE_LEVEL", [ Caps_Lock ] };
     replace key <LCTL> { type="ONE_LEVEL", [ Control_L ] };
     replace key <RCTL> { type="ONE_LEVEL", [ Control_R ] };
-    replace key <RALT> { type="ONE_LEVEL", [ Alt_L ] };
+    replace key <RALT> { type="ONE_LEVEL", [ Hyper_R ] };
+    replace key <ALT>  { type="ONE_LEVEL", [ NoSymbol ] };
+    replace key <META> { type="ONE_LEVEL", [ NoSymbol ] };
     replace key <LALT> { type="ONE_LEVEL", [ Meta_L ] };
     replace key <LWIN> { type="ONE_LEVEL", [ Super_L ] };
     replace key <RWIN> { type="ONE_LEVEL", [ Hyper_L ] };
@@ -285,7 +287,7 @@ xkb_symbols "base" {
     //   - <LVL3> "Using none, ignoring Mod3": pc symbols inherits a Mod5
     //     binding for <LVL3>; we suppress it via this map. <LVL3> emits
     //     Mode_switch and is not bound to any real Mod.
-    modifier_map None    { <RCTL>, <NMLK>, <LVL3>, <LVL5> };
+    modifier_map None    { <RCTL>, <NMLK>, <LVL3>, <LVL5>, <ALT>, <META> };
     modifier_map Control { <LCTL> };
     modifier_map Lock    { <CAPS> };
     modifier_map Mod1    { <LALT> };
