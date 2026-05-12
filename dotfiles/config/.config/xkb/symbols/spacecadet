@@ -273,7 +273,7 @@ xkb_symbols "base" {
     replace key <CAPS> { type="ONE_LEVEL", [ Caps_Lock ] };
     replace key <LCTL> { type="ONE_LEVEL", [ Control_L ] };
     replace key <RCTL> { type="ONE_LEVEL", [ Control_R ] };
-    replace key <RALT> { type="ONE_LEVEL", [ Hyper_R ] };
+    replace key <RALT> { type="ONE_LEVEL", [ Alt_L ] };
     replace key <ALT>  { type="ONE_LEVEL", [ NoSymbol ] };
     replace key <META> { type="ONE_LEVEL", [ NoSymbol ] };
     replace key <LALT> { type="ONE_LEVEL", [ Meta_L ] };
@@ -290,9 +290,9 @@ xkb_symbols "base" {
     modifier_map None    { <RCTL>, <NMLK>, <LVL3>, <LVL5>, <ALT>, <META> };
     modifier_map Control { <LCTL> };
     modifier_map Lock    { <CAPS> };
-    modifier_map Mod1    { <LALT> };
+    modifier_map Mod1    { <RALT> };
     modifier_map Mod2    { <RWIN> };
-    modifier_map Mod3    { <RALT> };
+    modifier_map Mod3    { <LALT> };
     modifier_map Mod4    { <LWIN> };
     modifier_map Mod5    { <ZEHA> };
 };
