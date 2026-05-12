@@ -104,13 +104,13 @@ xkb_symbols "base" {
     replace key <LVL5> { type="ONE_LEVEL", [ ISO_Level5_Shift ] };
     override key <ZEHA> { type[Group1]="ONE_LEVEL", symbols[Group1]=[ ISO_Level3_Shift ] };
 
-    modifier_map None { <CAPS>, <RCTL>, <NMLK>, <RALT>, <LALT>, <LWIN>, <RWIN>, <LVL3>, <LVL5> };
+    modifier_map None    { <CAPS>, <RCTL>, <NMLK> };
     modifier_map Control { <LCTL> };
-    modifier_map Mod1 { <RALT> };
-    modifier_map Mod2 { <LALT> };
-    modifier_map Mod3 { <LWIN>, <LVL3> };
-    modifier_map Mod4 { <RWIN> };
-    modifier_map Mod5 { <ZEHA> };
+    modifier_map Mod1    { <LALT>, <RALT> };
+    modifier_map Mod2    { <RWIN> };
+    modifier_map Mod3    { <LVL3>, <LVL5> };
+    modifier_map Mod4    { <LWIN> };
+    modifier_map Mod5    { <ZEHA> };
 };
 
 default partial alphanumeric_keys modifier_keys
