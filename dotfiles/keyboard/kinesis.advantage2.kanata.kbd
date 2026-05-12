@@ -30,10 +30,10 @@
 ;; US
 (defsrc
   =      1    2    3    4    5    			        6    7    8    9    0    -  
-  tab    q    w    e    r    t F18          F20 y    u    i    o    p     \
-  esc    a    s    d    f    g F19          F21 h    j    k    l    ;     ' 
+  tab    q    w    e    r    t                  y    u    i    o    p     \
+  esc    a    s    d    f    g                  h    j    k    l    ;     ' 
   lshift z    x    c    v    b                  n    m    ,    .    /     rshift
-	       grv  caps left right                   up   down [    ]
+	       grv  menu left right                   up   down [    ]
 
              lctl  lalt                rmet rctl
 						       home                pgup
@@ -70,10 +70,10 @@
 )
 (deflayer normal
   =      1    2    3    4    5    	    		6    7    8    9    0    -  
-  tab    q    w    e    r    t F18      F20 y    u    i    o    p     \
-  @eoam  @sa  @Ms  @Cd  @Sf  g F19      F21 h    @Sj  @Ck  @Ml  @s;   @qoam
+  tab    q    w    e    r    t              y    u    i    o    p     \
+  @eoam  @sa  @Ms  @Cd  @Sf  g              h    @Sj  @Ck  @Ml  @s;   @qoam
   lshift z    x    c    v    b              n    m    ,    .    /     rshift
-	       grv  caps left right               up   down [    ]
+	       grv  menu left right               up   down [    ]
 
                   @gr   lrld                rmet  @top
 		     			          home                pgup
