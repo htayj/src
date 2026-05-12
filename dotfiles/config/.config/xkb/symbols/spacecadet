@@ -32,6 +32,34 @@ xkb_symbols "base" {
     name[Group1] = "Space Cadet";
     name[Group2] = "Space Cadet Top";
 
+    // Function keys -- pc symbols normally defines these; we drop pc to
+    // keep its keysym-based modifier_map (Alt_*/Meta_* -> Mod1) from
+    // hijacking our Mod1 assignments, so we have to declare F1-F24 here.
+    key <FK01> { type="ONE_LEVEL", [ F1 ] };
+    key <FK02> { type="ONE_LEVEL", [ F2 ] };
+    key <FK03> { type="ONE_LEVEL", [ F3 ] };
+    key <FK04> { type="ONE_LEVEL", [ F4 ] };
+    key <FK05> { type="ONE_LEVEL", [ F5 ] };
+    key <FK06> { type="ONE_LEVEL", [ F6 ] };
+    key <FK07> { type="ONE_LEVEL", [ F7 ] };
+    key <FK08> { type="ONE_LEVEL", [ F8 ] };
+    key <FK09> { type="ONE_LEVEL", [ F9 ] };
+    key <FK10> { type="ONE_LEVEL", [ F10 ] };
+    key <FK11> { type="ONE_LEVEL", [ F11 ] };
+    key <FK12> { type="ONE_LEVEL", [ F12 ] };
+    key <FK13> { type="ONE_LEVEL", [ F13 ] };
+    key <FK14> { type="ONE_LEVEL", [ F14 ] };
+    key <FK15> { type="ONE_LEVEL", [ F15 ] };
+    key <FK16> { type="ONE_LEVEL", [ F16 ] };
+    key <FK17> { type="ONE_LEVEL", [ F17 ] };
+    key <FK18> { type="ONE_LEVEL", [ F18 ] };
+    key <FK19> { type="ONE_LEVEL", [ F19 ] };
+    key <FK20> { type="ONE_LEVEL", [ F20 ] };
+    key <FK21> { type="ONE_LEVEL", [ F21 ] };
+    key <FK22> { type="ONE_LEVEL", [ F22 ] };
+    key <FK23> { type="ONE_LEVEL", [ F23 ] };
+    key <FK24> { type="ONE_LEVEL", [ F24 ] };
+
     key <ESC>  { type="ONE_LEVEL", [ Escape ] };
     key <LFSH> { type="ONE_LEVEL", [ Shift_L ] };
     key <RTSH> { type="ONE_LEVEL", [ Shift_R ] };
@@ -274,8 +302,6 @@ xkb_symbols "base" {
     replace key <LCTL> { type="ONE_LEVEL", [ Control_L ] };
     replace key <RCTL> { type="ONE_LEVEL", [ Control_R ] };
     replace key <RALT> { type="ONE_LEVEL", [ Alt_L ] };
-    replace key <ALT>  { type="ONE_LEVEL", [ NoSymbol ] };
-    replace key <META> { type="ONE_LEVEL", [ NoSymbol ] };
     replace key <LALT> { type="ONE_LEVEL", [ Meta_L ] };
     replace key <LWIN> { type="ONE_LEVEL", [ Super_L ] };
     replace key <RWIN> { type="ONE_LEVEL", [ Hyper_L ] };
@@ -287,7 +313,8 @@ xkb_symbols "base" {
     //   - <LVL3> "Using none, ignoring Mod3": pc symbols inherits a Mod5
     //     binding for <LVL3>; we suppress it via this map. <LVL3> emits
     //     Mode_switch and is not bound to any real Mod.
-    modifier_map None    { <RCTL>, <NMLK>, <LVL3>, <LVL5>, <ALT>, <META> };
+    modifier_map None    { <RCTL>, <NMLK>, <LVL3>, <LVL5> };
+    modifier_map Shift   { <LFSH>, <RTSH> };
     modifier_map Control { <LCTL> };
     modifier_map Lock    { <CAPS> };
     modifier_map Mod1    { <RALT> };
