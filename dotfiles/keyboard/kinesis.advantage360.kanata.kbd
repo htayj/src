@@ -54,13 +54,13 @@ layout: {zmk_keyboard: adv360}
   Ck (tap-hold-release 200 200 k lctl)         ;; right homerow ctrl
   Ml (tap-hold-release 200 200 l lalt)         ;; right homerow meta
   s; (tap-hold-release 200 200 ; lmet)         ;; right homerow super
-  Hro (tap-hold-release 200 200 bspc rmet)     ;; left thumb hyper
-  Hsp (tap-hold-release 200 200 spc  rmet)     ;; right thumb hyper
+  Hro (tap-hold-release 200 200 bspc ralt)     ;; left thumb alt
+  Hsp (tap-hold-release 200 200 spc  ralt)     ;; right thumb alt
 ;;  Tr (tap-next-release r (layer-toggle top))         ;; left homerow top
 ;;  Tu (tap-next-release u (layer-toggle top))         ;; right homerow super
   ;; other mod keys
-  eoam (tap-hold-release 200 200 esc ralt)    ;; escape / alt mode
-  qoam (tap-hold-release 200 200 ' ralt)       ;; quote / alt mode
+  eoam (tap-hold-release 200 200 esc rmet)    ;; escape / hyper mode
+  qoam (tap-hold-release 200 200 ' rmet)       ;; quote / hyper mode
   osft (tap-hold-release 200 200 0 lshift)    ;; open round / shift
   csft (tap-hold-release 200 200 0 rshift)    ;; close round / shift
 
