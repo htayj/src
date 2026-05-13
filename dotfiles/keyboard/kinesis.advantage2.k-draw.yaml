@@ -1,0 +1,273 @@
+layout:
+  qmk_info_json: kinesis.qmk.json
+layers:
+  normal:
+  - '='
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '0'
+  - '-'
+  - tab
+  - q
+  - w
+  - e
+  - r
+  - t
+  - ''
+  - ''
+  - y
+  - u
+  - i
+  - o
+  - p
+  - \
+  - t: esc
+    h: rmet
+  - t: a
+    h: lmet
+  - t: s
+    h: lalt
+  - t: d
+    h: lctl
+  - t: f
+    h: lshift
+  - g
+  - ''
+  - ''
+  - h
+  - t: j
+    h: lshift
+  - t: k
+    h: lctl
+  - t: l
+    h: lalt
+  - t: ;
+    h: lmet
+  - t: ''''
+    h: rmet
+  - lshift
+  - z
+  - x
+  - c
+  - v
+  - b
+  - n
+  - m
+  - ','
+  - .
+  - /
+  - rshift
+  - ''
+  - grv
+  - menu
+  - left
+  - right
+  - up
+  - down
+  - '['
+  - ']'
+  - ''
+  - Greek
+  - lrld
+  - rmet
+  - Top
+  - t: bspc
+    h: ralt
+  - t: del
+    h: Greek
+  - home
+  - end
+  - pgdn
+  - pgup
+  - t: ent
+    h: Top
+  - t: spc
+    h: ralt
+combos:
+- p:
+  - 13
+  - 14
+  k:
+    t: Macro
+    h: XF86Tools
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 14
+  - 15
+  k:
+    t: Terminal
+    h: XF86Terminal
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 15
+  - 16
+  k:
+    t: Quote
+    h: Multi_key
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 16
+  - 17
+  k:
+    t: Over Strike
+    h: Insert
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 17
+  - 20
+  k:
+    t: Clear Input
+    h: Clear
+  l:
+  - normal
+  a: mid
+  o: 0.15
+- p:
+  - 20
+  - 21
+  k:
+    t: Clear Screen
+    h: XF86Reload
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 21
+  - 22
+  k:
+    t: Hold Output
+    h: Pause
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 22
+  - 23
+  k:
+    t: Stop Output
+    h: XF86Stop
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 23
+  - 24
+  k:
+    t: Abort
+    h: Cancel
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 24
+  - 25
+  k: Break
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 28
+  - 29
+  k:
+    t: System
+    h: XF86Setup
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 42
+  - 43
+  k:
+    t: Network
+    h: XF86RotateWindows
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 54
+  - 55
+  k:
+    t: Alt Mode
+    h: ISO_Group_Latch
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 53
+  - 54
+  k:
+    t: Mode Lock
+    h: ISO_Group_Lock
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 36
+  - 37
+  k:
+    t: Resume
+    h: XF86AudioPlay
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 48
+  - 49
+  k:
+    t: Status
+    h: XF86Display
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 37
+  - 38
+  k: Help
+  l:
+  - normal
+  a: top
+  o: 0.15
+- p:
+  - 34
+  - 35
+  k:
+    t: Line
+    h: Linefeed
+  l:
+  - normal
+  a: top
+  o: 0.15
+draw_config:
+  combo_w: 72
+  combo_h: 28
+  arc_radius: 6
