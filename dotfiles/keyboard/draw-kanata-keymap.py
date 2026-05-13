@@ -12,6 +12,7 @@ It intentionally handles the Kanata subset used by these Kinesis configs:
 from __future__ import annotations
 
 import argparse
+import html
 import re
 import shutil
 import subprocess
@@ -23,27 +24,50 @@ import yaml
 
 
 SPACE_CADET_ALIAS_LABELS = {
-    "gr": "Greek",
-    "top": "Top",
+    "gr": "greek",
+    "top": "top",
 }
 
 
+# Display modifiers by their semantic XKB role instead of Kanata's left/right
+# key names. See config/.config/xkb/symbols/spacecadet for the matching XKB
+# modifier map: LALT=Meta, LWIN=Super, RALT=Alt, RWIN=Hyper.
 TOKEN_LABELS = {
     "bspc": "bspc",
     "ent": "ent",
     "esc": "esc",
-    "lctl": "lctl",
-    "rctl": "rctl",
-    "lalt": "lalt",
-    "ralt": "ralt",
-    "lmet": "lmet",
-    "rmet": "rmet",
-    "lshift": "lshift",
-    "rshift": "rshift",
+    "lctl": "control",
+    "rctl": "control",
+    "lalt": "meta",
+    "ralt": "alt",
+    "lmet": "super",
+    "rmet": "hyper",
+    "lshift": "shift",
+    "rshift": "shift",
     "grv": "grv",
     "lrld": "lrld",
     "spc": "spc",
 }
+
+
+MODIFIER_PALETTE = {
+    "shift": ("mod-shift", "#eeeeee", "#8c8c8c"),
+    "control": ("mod-control", "#fff3bf", "#d9a300"),
+    "meta": ("mod-meta", "#ffe2e2", "#e03131"),
+    "super": ("mod-super", "#d8fbff", "#00a9c8"),
+    "alt": ("mod-alt", "#dff0ff", "#6aa8df"),
+    "hyper": ("mod-hyper", "#ffd6ff", "#c026d3"),
+    "greek": ("mod-greek", "#e4f8e7", "#2f9e44"),
+    "top": ("mod-top", "#ffe8cc", "#f08c00"),
+}
+
+MODIFIER_TYPES = {name: spec[0] for name, spec in MODIFIER_PALETTE.items()}
+
+
+MODIFIER_SVG_STYLE = "\n".join(
+    f"rect.{css_class} {{ fill: {fill}; stroke: {stroke}; }}"
+    for css_class, fill, stroke in MODIFIER_PALETTE.values()
+)
 
 
 class ConversionError(RuntimeError):
@@ -269,6 +293,83 @@ def clean_layout_key(value: dict[str, str]) -> Any:
     return cleaned
 
 
+def colorize_modifier_key(key: Any) -> Any:
+    """Color modifier keys while hiding the modifier word itself.
+
+    Tap-hold keys keep their tap legend (e.g. `f`) but drop the hold legend
+    (`shift`), relying on the fill color plus the legend. Pure modifier keys are
+    drawn as empty colored keys.
+    """
+    if isinstance(key, str):
+        key_type = MODIFIER_TYPES.get(key)
+        return {"t": "", "type": key_type} if key_type else key
+    if isinstance(key, dict):
+        key = dict(key)
+        hold_type = MODIFIER_TYPES.get(str(key.get("h") or ""))
+        tap_type = MODIFIER_TYPES.get(str(key.get("t") or ""))
+        key_type = hold_type or tap_type
+        if key_type:
+            if hold_type:
+                key["h"] = ""
+            if tap_type:
+                key["t"] = ""
+            key.setdefault("type", key_type)
+    return key
+
+
+def add_modifier_legend(svg_path: Path) -> None:
+    """Place a visual legend for modifier key colors at the top of an SVG."""
+    svg = svg_path.read_text()
+    match = re.search(
+        r'<svg width="(?P<width>[0-9.]+)" height="(?P<height>[0-9.]+)" viewBox="(?P<minx>[0-9.\-]+) (?P<miny>[0-9.\-]+) (?P<vbw>[0-9.]+) (?P<vbh>[0-9.]+)"',
+        svg,
+    )
+    if not match:
+        return
+
+    old_height = float(match.group("height"))
+    old_miny = float(match.group("miny"))
+    old_vbh = float(match.group("vbh"))
+    extra_height = 110
+    new_height = old_height + extra_height
+    new_miny = old_miny - extra_height
+    new_vbh = old_vbh + extra_height
+    new_open = match.group(0).replace(
+        f'height="{match.group("height")}"', f'height="{new_height:g}"'
+    ).replace(
+        f'viewBox="{match.group("minx")} {match.group("miny")} {match.group("vbw")} {match.group("vbh")}"',
+        f'viewBox="{match.group("minx")} {new_miny:g} {match.group("vbw")} {new_vbh:g}"',
+    )
+    svg = svg[: match.start()] + new_open + svg[match.end() :]
+
+    x0 = 30
+    y0 = new_miny + 32
+    item_w = 120
+    row_h = 34
+    swatch = 20
+    parts = [
+        f'<g transform="translate({x0:g}, {y0:g})" class="modifier-legend">',
+        '<text x="0" y="0" class="label">modifier colors:</text>',
+    ]
+    for index, (name, (_css_class, fill, stroke)) in enumerate(MODIFIER_PALETTE.items()):
+        col = index % 4
+        row = index // 4
+        x = col * item_w
+        y = 28 + row * row_h
+        parts.append(
+            f'<rect x="{x:g}" y="{y - swatch / 2:g}" width="{swatch:g}" height="{swatch:g}" '
+            f'rx="4" ry="4" fill="{fill}" stroke="{stroke}" stroke-width="1"/>'
+        )
+        parts.append(
+            f'<text x="{x + swatch + 8:g}" y="{y:g}" style="text-anchor:start; dominant-baseline:middle">'
+            f'{html.escape(name)}</text>'
+        )
+    parts.append("</g>")
+    legend = "\n".join(parts)
+    svg = svg.replace("</style>", "</style>\n" + legend, 1)
+    svg_path.write_text(svg)
+
+
 def label_for_expr(alias: str, expr: Any, aliases: dict[str, Any], code_labels: dict[int, dict[str, str]]) -> Any:
     alias_label = SPACE_CADET_ALIAS_LABELS.get(
         alias,
@@ -315,6 +416,7 @@ def build_keymap_yaml(
     qmk_info_json: Path,
     layer_name: str,
     yaml_path: Path,
+    combo_style: str,
 ) -> dict[str, Any]:
     text = kanata_path.read_text()
     aliases = parse_aliases(text)
@@ -328,7 +430,7 @@ def build_keymap_yaml(
     if len(src_keys) != len(layer_keys):
         raise ConversionError(f"defsrc has {len(src_keys)} keys but layer {layer_name!r} has {len(layer_keys)}")
 
-    layers = {layer_name: [label_for_token(k, aliases, code_labels) for k in layer_keys]}
+    layers = {layer_name: [colorize_modifier_key(label_for_token(k, aliases, code_labels)) for k in layer_keys]}
 
     first_pos: dict[str, int] = {}
     for i, key in enumerate(src_keys):
@@ -340,15 +442,31 @@ def build_keymap_yaml(
             positions = [first_pos[t] for t in triggers]
         except KeyError as exc:
             raise ConversionError(f"combo trigger {exc.args[0]!r} is not present in defsrc") from exc
-        combos.append(
-            {
-                "p": positions,
-                "k": label_for_token(output, aliases, code_labels),
-                "l": [layer_name],
-                "a": "top" if len(positions) == 2 and abs(positions[0] - positions[1]) == 1 else "mid",
-                "o": 0.15,
-            }
-        )
+
+        combo: dict[str, Any] = {
+            "p": positions,
+            "k": label_for_token(output, aliases, code_labels),
+            "l": [layer_name],
+        }
+        if combo_style == "hidden":
+            combo["hidden"] = True
+        elif combo_style == "separate":
+            # Keep the main layout readable and render each chord as a small
+            # dedicated diagram below it. This is much easier to scan on a
+            # large Kinesis layout than many inline labels competing for the
+            # same top-row space.
+            combo["draw_separate"] = True
+        elif len(positions) == 2:
+            left = min(positions)
+            # Adjacent horizontal chord labels are wider than a single key.
+            # Stagger them into two vertical lanes so runs like q-w, w-e,
+            # e-r, ... remain readable instead of stacking on top of each
+            # other. Non-adjacent same-row chords still draw as top chords
+            # with dendrons rather than sitting in the key well.
+            combo.update({"a": "top", "o": 0.25 if left % 2 == 0 else 0.95, "d": True})
+        else:
+            combo.update({"a": "mid", "o": 0.15})
+        combos.append(combo)
 
     layout_path = Path(qmk_info_json)
     try:
@@ -361,9 +479,11 @@ def build_keymap_yaml(
         "layers": layers,
         "combos": combos,
         "draw_config": {
-            "combo_w": 72,
-            "combo_h": 28,
+            "combo_w": 64,
+            "combo_h": 26,
             "arc_radius": 6,
+            "separate_combo_diagrams": combo_style == "separate",
+            "svg_extra_style": MODIFIER_SVG_STYLE,
         },
     }
 
@@ -376,16 +496,23 @@ def main() -> int:
     parser.add_argument("--layer", default="normal", help="Kanata deflayer to render (default: normal)")
     parser.add_argument("--output-yaml", required=True, type=Path, help="Generated keymap-drawer YAML path")
     parser.add_argument("--output-svg", type=Path, help="Generated SVG path; omitted means only YAML is written")
+    parser.add_argument(
+        "--combo-style",
+        choices=("separate", "inline", "hidden"),
+        default="separate",
+        help="How to render defchordsv2 combos: separate diagrams, inline labels, or hide them (default: separate)",
+    )
     parser.add_argument("--keymap", default=shutil.which("keymap") or "keymap", help="keymap-drawer executable")
     args = parser.parse_args()
 
     try:
-        data = build_keymap_yaml(args.kanata, args.xkb, args.qmk_info_json, args.layer, args.output_yaml)
+        data = build_keymap_yaml(args.kanata, args.xkb, args.qmk_info_json, args.layer, args.output_yaml, args.combo_style)
         args.output_yaml.parent.mkdir(parents=True, exist_ok=True)
         args.output_yaml.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True))
         if args.output_svg:
             args.output_svg.parent.mkdir(parents=True, exist_ok=True)
             subprocess.run([args.keymap, "draw", str(args.output_yaml), "-o", str(args.output_svg)], check=True)
+            add_modifier_legend(args.output_svg)
     except (ConversionError, OSError, subprocess.CalledProcessError) as exc:
         print(f"draw-kanata-keymap.py: {exc}", file=sys.stderr)
         return 1
