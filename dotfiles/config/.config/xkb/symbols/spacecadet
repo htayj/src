@@ -43,7 +43,8 @@
 //   break          Break              (XK_Break)
 //   resume         XF86AudioPlay      (no exact; F15 also reasonable)
 //   call           XF86Phone
-//   system         Menu
+//   system         XF86Setup          (distinct from <MENU>, which already
+//                                     emits the standard Menu keysym)
 //   status         XF86Display        (no exact; F16 also reasonable)
 //   network        XF86RotateWindows  (no exact; F17 also reasonable)
 //   delete         Delete
