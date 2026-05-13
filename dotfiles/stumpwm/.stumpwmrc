@@ -355,6 +355,11 @@ hidden behind the previously displayed window."
 ;;; mouseover focus
 (setf *mouse-focus-policy* :click)
 
+;;; mouse drag modifier for floating windows -- use Alt (RALT) so it
+;;; matches our keyboard prefix; default is :SUPER which would route
+;;; drags through LWIN now that the modifier_map has Super_L on Mod1.
+(setf *float-window-modifier* :ALT)
+
 ;;; TODO: replicate C-x C-B 
 
 ;; modules
