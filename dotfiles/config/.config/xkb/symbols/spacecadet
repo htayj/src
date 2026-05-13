@@ -112,6 +112,17 @@ xkb_symbols "base" {
     key <I216> { type="ONE_LEVEL", [ Break ] };              // break
     key <I217> { type="ONE_LEVEL", [ XF86Setup ] };          // system
     key <I218> { type="ONE_LEVEL", [ XF86RotateWindows ] };  // network
+    key <I224> { type="ONE_LEVEL", [ XF86Phone ] };          // call
+    key <I225> { type="ONE_LEVEL", [ End ] };                // end
+    key <I226> { type="ONE_LEVEL", [ U2160 ] };              // I
+    key <I227> { type="ONE_LEVEL", [ U2161 ] };              // II
+    key <I228> { type="ONE_LEVEL", [ U2162 ] };              // III
+    key <I229> { type="ONE_LEVEL", [ U2163 ] };              // IV
+    key <I230> { type="ONE_LEVEL", [ U261A ] };              // finger-left
+    key <I231> { type="ONE_LEVEL", [ U1F44D ] };             // thumb-up
+    key <I232> { type="ONE_LEVEL", [ U1F44E ] };             // thumb-down
+    key <I233> { type="ONE_LEVEL", [ U261B ] };              // finger-right
+    key <I234> { type="ONE_LEVEL", [ Redo ] };               // repeat
     key <I219> { type="ONE_LEVEL", [ ISO_Group_Latch ] };    // alt-mode
     key <I220> { type="ONE_LEVEL", [ ISO_Group_Lock ] };     // mode-lock
     key <I221> { type="ONE_LEVEL", [ XF86AudioPlay ] };      // resume

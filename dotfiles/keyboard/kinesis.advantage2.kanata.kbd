@@ -82,6 +82,17 @@
 	sc-break       (arbitrary-code 208) ;; -> Break
 	sc-system      (arbitrary-code 209) ;; -> XF86Setup
 	sc-network     (arbitrary-code 210) ;; -> XF86RotateWindows
+	sc-call        (arbitrary-code 216) ;; -> XF86Phone
+	sc-end         (arbitrary-code 217) ;; -> End
+	sc-i           (arbitrary-code 218) ;; -> U2160
+	sc-ii          (arbitrary-code 219) ;; -> U2161
+	sc-iii         (arbitrary-code 220) ;; -> U2162
+	sc-iv          (arbitrary-code 221) ;; -> U2163
+	sc-fingerleft  (arbitrary-code 222) ;; -> U261A
+	sc-thumbup     (arbitrary-code 223) ;; -> U1F44D
+	sc-thumbdown   (arbitrary-code 224) ;; -> U1F44E
+	sc-fingerright (arbitrary-code 225) ;; -> U261B
+	sc-repeat      (arbitrary-code 226) ;; -> Redo
 	sc-altmode     (arbitrary-code 211) ;; -> ISO_Group_Latch
 	sc-modelock    (arbitrary-code 212) ;; -> ISO_Group_Lock
 	sc-resume      (arbitrary-code 213) ;; -> XF86AudioPlay
@@ -91,6 +102,14 @@
 )
 
 (defchordsv2
+  (1 2)       @sc-i           100 first-release ()
+  (2 3)       @sc-ii          100 first-release ()
+  (3 4)       @sc-iii         100 first-release ()
+  (4 5)       @sc-iv          100 first-release ()
+  (6 7)       @sc-fingerleft  100 first-release ()
+  (7 8)       @sc-thumbup     100 first-release ()
+  (8 9)       @sc-thumbdown   100 first-release ()
+  (9 0)       @sc-fingerright 100 first-release ()
   (q w)       @sc-macro       100 first-release ()
   (w e)       @sc-terminal    100 first-release ()
   (e r)       @sc-quote       100 first-release ()
@@ -105,9 +124,12 @@
   (x c)       @sc-network     100 first-release ()
   (menu left) @sc-altmode     100 first-release ()
   (grv menu)  @sc-modelock    100 first-release ()
+  (down [)    @sc-end         100 first-release ()
+  (j k)       @sc-call        100 first-release ()
+  (g h)       @sc-help        100 first-release ()
   (k l)       @sc-resume      100 first-release ()
+  (m ,)       @sc-repeat      100 first-release ()
   (, .)       @sc-status      100 first-release ()
-  (l ;)       @sc-help        100 first-release ()
   (h j)       @sc-line        100 first-release ()
 )
 (deflayer normal

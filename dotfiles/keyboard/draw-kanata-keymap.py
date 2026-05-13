@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import json
 import re
 import shutil
 import subprocess
@@ -246,7 +247,10 @@ def parse_xkb_keysyms(path: Path | None) -> dict[int, dict[str, str]]:
             else:
                 continue
         comment = comment.strip()
-        display = comment.replace("-", " ").title() if comment else keysym
+        if comment and re.fullmatch(r"[IVX]+", comment):
+            display = comment
+        else:
+            display = comment.replace("-", " ").title() if comment else keysym
         out[code] = {"keysym": keysym.strip(), "display": display}
     return out
 
@@ -293,6 +297,13 @@ def clean_layout_key(value: dict[str, str]) -> Any:
     return cleaned
 
 
+def chord_tap_label(key: Any) -> Any:
+    """Use only the human chord name on the combined chords layer."""
+    if isinstance(key, dict):
+        return key.get("t") or key.get("tap") or ""
+    return key
+
+
 def colorize_modifier_key(key: Any) -> Any:
     """Color modifier keys while hiding the modifier word itself.
 
@@ -315,6 +326,17 @@ def colorize_modifier_key(key: Any) -> Any:
                 key["t"] = ""
             key.setdefault("type", key_type)
     return key
+
+
+def combo_center_span_width(qmk_info_json: Path, positions: list[int], key_pitch: int = 56) -> int | None:
+    """Return a combo box width spanning trigger-key center to center."""
+    try:
+        info = json.loads(qmk_info_json.read_text())
+        layout = next(iter(info["layouts"].values()))["layout"]
+        centers = [float(layout[pos]["x"]) + float(layout[pos].get("w", 1)) / 2 for pos in positions]
+    except (OSError, KeyError, IndexError, StopIteration, json.JSONDecodeError):
+        return None
+    return round((max(centers) - min(centers)) * key_pitch)
 
 
 def add_modifier_legend(svg_path: Path) -> None:
@@ -431,6 +453,13 @@ def build_keymap_yaml(
         raise ConversionError(f"defsrc has {len(src_keys)} keys but layer {layer_name!r} has {len(layer_keys)}")
 
     layers = {layer_name: [colorize_modifier_key(label_for_token(k, aliases, code_labels)) for k in layer_keys]}
+    combo_layer_name = "chords"
+    if combo_style == "layer":
+        # A second, single diagram for chords keeps the key/mod drawing clean
+        # while avoiding dozens of separate combo mini-diagrams. Leave the
+        # physical keys blank so chord labels can sit directly on the keys they
+        # describe without competing with base legends.
+        layers[combo_layer_name] = ["" for _ in src_keys]
 
     first_pos: dict[str, int] = {}
     for i, key in enumerate(src_keys):
@@ -443,18 +472,25 @@ def build_keymap_yaml(
         except KeyError as exc:
             raise ConversionError(f"combo trigger {exc.args[0]!r} is not present in defsrc") from exc
 
+        output_label = label_for_token(output, aliases, code_labels)
+        chord_label = chord_tap_label(output_label)
         combo: dict[str, Any] = {
             "p": positions,
-            "k": label_for_token(output, aliases, code_labels),
-            "l": [layer_name],
+            "k": chord_label if combo_style == "layer" else output_label,
+            "l": [combo_layer_name if combo_style == "layer" else layer_name],
         }
         if combo_style == "hidden":
             combo["hidden"] = True
+        elif combo_style == "layer":
+            # On the dedicated chords layer, draw labels directly over the
+            # involved blank keys rather than above/below the keyboard.
+            combo.update({"a": "mid", "d": False})
+            if chord_label in {"Clear Input", "Help"}:
+                width = combo_center_span_width(qmk_info_json, positions)
+                if width:
+                    combo["w"] = width
         elif combo_style == "separate":
-            # Keep the main layout readable and render each chord as a small
-            # dedicated diagram below it. This is much easier to scan on a
-            # large Kinesis layout than many inline labels competing for the
-            # same top-row space.
+            # Render each chord as a small dedicated diagram.
             combo["draw_separate"] = True
         elif len(positions) == 2:
             left = min(positions)
@@ -479,8 +515,8 @@ def build_keymap_yaml(
         "layers": layers,
         "combos": combos,
         "draw_config": {
-            "combo_w": 64,
-            "combo_h": 26,
+            "combo_w": 52 if combo_style == "layer" else 64,
+            "combo_h": 30 if combo_style == "layer" else 26,
             "arc_radius": 6,
             "separate_combo_diagrams": combo_style == "separate",
             "svg_extra_style": MODIFIER_SVG_STYLE,
@@ -498,9 +534,9 @@ def main() -> int:
     parser.add_argument("--output-svg", type=Path, help="Generated SVG path; omitted means only YAML is written")
     parser.add_argument(
         "--combo-style",
-        choices=("separate", "inline", "hidden"),
-        default="separate",
-        help="How to render defchordsv2 combos: separate diagrams, inline labels, or hide them (default: separate)",
+        choices=("layer", "separate", "inline", "hidden"),
+        default="layer",
+        help="How to render defchordsv2 combos: one chords layer, separate diagrams, inline labels, or hide them (default: layer)",
     )
     parser.add_argument("--keymap", default=shutil.which("keymap") or "keymap", help="keymap-drawer executable")
     args = parser.parse_args()

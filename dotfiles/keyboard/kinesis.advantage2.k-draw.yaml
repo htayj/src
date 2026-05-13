@@ -109,170 +109,321 @@ layers:
   - t: spc
     h: ''
     type: mod-alt
+  chords:
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
 combos:
+- p:
+  - 1
+  - 2
+  k: I
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 2
+  - 3
+  k: II
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 3
+  - 4
+  k: III
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 4
+  - 5
+  k: IV
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 6
+  - 7
+  k: Finger Left
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 7
+  - 8
+  k: Thumb Up
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 8
+  - 9
+  k: Thumb Down
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 9
+  - 10
+  k: Finger Right
+  l:
+  - chords
+  a: mid
+  d: false
 - p:
   - 13
   - 14
-  k:
-    t: Macro
-    h: XF86Tools
+  k: Macro
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 14
   - 15
-  k:
-    t: Terminal
-    h: XF86Terminal
+  k: Terminal
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 15
   - 16
-  k:
-    t: Quote
-    h: Multi_key
+  k: Quote
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 16
   - 17
-  k:
-    t: Over Strike
-    h: Insert
+  k: Over Strike
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 17
   - 20
-  k:
-    t: Clear Input
-    h: Clear
+  k: Clear Input
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
+  w: 336
 - p:
   - 20
   - 21
-  k:
-    t: Clear Screen
-    h: XF86Reload
+  k: Clear Screen
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 21
   - 22
-  k:
-    t: Hold Output
-    h: Pause
+  k: Hold Output
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 22
   - 23
-  k:
-    t: Stop Output
-    h: XF86Stop
+  k: Stop Output
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 23
   - 24
-  k:
-    t: Abort
-    h: Cancel
+  k: Abort
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 24
   - 25
   k: Break
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 28
   - 29
-  k:
-    t: System
-    h: XF86Setup
+  k: System
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 42
   - 43
-  k:
-    t: Network
-    h: XF86RotateWindows
+  k: Network
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 54
   - 55
-  k:
-    t: Alt Mode
-    h: ISO_Group_Latch
+  k: Alt Mode
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 53
   - 54
-  k:
-    t: Mode Lock
-    h: ISO_Group_Lock
+  k: Mode Lock
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
+- p:
+  - 58
+  - 59
+  k: End
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 35
+  - 36
+  k: Call
+  l:
+  - chords
+  a: mid
+  d: false
+- p:
+  - 31
+  - 34
+  k: Help
+  l:
+  - chords
+  a: mid
+  d: false
+  w: 336
 - p:
   - 36
   - 37
-  k:
-    t: Resume
-    h: XF86AudioPlay
+  k: Resume
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
+- p:
+  - 47
+  - 48
+  k: Repeat
+  l:
+  - chords
+  a: mid
+  d: false
 - p:
   - 48
   - 49
-  k:
-    t: Status
-    h: XF86Display
+  k: Status
   l:
-  - normal
-  draw_separate: true
-- p:
-  - 37
-  - 38
-  k: Help
-  l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 - p:
   - 34
   - 35
-  k:
-    t: Line
-    h: Linefeed
+  k: Line
   l:
-  - normal
-  draw_separate: true
+  - chords
+  a: mid
+  d: false
 draw_config:
-  combo_w: 64
-  combo_h: 26
+  combo_w: 52
+  combo_h: 30
   arc_radius: 6
-  separate_combo_diagrams: true
+  separate_combo_diagrams: false
   svg_extra_style: 'rect.mod-shift { fill: #eeeeee; stroke: #8c8c8c; }
 
     rect.mod-control { fill: #fff3bf; stroke: #d9a300; }
