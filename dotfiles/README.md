@@ -25,7 +25,7 @@ Managed packages:
   desktop, terminal, GTK, KDE/LXQt, keyboard, and small tool config.
 - `keyboard`: keyboard setup scripts and Kinesis layout files. The Space
   Cadet-inspired Kanata/XKB assets live in the
-  `keyboard/space-cadet-keyboard` submodule and are symlinked into the package
+  `keyboard/manna-cadet` submodule and are symlinked into the package
   for stow compatibility.
 - `clawmacs`: Clawmacs user config and installed skills under `~/.clawmacs.d`.
 - `claude`: curated Claude Code config under `~/.claude` (CLAUDE.md,

@@ -1,1 +1,1 @@
-space-cadet-keyboard/space-cadet-layered-mnemonics.md
+manna-cadet/space-cadet-layered-mnemonics.md

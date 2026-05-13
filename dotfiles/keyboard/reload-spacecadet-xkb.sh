@@ -1,1 +1,1 @@
-space-cadet-keyboard/reload-spacecadet-xkb.sh
+manna-cadet/reload-spacecadet-xkb.sh

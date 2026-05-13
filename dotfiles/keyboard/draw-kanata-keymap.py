@@ -1,1 +1,1 @@
-space-cadet-keyboard/draw-kanata-keymap.py
+manna-cadet/draw-kanata-keymap.py
