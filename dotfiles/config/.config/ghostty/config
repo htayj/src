@@ -49,3 +49,45 @@ font-family = unscii
 # resize-overlay-duration = 4s 200ms
 theme = CGA
 window-decoration = false
+# meta-as-alt workaround: ghostty's "alt" matches X11 Alt virtual modifier
+# (Alt_L keysym). Our LALT emits Meta_L (Mod3), so ghostty doesn't escape
+# LALT+X by default. Bind physical:alt+<letter> to send ESC+<letter>,
+# replicating the M-prefix behavior for the LALT thumb key. physical:alt
+# matches the scancode of the Alt-positioned key, catching LALT regardless
+# of its emitted keysym.
+keybind = physical:alt+a=esc:a
+keybind = physical:alt+b=esc:b
+keybind = physical:alt+c=esc:c
+keybind = physical:alt+d=esc:d
+keybind = physical:alt+e=esc:e
+keybind = physical:alt+f=esc:f
+keybind = physical:alt+g=esc:g
+keybind = physical:alt+h=esc:h
+keybind = physical:alt+i=esc:i
+keybind = physical:alt+j=esc:j
+keybind = physical:alt+k=esc:k
+keybind = physical:alt+l=esc:l
+keybind = physical:alt+m=esc:m
+keybind = physical:alt+n=esc:n
+keybind = physical:alt+o=esc:o
+keybind = physical:alt+p=esc:p
+keybind = physical:alt+q=esc:q
+keybind = physical:alt+r=esc:r
+keybind = physical:alt+s=esc:s
+keybind = physical:alt+t=esc:t
+keybind = physical:alt+u=esc:u
+keybind = physical:alt+v=esc:v
+keybind = physical:alt+w=esc:w
+keybind = physical:alt+x=esc:x
+keybind = physical:alt+y=esc:y
+keybind = physical:alt+z=esc:z
+keybind = physical:alt+0=esc:0
+keybind = physical:alt+1=esc:1
+keybind = physical:alt+2=esc:2
+keybind = physical:alt+3=esc:3
+keybind = physical:alt+4=esc:4
+keybind = physical:alt+5=esc:5
+keybind = physical:alt+6=esc:6
+keybind = physical:alt+7=esc:7
+keybind = physical:alt+8=esc:8
+keybind = physical:alt+9=esc:9
