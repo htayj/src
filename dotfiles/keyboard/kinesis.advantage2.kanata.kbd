@@ -67,6 +67,48 @@
 	top (arbitrary-code 84) ;; iso level 3
 	rtop (tap-hold-release 200 200 ent @top)
 	gdel (tap-hold-release 200 200 del @gr)
+
+  ;; Space Cadet command keysyms (emitted via spare evdev keycodes;
+  ;; the XKB layout maps each keycode to the actual command keysym).
+	sc-macro       (arbitrary-code 112) ;; -> XF86Tools
+	sc-terminal    (arbitrary-code 200) ;; -> XF86Terminal
+	sc-quote       (arbitrary-code 201) ;; -> Multi_key
+	sc-overstrike  (arbitrary-code 202) ;; -> Insert
+	sc-clearinput  (arbitrary-code 203) ;; -> Clear
+	sc-clearscreen (arbitrary-code 204) ;; -> XF86Reload
+	sc-holdoutput  (arbitrary-code 205) ;; -> Pause
+	sc-stopoutput  (arbitrary-code 206) ;; -> XF86Stop
+	sc-abort       (arbitrary-code 207) ;; -> Cancel
+	sc-break       (arbitrary-code 208) ;; -> Break
+	sc-system      (arbitrary-code 209) ;; -> XF86Setup
+	sc-network     (arbitrary-code 210) ;; -> XF86RotateWindows
+	sc-altmode     (arbitrary-code 211) ;; -> ISO_Group_Latch
+	sc-modelock    (arbitrary-code 212) ;; -> ISO_Group_Lock
+	sc-resume      (arbitrary-code 213) ;; -> XF86AudioPlay
+	sc-status      (arbitrary-code 214) ;; -> XF86Display
+	sc-line        (arbitrary-code 215) ;; -> Linefeed
+	sc-help        (arbitrary-code 138) ;; KEY_HELP -> Help
+)
+
+(defchordsv2
+  (q w)       @sc-macro       100 first-release ()
+  (w e)       @sc-terminal    100 first-release ()
+  (e r)       @sc-quote       100 first-release ()
+  (r t)       @sc-overstrike  100 first-release ()
+  (t y)       @sc-clearinput  100 first-release ()
+  (y u)       @sc-clearscreen 100 first-release ()
+  (u i)       @sc-holdoutput  100 first-release ()
+  (i o)       @sc-stopoutput  100 first-release ()
+  (o p)       @sc-abort       100 first-release ()
+  (p \)       @sc-break       100 first-release ()
+  (s d)       @sc-system      100 first-release ()
+  (x c)       @sc-network     100 first-release ()
+  (menu left) @sc-altmode     100 first-release ()
+  (grv menu)  @sc-modelock    100 first-release ()
+  (k l)       @sc-resume      100 first-release ()
+  (, .)       @sc-status      100 first-release ()
+  (l ;)       @sc-help        100 first-release ()
+  (h j)       @sc-line        100 first-release ()
 )
 (deflayer normal
   =      1    2    3    4    5    	    		6    7    8    9    0    -  
@@ -93,7 +135,8 @@
 ;;(deflayer top)
 (defcfg
    linux-dev /dev/input/by-id/usb-Kinesis_Advantage2_Keyboard_314159265359-if01-event-kbd
-    process-unmapped-keys yes)
+    process-unmapped-keys yes
+    concurrent-tap-hold yes)
 
 ;; I have the following mappings in kinesis profile
 ;; [HK1]>[app]

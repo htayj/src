@@ -97,6 +97,28 @@ xkb_symbols "base" {
     key <FK23> { type="ONE_LEVEL", [ F23 ] };
     key <FK24> { type="ONE_LEVEL", [ F24 ] };
 
+    // Space Cadet command keysyms on spare evdev keycodes. The kanata
+    // chord aliases (@sc-*) emit these keycodes via arbitrary-code so
+    // that the X keysym arriving at apps is the intended command.
+    key <I120> { type="ONE_LEVEL", [ XF86Tools ] };          // macro
+    key <I208> { type="ONE_LEVEL", [ XF86Terminal ] };       // terminal
+    key <I209> { type="ONE_LEVEL", [ Multi_key ] };          // quote
+    key <I210> { type="ONE_LEVEL", [ Insert ] };             // over-strike
+    key <I211> { type="ONE_LEVEL", [ Clear ] };              // clear-input
+    key <I212> { type="ONE_LEVEL", [ XF86Reload ] };         // clear-screen
+    key <I213> { type="ONE_LEVEL", [ Pause ] };              // hold-output
+    key <I214> { type="ONE_LEVEL", [ XF86Stop ] };           // stop-output
+    key <I215> { type="ONE_LEVEL", [ Cancel ] };             // abort
+    key <I216> { type="ONE_LEVEL", [ Break ] };              // break
+    key <I217> { type="ONE_LEVEL", [ XF86Setup ] };          // system
+    key <I218> { type="ONE_LEVEL", [ XF86RotateWindows ] };  // network
+    key <I219> { type="ONE_LEVEL", [ ISO_Group_Latch ] };    // alt-mode
+    key <I220> { type="ONE_LEVEL", [ ISO_Group_Lock ] };     // mode-lock
+    key <I221> { type="ONE_LEVEL", [ XF86AudioPlay ] };      // resume
+    key <I222> { type="ONE_LEVEL", [ XF86Display ] };        // status
+    key <I223> { type="ONE_LEVEL", [ Linefeed ] };           // line
+    key <HELP> { type="ONE_LEVEL", [ Help ] };               // help
+
     key <ESC>  { type="ONE_LEVEL", [ Escape ] };
     key <LFSH> { type="ONE_LEVEL", [ Shift_L ] };
     key <RTSH> { type="ONE_LEVEL", [ Shift_R ] };
