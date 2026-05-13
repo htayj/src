@@ -68,7 +68,39 @@ MODIFIER_TYPES = {name: spec[0] for name, spec in MODIFIER_PALETTE.items()}
 MODIFIER_SVG_STYLE = "\n".join(
     f"rect.{css_class} {{ fill: {fill}; stroke: {stroke}; }}"
     for css_class, fill, stroke in MODIFIER_PALETTE.values()
-)
+) + """
+text.greek-legend { fill: #1b7f33; font-weight: 700; }
+text.top-legend { fill: #b35f00; font-weight: 700; }
+""".rstrip()
+
+
+NUMBER_ROW_GREEK_LEGENDS = {
+    "=": "∅", "1": "†", "2": "‡", "3": "▿", "4": "¢", "5": "○", "6": "▯",
+    "7": "÷", "8": "×", "9": "¶", "0": "○", "-": "≈",
+    "[": "⟦", "]": "⟧", ";": "¨", "'": "·", "\\": "‖", ",": "«", ".": "»", "/": "∫",
+}
+
+
+KEYSYM_DISPLAY = {
+    "Greek_alpha": "α", "Greek_beta": "β", "Greek_chi": "χ", "Greek_delta": "δ",
+    "Greek_epsilon": "ε", "Greek_eta": "η", "Greek_finalsmallsigma": "ς",
+    "Greek_gamma": "γ", "Greek_iota": "ι", "Greek_kappa": "κ", "Greek_lambda": "λ",
+    "Greek_xi": "ξ", "Greek_zeta": "ζ",
+    "Greek_mu": "μ", "Greek_nu": "ν", "Greek_omega": "ω", "Greek_omicron": "ο",
+    "Greek_phi": "φ", "Greek_pi": "π", "Greek_psi": "ψ", "Greek_rho": "ρ",
+    "Greek_sigma": "σ", "Greek_tau": "τ", "Greek_theta": "θ", "Greek_upsilon": "υ",
+    "U03D1": "ϑ",
+    "upcaret": "∧", "downcaret": "∨", "downshoe": "∪", "upshoe": "∩",
+    "leftshoe": "⊂", "rightshoe": "⊃", "U2200": "∀", "infinity": "∞",
+    "U2203": "∃", "partialderivative": "∂", "uptack": "⊥", "downtack": "⊤",
+    "righttack": "⊢", "lefttack": "⊣", "uparrow": "↑", "downarrow": "↓",
+    "leftarrow": "←", "rightarrow": "→", "U2194": "↔", "downstile": "⌊",
+    "upstile": "⌈", "similarequal": "≃", "identical": "≡", "lessthanequal": "≤",
+    "greaterthanequal": "≥", "guillemotleft": "«", "guillemotright": "»",
+    "guillemetleft": "«", "guillemetright": "»", "integral": "∫",
+    "diaeresis": "¨", "periodcentered": "·", "U27E6": "⟦", "U27E7": "⟧",
+    "U2016": "‖",
+}
 
 
 class ConversionError(RuntimeError):
@@ -222,6 +254,36 @@ def parse_kanata_comment_keysyms(text: str) -> dict[int, dict[str, str]]:
     return out
 
 
+def parse_xkb_legends(path: Path | None) -> dict[str, dict[str, str]]:
+    """Return base-key -> keymap-drawer legends for top/Greek symbols."""
+    if path is None:
+        return {}
+    text = path.read_text()
+    legends: dict[str, dict[str, str]] = {}
+    key_re = re.compile(r"key\s+<[^>]+>\s*\{(?P<body>.*?)\};", re.S)
+    for match in key_re.finditer(text):
+        body = match.group("body")
+        g1 = re.search(r"symbols\[Group1\]\s*=\s*\[\s*([^\]]+)\]", body)
+        if not g1:
+            continue
+        g1_syms = [part.strip() for part in g1.group(1).split(",")]
+        if len(g1_syms) < 3:
+            continue
+        base = KEYSYM_DISPLAY.get(g1_syms[0], g1_syms[0])
+        greek = KEYSYM_DISPLAY.get(g1_syms[2], g1_syms[2])
+        if not base or greek == "NoSymbol":
+            continue
+        entry: dict[str, str] = {"h": greek}
+        g2 = re.search(r"symbols\[Group2\]\s*=\s*\[\s*([^\]]+)\]", body)
+        if g2:
+            top_sym = g2.group(1).split(",", 1)[0].strip()
+            top = KEYSYM_DISPLAY.get(top_sym, top_sym)
+            if top and top != "NoSymbol":
+                entry["s"] = top
+        legends[base] = entry
+    return legends
+
+
 def parse_xkb_keysyms(path: Path | None) -> dict[int, dict[str, str]]:
     if path is None:
         return {}
@@ -312,6 +374,22 @@ def clean_layout_key(value: dict[str, str]) -> Any:
     return cleaned
 
 
+def annotate_symbol_legends(key: Any, legends: dict[str, dict[str, str]]) -> Any:
+    """Add Space Cadet top/Greek legends to normal-layer printable keys."""
+    tap = key if isinstance(key, str) else key.get("t") if isinstance(key, dict) else None
+    if not isinstance(tap, str):
+        return key
+    extra = legends.get(tap, {})
+    if tap in NUMBER_ROW_GREEK_LEGENDS:
+        extra = {**extra, "h": NUMBER_ROW_GREEK_LEGENDS[tap]}
+    if not extra:
+        return key
+    annotated = {"t": tap, **extra}
+    if isinstance(key, dict):
+        annotated = {**key, **annotated}
+    return annotated
+
+
 def chord_tap_label(key: Any) -> Any:
     """Use only the human chord name on the combined chords layer."""
     if isinstance(key, dict):
@@ -328,7 +406,13 @@ def colorize_modifier_key(key: Any) -> Any:
     """
     if isinstance(key, str):
         key_type = MODIFIER_TYPES.get(key)
-        return {"t": "", "type": key_type} if key_type else key
+        if not key_type:
+            return key
+        # Keep Greek/Top labels visible on their normal-layer thumb keys while
+        # still color-coding them like modifiers. Other pure modifiers stay
+        # color-only to avoid visual clutter.
+        tap = key if key in {"greek", "top"} else ""
+        return {"t": tap, "type": key_type}
     if isinstance(key, dict):
         key = dict(key)
         hold_type = MODIFIER_TYPES.get(str(key.get("h") or ""))
@@ -404,6 +488,11 @@ def add_modifier_legend(svg_path: Path) -> None:
     parts.append("</g>")
     legend = "\n".join(parts)
     svg = svg.replace("</style>", "</style>\n" + legend, 1)
+    # keymap-drawer has one class for all hold/shifted legends. In our
+    # generated normal layer, hold=Greek/front and shifted=Top, so add more
+    # specific classes for color-coding those symbols.
+    svg = re.sub(r'class="key((?: [^"]+)?) hold"', r'class="key\1 hold greek-legend"', svg)
+    svg = re.sub(r'class="key((?: [^"]+)?) shifted"', r'class="key\1 shifted top-legend"', svg)
     svg_path.write_text(svg)
 
 
@@ -459,6 +548,7 @@ def build_keymap_yaml(
     aliases = parse_aliases(text)
     code_labels = parse_kanata_comment_keysyms(text)
     code_labels.update(parse_xkb_keysyms(xkb_path))
+    symbol_legends = parse_xkb_legends(xkb_path)
 
     src_rows = rows_from_raw_block(text, "defsrc")
     layer_rows = rows_from_raw_block(text, "deflayer", layer_name)
@@ -467,7 +557,12 @@ def build_keymap_yaml(
     if len(src_keys) != len(layer_keys):
         raise ConversionError(f"defsrc has {len(src_keys)} keys but layer {layer_name!r} has {len(layer_keys)}")
 
-    layers = {layer_name: [colorize_modifier_key(label_for_token(k, aliases, code_labels)) for k in layer_keys]}
+    layers = {
+        layer_name: [
+            annotate_symbol_legends(colorize_modifier_key(label_for_token(k, aliases, code_labels)), symbol_legends)
+            for k in layer_keys
+        ]
+    }
     for form in top_forms(text, "deflayer"):
         name = str(form[1]) if len(form) > 1 else ""
         if not name or name == layer_name:

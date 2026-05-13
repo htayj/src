@@ -2,78 +2,139 @@ layout:
   qmk_info_json: kinesis.qmk.json
 layers:
   normal:
-  - '='
-  - '1'
-  - '2'
-  - '3'
-  - '4'
-  - '5'
-  - '6'
-  - '7'
-  - '8'
-  - '9'
-  - '0'
-  - '-'
+  - t: '='
+    h: ∅
+  - t: '1'
+    h: †
+  - t: '2'
+    h: ‡
+  - t: '3'
+    h: ▿
+  - t: '4'
+    h: ¢
+  - t: '5'
+    h: ○
+  - t: '6'
+    h: ▯
+  - t: '7'
+    h: ÷
+  - t: '8'
+    h: ×
+  - t: '9'
+    h: ¶
+  - t: '0'
+    h: ○
+  - t: '-'
+    h: ≈
   - tab
-  - q
-  - w
-  - e
-  - r
-  - t
+  - t: q
+    h: θ
+    s: ∧
+  - t: w
+    h: ω
+    s: ∨
+  - t: e
+    h: ε
+    s: ∪
+  - t: r
+    h: ρ
+    s: ∩
+  - t: t
+    h: τ
+    s: ⊂
   - ''
   - ''
-  - y
-  - u
-  - i
-  - o
-  - p
-  - \
+  - t: y
+    h: ψ
+    s: ⊃
+  - t: u
+    h: υ
+    s: ∀
+  - t: i
+    h: ι
+    s: ∞
+  - t: o
+    h: ο
+    s: ∃
+  - t: p
+    h: π
+    s: ∂
+  - t: \
+    h: ‖
   - t: esc
     h: ''
     type: mod-hyper
   - t: a
-    h: ''
+    h: α
     type: mod-super
+    s: ⊥
   - t: s
-    h: ''
+    h: σ
     type: mod-meta
+    s: ⊤
   - t: d
-    h: ''
+    h: δ
     type: mod-control
+    s: ⊢
   - t: f
-    h: ''
+    h: φ
     type: mod-shift
-  - g
+    s: ⊣
+  - t: g
+    h: γ
+    s: ↑
   - ''
   - ''
-  - h
+  - t: h
+    h: η
+    s: ↓
   - t: j
-    h: ''
+    h: ϑ
     type: mod-shift
+    s: ←
   - t: k
-    h: ''
+    h: κ
     type: mod-control
+    s: →
   - t: l
-    h: ''
+    h: λ
     type: mod-meta
+    s: ↔
   - t: ;
-    h: ''
+    h: ¨
     type: mod-super
   - t: ''''
-    h: ''
+    h: ·
     type: mod-hyper
   - t: ''
     type: mod-shift
-  - z
-  - x
-  - c
-  - v
-  - b
-  - n
-  - m
-  - ','
-  - .
-  - /
+  - t: z
+    h: ζ
+    s: ∨
+  - t: x
+    h: ξ
+    s: ⌊
+  - t: c
+    h: χ
+    s: ⌈
+  - t: v
+    h: ς
+    s: ≃
+  - t: b
+    h: β
+    s: ≡
+  - t: n
+    h: ν
+    s: ≤
+  - t: m
+    h: μ
+    s: ≥
+  - t: ','
+    h: «
+  - t: .
+    h: »
+  - t: /
+    h: ∫
   - t: ''
     type: mod-shift
   - ''
@@ -83,15 +144,17 @@ layers:
   - right
   - up
   - down
-  - '['
-  - ']'
+  - t: '['
+    h: ⟦
+  - t: ']'
+    h: ⟧
   - ''
-  - t: ''
+  - t: greek
     type: mod-greek
   - lrld
   - t: ''
     type: mod-hyper
-  - t: ''
+  - t: top
     type: mod-top
   - t: bspc
     h: ''
@@ -438,4 +501,8 @@ draw_config:
 
     rect.mod-greek { fill: #e4f8e7; stroke: #2f9e44; }
 
-    rect.mod-top { fill: #ffe8cc; stroke: #f08c00; }'
+    rect.mod-top { fill: #ffe8cc; stroke: #f08c00; }
+
+    text.greek-legend { fill: #1b7f33; font-weight: 700; }
+
+    text.top-legend { fill: #b35f00; font-weight: 700; }'
