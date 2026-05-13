@@ -13,3 +13,6 @@
 [submodule "guix-config/dotfiles.back/.stumpwm.d.immutable/modules"]
 	path = guix-config/dotfiles.back/.stumpwm.d.immutable/modules
 	url = https://github.com/stumpwm/stumpwm-contrib
+[submodule "dotfiles/keyboard/space-cadet-keyboard"]
+	path = dotfiles/keyboard/space-cadet-keyboard
+	url = https://github.com/htayj/space-cadet-keyboard.git

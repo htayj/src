@@ -23,7 +23,10 @@ Managed packages:
 - `emacs`: selected editable Emacs config files inside `~/.emacs.d`.
 - `config`: selected editable XDG config under `~/.config`, including shell,
   desktop, terminal, GTK, KDE/LXQt, keyboard, and small tool config.
-- `keyboard`: keyboard setup scripts and Kinesis layout files.
+- `keyboard`: keyboard setup scripts and Kinesis layout files. The Space
+  Cadet-inspired Kanata/XKB assets live in the
+  `keyboard/space-cadet-keyboard` submodule and are symlinked into the package
+  for stow compatibility.
 - `clawmacs`: Clawmacs user config and installed skills under `~/.clawmacs.d`.
 - `claude`: curated Claude Code config under `~/.claude` (CLAUDE.md,
   settings.json, keybindings.json, hooks, statusline, safer-curl wrapper).
