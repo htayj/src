@@ -121,10 +121,10 @@ layout: {zmk_keyboard: adv360}
 )
 (deflayer fun
   _    @sc-i @sc-ii @sc-iii @sc-iv _              _    @sc-fingerleft @sc-thumbup @sc-thumbdown @sc-fingerright _
-  _    @sc-macro @sc-terminal @sc-quote @sc-overstrike @sc-clearinput _    _    @sc-clearinput @sc-clearscreen @sc-holdoutput @sc-stopoutput @sc-abort @sc-break
-  _    _    @sc-system _    _    @sc-help _    _    @sc-help @sc-line @sc-call @sc-resume _    _
-  _    _    @sc-network _    _    _               _    _    @sc-repeat @sc-status _    _
-       @sc-modelock @sc-altmode _    _             _    _    @sc-end _
+  _    @sc-quote @sc-terminal @sc-macro _    @sc-overstrike _    _    _    @sc-status @sc-call @sc-stopoutput _    _
+  _    _    @sc-system _    _    @sc-abort _    _    @sc-help @sc-line @sc-clearinput @sc-clearscreen @sc-end _
+  _    @sc-holdoutput @sc-network @sc-break _    _          _    @sc-resume _    @sc-repeat _    _
+       @sc-modelock @sc-altmode _    _             _    _    _    _
                   _    _                   _    _
                                       _                   _
              _    _    _                   _    _    _

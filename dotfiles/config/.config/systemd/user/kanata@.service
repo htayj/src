@@ -19,10 +19,8 @@ StartLimitBurst=0
 # X auto-applies the default us layout to any newly-attached keyboard
 # device, which overrides our custom spacecadet map for the kanata
 # virtual keyboard. The leading '-' makes ExecStartPost non-fatal if
-# xkbcomp can't reach the server (e.g. service starts before login).
-Environment=DISPLAY=:0
-Environment=XAUTHORITY=/run/user/1000/gdm/Xauthority
-ExecStartPost=-/bin/bash -c 'sleep 2 && /usr/bin/xkbcomp -I%h/.config/xkb -w 0 %h/.config/xkb/keymap/spacecadet.xkb "$DISPLAY"'
+# the helper can't reach the server (e.g. service starts before login).
+ExecStartPost=-/bin/bash -c 'sleep 2 && %h/reload-spacecadet-xkb.sh'
 
 [Install]
 WantedBy=default.target

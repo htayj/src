@@ -133,63 +133,62 @@ layers:
     h: U261B
   - ''
   - ''
-  - t: Macro
-    h: UE000
-  - t: Terminal
-    h: UE001
   - t: Quote
     h: UE002
+  - t: Terminal
+    h: UE001
+  - t: Macro
+    h: UE000
+  - ''
   - t: Over Strike
     h: UE003
-  - t: Clear Input
-    h: UE004
   - ''
   - ''
-  - t: Clear Input
-    h: UE004
-  - t: Clear Screen
-    h: UE005
-  - t: Hold Output
-    h: UE006
+  - ''
+  - t: Status
+    h: UE012
+  - t: Call
+    h: UE00C
   - t: Stop Output
     h: UE007
-  - t: Abort
-    h: UE008
-  - t: Break
-    h: UE009
+  - ''
+  - ''
   - ''
   - ''
   - t: System
     h: UE00A
   - ''
   - ''
-  - t: Help
-    h: UE014
+  - t: Abort
+    h: UE008
   - ''
   - ''
   - t: Help
     h: UE014
   - t: Line
     h: UE013
-  - t: Call
-    h: UE00C
+  - t: Clear Input
+    h: UE004
+  - t: Clear Screen
+    h: UE005
+  - t: End
+    h: UE00D
+  - ''
+  - ''
+  - t: Hold Output
+    h: UE006
+  - t: Network
+    h: UE00B
+  - t: Break
+    h: UE009
+  - ''
+  - ''
+  - ''
   - t: Resume
     h: UE011
   - ''
-  - ''
-  - ''
-  - ''
-  - t: Network
-    h: UE00B
-  - ''
-  - ''
-  - ''
-  - ''
-  - ''
   - t: Repeat
     h: UE00E
-  - t: Status
-    h: UE012
   - ''
   - ''
   - ''
@@ -201,8 +200,7 @@ layers:
   - ''
   - ''
   - ''
-  - t: End
-    h: UE00D
+  - ''
   - ''
   - ''
   - ''
