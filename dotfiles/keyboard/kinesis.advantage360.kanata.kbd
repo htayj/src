@@ -72,20 +72,20 @@ layout: {zmk_keyboard: adv360}
 
   ;; Space Cadet command keysyms (emitted via spare evdev keycodes;
   ;; the XKB layout maps each keycode to the actual command keysym).
-	sc-macro       (arbitrary-code 112) ;; -> XF86Tools
-	sc-terminal    (arbitrary-code 200) ;; -> XF86Terminal
-	sc-quote       (arbitrary-code 201) ;; -> Multi_key
-	sc-overstrike  (arbitrary-code 202) ;; -> Insert
-	sc-clearinput  (arbitrary-code 203) ;; -> Clear
-	sc-clearscreen (arbitrary-code 204) ;; -> XF86Reload
-	sc-holdoutput  (arbitrary-code 205) ;; -> Pause
-	sc-stopoutput  (arbitrary-code 206) ;; -> XF86Stop
-	sc-abort       (arbitrary-code 207) ;; -> Cancel
-	sc-break       (arbitrary-code 208) ;; -> Break
-	sc-system      (arbitrary-code 209) ;; -> XF86Setup
-	sc-network     (arbitrary-code 210) ;; -> XF86RotateWindows
-	sc-call        (arbitrary-code 216) ;; -> XF86Phone
-	sc-end         (arbitrary-code 217) ;; -> End
+	sc-macro       (arbitrary-code 183) ;; -> UE000
+	sc-terminal    (arbitrary-code 184) ;; -> UE001
+	sc-quote       (arbitrary-code 185) ;; -> UE002
+	sc-overstrike  (arbitrary-code 186) ;; -> UE003
+	sc-clearinput  (arbitrary-code 187) ;; -> UE004
+	sc-clearscreen (arbitrary-code 188) ;; -> UE005
+	sc-holdoutput  (arbitrary-code 189) ;; -> UE006
+	sc-stopoutput  (arbitrary-code 190) ;; -> UE007
+	sc-abort       (arbitrary-code 191) ;; -> UE008
+	sc-break       (arbitrary-code 192) ;; -> UE009
+	sc-system      (arbitrary-code 195) ;; -> UE00A
+	sc-network     (arbitrary-code 196) ;; -> UE00B
+	sc-call        (arbitrary-code 194) ;; -> UE00C
+	sc-end         (arbitrary-code 240) ;; -> UE00D
 	sc-i           (arbitrary-code 218) ;; -> U2160
 	sc-ii          (arbitrary-code 219) ;; -> U2161
 	sc-iii         (arbitrary-code 220) ;; -> U2162
@@ -94,45 +94,45 @@ layout: {zmk_keyboard: adv360}
 	sc-thumbup     (arbitrary-code 223) ;; -> U1F44D
 	sc-thumbdown   (arbitrary-code 224) ;; -> U1F44E
 	sc-fingerright (arbitrary-code 225) ;; -> U261B
-	sc-repeat      (arbitrary-code 226) ;; -> Redo
-	sc-altmode     (arbitrary-code 211) ;; -> ISO_Group_Latch
-	sc-modelock    (arbitrary-code 212) ;; -> ISO_Group_Lock
-	sc-resume      (arbitrary-code 213) ;; -> XF86AudioPlay
-	sc-status      (arbitrary-code 214) ;; -> XF86Display
-	sc-line        (arbitrary-code 215) ;; -> Linefeed
-	sc-help        (arbitrary-code 138) ;; KEY_HELP -> Help
+	sc-repeat      (arbitrary-code 226) ;; -> UE00E
+	sc-altmode     (arbitrary-code 211) ;; -> UE00F
+	sc-modelock    (arbitrary-code 212) ;; -> UE010
+	sc-resume      (arbitrary-code 193) ;; -> UE011
+	sc-status      (arbitrary-code 197) ;; -> UE012
+	sc-line        (arbitrary-code 198) ;; -> UE013
+	sc-help        (arbitrary-code 199) ;; KEY_HELP -> UE014
 )
 
 (defchordsv2
-  (1 2)       @sc-i           100 first-release ()
-  (2 3)       @sc-ii          100 first-release ()
-  (3 4)       @sc-iii         100 first-release ()
-  (4 5)       @sc-iv          100 first-release ()
-  (6 7)       @sc-fingerleft  100 first-release ()
-  (7 8)       @sc-thumbup     100 first-release ()
-  (8 9)       @sc-thumbdown   100 first-release ()
-  (9 0)       @sc-fingerright 100 first-release ()
-  (q w)       @sc-macro       100 first-release ()
-  (w e)       @sc-terminal    100 first-release ()
-  (e r)       @sc-quote       100 first-release ()
-  (r t)       @sc-overstrike  100 first-release ()
-  (t y)       @sc-clearinput  100 first-release ()
-  (y u)       @sc-clearscreen 100 first-release ()
-  (u i)       @sc-holdoutput  100 first-release ()
-  (i o)       @sc-stopoutput  100 first-release ()
-  (o p)       @sc-abort       100 first-release ()
-  (p \)       @sc-break       100 first-release ()
-  (s d)       @sc-system      100 first-release ()
-  (x c)       @sc-network     100 first-release ()
-  (menu left) @sc-altmode     100 first-release ()
-  (grv menu)  @sc-modelock    100 first-release ()
-  (down [)    @sc-end         100 first-release ()
-  (j k)       @sc-call        100 first-release ()
-  (g h)       @sc-help        100 first-release ()
-  (k l)       @sc-resume      100 first-release ()
-  (m ,)       @sc-repeat      100 first-release ()
-  (, .)       @sc-status      100 first-release ()
-  (h j)       @sc-line        100 first-release ()
+  (1 2)       @sc-i           45 first-release ()
+  (2 3)       @sc-ii          45 first-release ()
+  (3 4)       @sc-iii         45 first-release ()
+  (4 5)       @sc-iv          45 first-release ()
+  (6 7)       @sc-fingerleft  45 first-release ()
+  (7 8)       @sc-thumbup     45 first-release ()
+  (8 9)       @sc-thumbdown   45 first-release ()
+  (9 0)       @sc-fingerright 45 first-release ()
+  (q w)       @sc-macro       45 first-release ()
+  (w e)       @sc-terminal    45 first-release ()
+  (e r)       @sc-quote       45 first-release ()
+  (r t)       @sc-overstrike  45 first-release ()
+  (t y)       @sc-clearinput  45 first-release ()
+  (y u)       @sc-clearscreen 45 first-release ()
+  (u i)       @sc-holdoutput  45 first-release ()
+  (i o)       @sc-stopoutput  45 first-release ()
+  (o p)       @sc-abort       45 first-release ()
+  (p \)       @sc-break       45 first-release ()
+  (s d)       @sc-system      45 first-release ()
+  (x c)       @sc-network     45 first-release ()
+  (menu left) @sc-altmode     45 first-release ()
+  (grv menu)  @sc-modelock    45 first-release ()
+  (down [)    @sc-end         45 first-release ()
+  (j k)       @sc-call        45 first-release ()
+  (g h)       @sc-help        45 first-release ()
+  (k l)       @sc-resume      45 first-release ()
+  (m ,)       @sc-repeat      45 first-release ()
+  (, .)       @sc-status      45 first-release ()
+  (h j)       @sc-line        45 first-release ()
 )
 (deflayer normal
   =      1    2    3    4    5    	    		6    7    8    9    0    -  

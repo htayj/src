@@ -97,38 +97,39 @@ xkb_symbols "base" {
     key <FK23> { type="ONE_LEVEL", [ F23 ] };
     key <FK24> { type="ONE_LEVEL", [ F24 ] };
 
-    // Space Cadet command keysyms on spare evdev keycodes. The kanata
-    // chord aliases (@sc-*) emit these keycodes via arbitrary-code so
-    // that the X keysym arriving at apps is the intended command.
-    key <I120> { type="ONE_LEVEL", [ XF86Tools ] };          // macro
-    key <I208> { type="ONE_LEVEL", [ XF86Terminal ] };       // terminal
-    key <I209> { type="ONE_LEVEL", [ Multi_key ] };          // quote
-    key <I210> { type="ONE_LEVEL", [ Insert ] };             // over-strike
-    key <I211> { type="ONE_LEVEL", [ Clear ] };              // clear-input
-    key <I212> { type="ONE_LEVEL", [ XF86Reload ] };         // clear-screen
-    key <I213> { type="ONE_LEVEL", [ Pause ] };              // hold-output
-    key <I214> { type="ONE_LEVEL", [ XF86Stop ] };           // stop-output
-    key <I215> { type="ONE_LEVEL", [ Cancel ] };             // abort
-    key <I216> { type="ONE_LEVEL", [ Break ] };              // break
-    key <I217> { type="ONE_LEVEL", [ XF86Setup ] };          // system
-    key <I218> { type="ONE_LEVEL", [ XF86RotateWindows ] };  // network
-    key <I224> { type="ONE_LEVEL", [ XF86Phone ] };          // call
-    key <I225> { type="ONE_LEVEL", [ End ] };                // end
-    key <I226> { type="ONE_LEVEL", [ U2160 ] };              // I
-    key <I227> { type="ONE_LEVEL", [ U2161 ] };              // II
-    key <I228> { type="ONE_LEVEL", [ U2162 ] };              // III
-    key <I229> { type="ONE_LEVEL", [ U2163 ] };              // IV
-    key <I230> { type="ONE_LEVEL", [ U261A ] };              // finger-left
-    key <I231> { type="ONE_LEVEL", [ U1F44D ] };             // thumb-up
-    key <I232> { type="ONE_LEVEL", [ U1F44E ] };             // thumb-down
-    key <I233> { type="ONE_LEVEL", [ U261B ] };              // finger-right
-    key <I234> { type="ONE_LEVEL", [ Redo ] };               // repeat
-    key <I219> { type="ONE_LEVEL", [ ISO_Group_Latch ] };    // alt-mode
-    key <I220> { type="ONE_LEVEL", [ ISO_Group_Lock ] };     // mode-lock
-    key <I221> { type="ONE_LEVEL", [ XF86AudioPlay ] };      // resume
-    key <I222> { type="ONE_LEVEL", [ XF86Display ] };        // status
-    key <I223> { type="ONE_LEVEL", [ Linefeed ] };           // line
-    key <HELP> { type="ONE_LEVEL", [ Help ] };               // help
+    // Space Cadet command keysyms on spare evdev/F-key keycodes. The kanata
+    // chord aliases (@sc-*) emit these keycodes via arbitrary-code. XKB maps
+    // them to private-use keysyms (UE000...) so desktops do not treat them as
+    // media/power/system keys.
+    key <I191> { type="ONE_LEVEL", [ UE000 ] };  // macro
+    key <I192> { type="ONE_LEVEL", [ UE001 ] };  // terminal
+    key <I193> { type="ONE_LEVEL", [ UE002 ] };  // quote
+    key <I194> { type="ONE_LEVEL", [ UE003 ] };  // over-strike
+    key <I195> { type="ONE_LEVEL", [ UE004 ] };  // clear-input
+    key <I196> { type="ONE_LEVEL", [ UE005 ] };  // clear-screen
+    key <I197> { type="ONE_LEVEL", [ UE006 ] };  // hold-output
+    key <I198> { type="ONE_LEVEL", [ UE007 ] };  // stop-output
+    key <I199> { type="ONE_LEVEL", [ UE008 ] };  // abort
+    key <I200> { type="ONE_LEVEL", [ UE009 ] };  // break
+    key <I201> { type="ONE_LEVEL", [ UE011 ] };  // resume
+    key <I202> { type="ONE_LEVEL", [ UE00C ] };  // call
+    key <I203> { type="ONE_LEVEL", [ UE00A ] };  // system
+    key <I204> { type="ONE_LEVEL", [ UE00B ] };  // network
+    key <I205> { type="ONE_LEVEL", [ UE012 ] };  // status
+    key <I206> { type="ONE_LEVEL", [ UE013 ] };  // line
+    key <I207> { type="ONE_LEVEL", [ UE014 ] };  // help
+    key <I248> { type="ONE_LEVEL", [ UE00D ] };  // end
+    key <I226> { type="ONE_LEVEL", [ U2160 ] };  // I
+    key <I227> { type="ONE_LEVEL", [ U2161 ] };  // II
+    key <I228> { type="ONE_LEVEL", [ U2162 ] };  // III
+    key <I229> { type="ONE_LEVEL", [ U2163 ] };  // IV
+    key <I230> { type="ONE_LEVEL", [ U261A ] };  // finger-left
+    key <I231> { type="ONE_LEVEL", [ U1F44D ] }; // thumb-up
+    key <I232> { type="ONE_LEVEL", [ U1F44E ] }; // thumb-down
+    key <I233> { type="ONE_LEVEL", [ U261B ] };  // finger-right
+    key <I234> { type="ONE_LEVEL", [ UE00E ] };  // repeat
+    key <I219> { type="ONE_LEVEL", [ UE00F ] };  // alt-mode
+    key <I220> { type="ONE_LEVEL", [ UE010 ] };  // mode-lock
 
     key <ESC>  { type="ONE_LEVEL", [ Escape ] };
     key <LFSH> { type="ONE_LEVEL", [ Shift_L ] };
@@ -137,10 +138,10 @@ xkb_symbols "base" {
     key <PRSC> { type="PC_ALT_LEVEL2", [ Print, Sys_Req ] };
     key <SCLK> { type="ONE_LEVEL", [ Scroll_Lock ] };
     key <PAUS> { type="PC_CONTROL_LEVEL2", [ Pause, Break ] };
-    key <INS>  { type="ONE_LEVEL", [ Insert ] };
+    key <INS>  { type="ONE_LEVEL", [ UE003 ] };
     key <DELE> { type="ONE_LEVEL", [ Delete ] };
     key <HOME> { type="ONE_LEVEL", [ Home ] };
-    key <END>  { type="ONE_LEVEL", [ End ] };
+    key <END>  { type="ONE_LEVEL", [ UE00D ] };
     key <PGUP> { type="ONE_LEVEL", [ Prior ] };
     key <PGDN> { type="ONE_LEVEL", [ Next ] };
     key <UP>   { type="ONE_LEVEL", [ Up ] };
