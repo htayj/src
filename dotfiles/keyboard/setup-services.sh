@@ -2,8 +2,8 @@
 # Enable + start the kanata user services that this host should run.
 # Idempotent: rerun any time you change which configs apply.
 #
-#   basedserv -> kanata@advantage360
-#   work      -> kanata@normal, kanata@advantage2
+#   basedserv -> kanata@advantage360 (layered Space Cadet by default)
+#   work      -> kanata@normal, kanata@advantage2 (layered Space Cadet by default)
 #
 # Requires: ~/.config/systemd/user/kanata@.service stowed (config pkg)
 # and ~/kanata-launch.sh stowed (keyboard pkg).

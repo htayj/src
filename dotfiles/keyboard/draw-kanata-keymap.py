@@ -152,7 +152,10 @@ def rows_from_raw_block(text: str, form_name: str, item_name: str | None = None)
     used for `defsrc` and `deflayer` matrices.
     """
     cleaned = strip_block_comments(text)
-    header_re = re.compile(r"^\s*\(" + re.escape(form_name) + r"(?:\s+" + (re.escape(item_name) if item_name else r"[^\s)]+") + r")?\b")
+    if item_name:
+        header_re = re.compile(r"^\s*\(" + re.escape(form_name) + r"\s+" + re.escape(item_name) + r"\b")
+    else:
+        header_re = re.compile(r"^\s*\(" + re.escape(form_name) + r"(?:\s+[^\s)]+)?\b")
     lines = cleaned.splitlines()
     in_form = False
     rows: list[list[str]] = []
@@ -275,8 +278,20 @@ def expand_kinesis_rows(rows: list[list[str]]) -> list[str]:
     out.extend(rows[5])
     mid = rows[6]
     bottom = rows[7]
-    out.extend([bottom[0], bottom[1], mid[0], bottom[2], bottom[3], mid[1], bottom[4], bottom[5]])
+    # QMK physical order for the Kinesis thumb clusters has the right upper
+    # thumb key (PgUp in defsrc) before the lower inner key (PgDn in defsrc).
+    out.extend([bottom[0], bottom[1], mid[0], bottom[2], mid[1], bottom[3], bottom[4], bottom[5]])
     return out
+
+
+def label_for_action(action: Any, aliases: dict[str, Any], code_labels: dict[int, dict[str, str]]) -> Any:
+    if isinstance(action, str):
+        return label_for_token(action, aliases, code_labels)
+    if isinstance(action, list) and action:
+        op = str(action[0])
+        if op in {"layer-while-held", "layer-toggle", "layer-switch"} and len(action) >= 2:
+            return str(action[1])
+    return str(action)
 
 
 def label_for_token(token: str, aliases: dict[str, Any], code_labels: dict[int, dict[str, str]]) -> Any:
@@ -408,8 +423,8 @@ def label_for_expr(alias: str, expr: Any, aliases: dict[str, Any], code_labels: 
             return alias_label
         # tap-hold-release delay tap-delay tap hold; tap-hold-next-release delay tap hold
         tap_i, hold_i = (3, 4) if op == "tap-hold-release" else (2, 3)
-        tap = label_for_token(str(expr[tap_i]), aliases, code_labels)
-        hold = label_for_token(str(expr[hold_i]), aliases, code_labels)
+        tap = label_for_action(expr[tap_i], aliases, code_labels)
+        hold = label_for_action(expr[hold_i], aliases, code_labels)
         return clean_layout_key({"t": str(tap), "h": str(hold)})
 
     if op == "arbitrary-code" and len(expr) >= 2:
@@ -453,8 +468,21 @@ def build_keymap_yaml(
         raise ConversionError(f"defsrc has {len(src_keys)} keys but layer {layer_name!r} has {len(layer_keys)}")
 
     layers = {layer_name: [colorize_modifier_key(label_for_token(k, aliases, code_labels)) for k in layer_keys]}
+    for form in top_forms(text, "deflayer"):
+        name = str(form[1]) if len(form) > 1 else ""
+        if not name or name == layer_name:
+            continue
+        rows = rows_from_raw_block(text, "deflayer", name)
+        keys = expand_kinesis_rows(rows)
+        if len(keys) == len(src_keys):
+            if name.startswith("sc-"):
+                layers[name] = [chord_tap_label(label_for_token(k, aliases, code_labels)) for k in keys]
+            else:
+                layers[name] = [colorize_modifier_key(label_for_token(k, aliases, code_labels)) for k in keys]
+
+    chords = parse_chords(text)
     combo_layer_name = "chords"
-    if combo_style == "layer":
+    if combo_style == "layer" and chords:
         # A second, single diagram for chords keeps the key/mod drawing clean
         # while avoiding dozens of separate combo mini-diagrams. Leave the
         # physical keys blank so chord labels can sit directly on the keys they
@@ -466,7 +494,7 @@ def build_keymap_yaml(
         first_pos.setdefault(key, i)
 
     combos = []
-    for triggers, output in parse_chords(text):
+    for triggers, output in chords:
         try:
             positions = [first_pos[t] for t in triggers]
         except KeyError as exc:

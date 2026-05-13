@@ -101,8 +101,8 @@ layers:
     type: mod-greek
   - home
   - end
-  - pgdn
   - pgup
+  - pgdn
   - t: ent
     h: ''
     type: mod-top

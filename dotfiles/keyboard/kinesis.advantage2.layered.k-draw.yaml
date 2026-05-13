@@ -1,0 +1,240 @@
+layout:
+  qmk_info_json: kinesis.qmk.json
+layers:
+  normal:
+  - '='
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '0'
+  - '-'
+  - tab
+  - q
+  - w
+  - e
+  - r
+  - t
+  - ''
+  - ''
+  - y
+  - u
+  - i
+  - o
+  - p
+  - \
+  - t: esc
+    h: ''
+    type: mod-hyper
+  - t: a
+    h: ''
+    type: mod-super
+  - t: s
+    h: ''
+    type: mod-meta
+  - t: d
+    h: ''
+    type: mod-control
+  - t: f
+    h: ''
+    type: mod-shift
+  - g
+  - ''
+  - ''
+  - h
+  - t: j
+    h: ''
+    type: mod-shift
+  - t: k
+    h: ''
+    type: mod-control
+  - t: l
+    h: ''
+    type: mod-meta
+  - t: ;
+    h: ''
+    type: mod-super
+  - t: ''''
+    h: ''
+    type: mod-hyper
+  - t: ''
+    type: mod-shift
+  - z
+  - x
+  - c
+  - v
+  - b
+  - n
+  - m
+  - ','
+  - .
+  - /
+  - t: ''
+    type: mod-shift
+  - ''
+  - grv
+  - menu
+  - left
+  - right
+  - up
+  - down
+  - '['
+  - ']'
+  - ''
+  - t: ''
+    type: mod-greek
+  - lrld
+  - t: ''
+    type: mod-hyper
+  - t: ''
+    type: mod-top
+  - t: bspc
+    h: ''
+    type: mod-alt
+  - t: del
+    h: ''
+    type: mod-greek
+  - home
+  - t: end
+    h: fun
+  - pgup
+  - t: pgdn
+    h: fun
+  - t: ent
+    h: ''
+    type: mod-top
+  - t: spc
+    h: ''
+    type: mod-alt
+  fun:
+  - ''
+  - t: I
+    h: U2160
+  - t: II
+    h: U2161
+  - t: III
+    h: U2162
+  - t: IV
+    h: U2163
+  - ''
+  - ''
+  - t: Finger Left
+    h: U261A
+  - t: Thumb Up
+    h: U1F44D
+  - t: Thumb Down
+    h: U1F44E
+  - t: Finger Right
+    h: U261B
+  - ''
+  - ''
+  - t: Macro
+    h: UE000
+  - t: Terminal
+    h: UE001
+  - t: Quote
+    h: UE002
+  - t: Over Strike
+    h: UE003
+  - t: Clear Input
+    h: UE004
+  - ''
+  - ''
+  - t: Clear Input
+    h: UE004
+  - t: Clear Screen
+    h: UE005
+  - t: Hold Output
+    h: UE006
+  - t: Stop Output
+    h: UE007
+  - t: Abort
+    h: UE008
+  - t: Break
+    h: UE009
+  - ''
+  - ''
+  - t: System
+    h: UE00A
+  - ''
+  - ''
+  - t: Help
+    h: UE014
+  - ''
+  - ''
+  - t: Help
+    h: UE014
+  - t: Line
+    h: UE013
+  - t: Call
+    h: UE00C
+  - t: Resume
+    h: UE011
+  - ''
+  - ''
+  - ''
+  - ''
+  - t: Network
+    h: UE00B
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - t: Repeat
+    h: UE00E
+  - t: Status
+    h: UE012
+  - ''
+  - ''
+  - ''
+  - t: Mode Lock
+    h: UE010
+  - t: Alt Mode
+    h: UE00F
+  - ''
+  - ''
+  - ''
+  - ''
+  - t: End
+    h: UE00D
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+  - ''
+combos: []
+draw_config:
+  combo_w: 52
+  combo_h: 30
+  arc_radius: 6
+  separate_combo_diagrams: false
+  svg_extra_style: 'rect.mod-shift { fill: #eeeeee; stroke: #8c8c8c; }
+
+    rect.mod-control { fill: #fff3bf; stroke: #d9a300; }
+
+    rect.mod-meta { fill: #ffe2e2; stroke: #e03131; }
+
+    rect.mod-super { fill: #d8fbff; stroke: #00a9c8; }
+
+    rect.mod-alt { fill: #dff0ff; stroke: #6aa8df; }
+
+    rect.mod-hyper { fill: #ffd6ff; stroke: #c026d3; }
+
+    rect.mod-greek { fill: #e4f8e7; stroke: #2f9e44; }
+
+    rect.mod-top { fill: #ffe8cc; stroke: #f08c00; }'

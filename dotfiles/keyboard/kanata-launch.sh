@@ -8,9 +8,13 @@ set -eu
 profile="${1:?usage: kanata-launch.sh <profile>}"
 
 case "$profile" in
-    advantage360) config="$HOME/kinesis.advantage360.kanata.kbd" ;;
-    advantage2)   config="$HOME/kinesis.advantage2.kanata.kbd"   ;;
-    normal)       config="$HOME/normal.kanata.kbd"               ;;
+    advantage360)         config="$HOME/kinesis.advantage360.layered.kanata.kbd" ;;
+    advantage360-chords)  config="$HOME/kinesis.advantage360.kanata.kbd"         ;;
+    advantage360-layered) config="$HOME/kinesis.advantage360.layered.kanata.kbd" ;;
+    advantage2)           config="$HOME/kinesis.advantage2.layered.kanata.kbd"   ;;
+    advantage2-chords)    config="$HOME/kinesis.advantage2.kanata.kbd"           ;;
+    advantage2-layered)   config="$HOME/kinesis.advantage2.layered.kanata.kbd"   ;;
+    normal)               config="$HOME/normal.kanata.kbd"                       ;;
     *) echo "kanata-launch.sh: unknown profile '$profile'" >&2; exit 2 ;;
 esac
 
