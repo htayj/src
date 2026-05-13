@@ -19,11 +19,47 @@
 //
 // Modifier slot layout (final, after resolving inherited bindings):
 //   Lock: <CAPS> (Caps_Lock, latch behaviour from compat/caps)
-//   Mod1: Meta_L  (LALT, thumb Alt; Emacs uses as Meta)
+//   Mod1: Super_L (LWIN)
 //   Mod2: Hyper_L (RWIN)
-//   Mod3: Alt_L   (RALT) -- dedicated Alt slot for stumpwm A-* bindings
-//   Mod4: Super_L (LWIN)
+//   Mod3: Meta_L  (LALT, thumb Alt; Emacs uses as Meta)
+//   Mod4: Alt_L   (RALT) -- stumpwm hard-uses Mod4 as its WM modifier
 //   Mod5: ISO_Level3_Shift (ZEHA) -- Greek layer trigger
+//
+// Space Cadet command-key vocabulary (no physical binding yet -- assign
+// via 'key <SOMEALIAS> { ... [ KEYSYM ] }' or kanata 'arbitrary-code'
+// when wiring a physical position to the function):
+//
+//   Name           XKB keysym         Note
+//   --------------------------------------------------------------------
+//   macro          XF86Tools          (no exact match; F13 also reasonable)
+//   terminal       XF86Terminal
+//   quote          Multi_key          (Compose = literally "quote next")
+//   over-strike    Insert             (toggle insert/overwrite)
+//   clear-input    Clear              (XK_Clear)
+//   clear-screen   XF86Reload         (no exact; F14 also reasonable)
+//   hold-output    Pause              (or ScrollLock; XK_Pause halts xterm)
+//   stop-output    XF86Stop
+//   abort          Cancel             (XK_Cancel)
+//   break          Break              (XK_Break)
+//   resume         XF86AudioPlay      (no exact; F15 also reasonable)
+//   call           XF86Phone
+//   system         Menu
+//   status         XF86Display        (no exact; F16 also reasonable)
+//   network        XF86RotateWindows  (no exact; F17 also reasonable)
+//   delete         Delete
+//   alt-mode       ISO_Group_Latch    (sticky group shift)
+//   mode-lock      ISO_Group_Lock     (toggle to next group)
+//   line           Linefeed
+//   help           Help
+//
+//   I              U2160              (Ⅰ)
+//   II             U2161              (Ⅱ)
+//   III            U2162              (Ⅲ)
+//   IV             U2163              (Ⅳ)
+//   thumbsup       U1F44D             (👍)
+//   thumbsdown     U1F44E             (👎)
+//   fingerleft     U261A              (☚)
+//   fingerright    U261B              (☛)
 
 partial alphanumeric_keys modifier_keys
 xkb_symbols "base" {
