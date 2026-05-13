@@ -73,7 +73,7 @@
   tab   q    w    e    r    t    y    u    i    o    p    [     ]        \
   @roam @sa  @Ms  @Cd  @Sf  g    h    @Sj  @Ck  @Ml  @s;  @qoam          ret
   lsft  z    x    c    v    b    n    m    ,    .    /                   rsft
-  wkup  lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
+  wkup  lctl lmet ralt           spc            ralt cmps rctl      pgup up   pgdn
                                                                    left down rght
 )
 ;;(deflayer modelatch)
@@ -84,7 +84,7 @@
   tab   q    w    e    r    t    y    u    i    o    p    [     ]        \
   @roam @sa  @Ms  @Cd  @Sf  g    h    @Sj  @Ck  @Ml  @s;  @qoam          ret
   lsft  z    x    c    v    b    n    m    ,    .    /                   rsft
-  wkup  lctl lmet lalt           spc            ralt cmps rctl      pgup up   pgdn
+  wkup  lctl lmet ralt           spc            ralt cmps rctl      pgup up   pgdn
                                                                    left down rght
 )
 ;;(deflayer top)
