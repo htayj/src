@@ -200,3 +200,4 @@ export EDITOR='emacsclient -nw'
 # Added by LM Studio CLI (lms)
 [ -d /home/tay/.lmstudio/bin ] && export PATH="$PATH:/home/tay/.lmstudio/bin"
 # End of LM Studio CLI section
+export PATH="$HOME/.local/bin/:$PATH"
