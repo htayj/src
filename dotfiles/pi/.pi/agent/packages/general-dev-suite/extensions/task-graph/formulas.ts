@@ -1,6 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { Edge, Priority, RunMode, RunnerSpec, TaskGraphOptions, TaskGraphRun, TaskKind, TaskNode } from "./schema";
+import type { ComplexityMetadata, Edge, Priority, RunMode, RunnerSpec, TaskGraphOptions, TaskGraphRun, TaskKind, TaskNode } from "./schema";
 import { newId, slugify } from "./store";
 
 const now = () => new Date().toISOString();
@@ -88,6 +88,30 @@ function summarize(input: string) {
   return first.replace(/^#+\s*/, "").slice(0, 90);
 }
 
+export function analyzePlanningComplexity(input: string, mode: RunMode): ComplexityMetadata {
+  const lines = input.split(/\r?\n/);
+  const bulletCount = lines.filter((line) => /^\s*(?:[-*+]\s+|\d+[.)]\s+)/.test(line)).length;
+  const acceptanceCount = lines.filter((line) => /\b(acceptance criteria|must|should|requirement|done when|verify|test|validation|criteria)\b/i.test(line)).length;
+  const uncertaintyCount = lines.filter((line) => /\b(unclear|unknown|maybe|probably|design|architecture|refactor|migrate|replace|decompose|multiple|dependencies|plan|tradeoff|risky|complicated|complex)\b/i.test(line)).length;
+  const lengthScore = input.length > 1200 ? 2 : input.length > 600 ? 1 : 0;
+  const modeScore = mode === "pdo" || mode === "fulcrum" || mode === "ticketdo" ? 2 : 0;
+  const score = Math.min(4, bulletCount) + Math.min(4, acceptanceCount) + Math.min(4, uncertaintyCount) + lengthScore + modeScore;
+  const reasons = [
+    bulletCount ? `${bulletCount} bullet/numbered item${bulletCount === 1 ? "" : "s"}` : undefined,
+    acceptanceCount ? `${acceptanceCount} acceptance/validation term${acceptanceCount === 1 ? "" : "s"}` : undefined,
+    uncertaintyCount ? `${uncertaintyCount} planning/uncertainty term${uncertaintyCount === 1 ? "" : "s"}` : undefined,
+    lengthScore ? "long request" : undefined,
+    modeScore ? `${mode} planning mode` : undefined,
+  ].filter((reason): reason is string => Boolean(reason));
+  const explicitOracle = /\b(oracle|gpt pro|gpt-5\.5 pro|extended thinking|deep design|major design|architecture review)\b/i.test(input);
+  return {
+    score,
+    reasons,
+    shouldDecompose: bulletCount >= 2 || acceptanceCount >= 3 || score >= 5,
+    shouldConsultOracle: explicitOracle || score >= 8 || /\b(architecture|migration|large refactor|complicated|uncertain|ambiguous|tradeoff|risky|deep design)\b/i.test(input),
+  };
+}
+
 function planTask(title: string, full: string, source: string, priority: Priority, metadata: Record<string, unknown> = {}) {
   return makeTask({
     kind: "PLAN",
@@ -99,6 +123,69 @@ function planTask(title: string, full: string, source: string, priority: Priorit
     subagent: { type: "planner", chain: "general-dev-plan", skills: ["build-test-procedures", "tdd"] },
     metadata: { todoTitle: title, planFile: `.pi/dev-suite/task-graph/plans/${slugify(title)}.md`, readOnly: true, ...metadata },
   });
+}
+
+function oracleConsultTask(title: string, full: string, source: string, priority: Priority, blockedBy: string[], metadata: Record<string, unknown> = {}) {
+  return makeTask({
+    kind: "ORACLE_CONSULT",
+    title: `Oracle consult: ${title}`,
+    description: full,
+    priority,
+    blockedBy,
+    source,
+    runner: runner("manual_gate", "oracle-consult", "read"),
+    metadata: {
+      todoTitle: title,
+      readOnly: true,
+      oracle: {
+        requested: true,
+        model: "GPT-5.5 Pro Extended",
+        mode: "browser",
+        noSecrets: true,
+      },
+      awaitingInput: {
+        question: "Use the Oracle MCP/tool in browser mode with GPT-5.5 Pro Extended. Attach or summarize ample non-secret project/task context, then record Oracle's recommendations on this task before continuing.",
+        recommended: "Consult Oracle for planning, decomposition, risks, and validation strategy only. Do not send secrets, credentials, tokens, private keys, .env files, production data, or unrelated personal data.",
+      },
+      ...metadata,
+    },
+  });
+}
+
+function decomposeTask(title: string, full: string, source: string, priority: Priority, blockedBy: string[], metadata: Record<string, unknown> = {}) {
+  return makeTask({
+    kind: "DECOMPOSE",
+    title: `Decompose: ${title}`,
+    description: full,
+    priority,
+    blockedBy,
+    source,
+    runner: runner("chain", "task-decomposer", "read"),
+    subagent: { type: "planner", chain: "general-dev-plan", skills: ["build-test-procedures", "tdd"] },
+    metadata: {
+      todoTitle: title,
+      readOnly: true,
+      decomposition: {
+        expectedArtifact: "decomposition.json",
+      },
+      ...metadata,
+    },
+  });
+}
+
+function appendPlanningGates(run: TaskGraphRun, title: string, full: string, source: string, priority: Priority, blockers: string[], complexity: ComplexityMetadata, options: TaskGraphOptions, metadata: Record<string, unknown> = {}) {
+  let gateIds = [...blockers];
+  const shouldConsultOracle = options.oracleConsult ?? complexity.shouldConsultOracle;
+  const shouldDecompose = options.decompose ?? complexity.shouldDecompose;
+  if (shouldConsultOracle) {
+    const oracle = addTask(run, oracleConsultTask(title, full, source, "A", gateIds, { ...metadata, complexity, oracle: { requested: true, model: "GPT-5.5 Pro Extended", mode: "browser", noSecrets: true, contextPaths: options.oracleContextPaths } }));
+    gateIds = [oracle.id];
+  }
+  if (shouldDecompose) {
+    const decompose = addTask(run, decomposeTask(title, full, source, "A", gateIds, { ...metadata, complexity }));
+    gateIds = [decompose.id];
+  }
+  return gateIds;
 }
 
 export const STAGE_DEFS: Array<{ kind: TaskKind; title: string; runner: RunnerSpec; subagent?: TaskNode["subagent"] }> = [
@@ -205,16 +292,31 @@ export function createRun(cwd: string, mode: RunMode, input: string, options: Ta
     const parsed = parseTodoOrg(cwd, input);
     run.orgState = { todoPath: parsed.file, donePath: path.join(cwd, "DONE.org"), backups: [], parsedTitles: parsed.items.map((i) => i.title) };
     const plans = parsed.items.length ? parsed.items : [{ title: title || "Process TODO", body: input || "Process TODO items", priority: "B" as Priority }];
+    const runComplexity = analyzePlanningComplexity(`${input}\n${plans.map((item) => item.body).join("\n")}`, mode);
     const planIds: string[] = [];
+    const gateIdsByPlan = new Map<string, string[]>();
+    const allPlanGateIds: string[] = [];
     for (const item of plans) {
-      const p = addTask(run, planTask(item.title, item.body, source, item.priority, { orgPath: parsed.file, strict: mode === "todo-strict" }));
+      const itemComplexity = analyzePlanningComplexity(item.body, mode);
+      const p = addTask(run, planTask(item.title, item.body, source, item.priority, { orgPath: parsed.file, strict: mode === "todo-strict", complexity: itemComplexity }));
+      const itemGateIds = appendPlanningGates(run, item.title, item.body, source, item.priority, [p.id], itemComplexity, { ...options, oracleConsult: false }, { planTaskId: p.id, orgPath: parsed.file, strict: mode === "todo-strict" });
       planIds.push(p.id);
+      gateIdsByPlan.set(p.id, itemGateIds);
+      allPlanGateIds.push(...itemGateIds);
       run.rootTaskIds.push(p.id);
     }
-    const go = addTask(run, makeTask({ kind: "GO", title: "Analyze dependencies and launch chains", description: input, blockedBy: planIds, source, runner: runner("formula", "dependency-analysis", "read"), metadata: { formula: "stageChain", strict: mode === "todo-strict" } }));
+    let goBlockers = allPlanGateIds.length ? allPlanGateIds : planIds;
+    const shouldConsultOracle = options.oracleConsult ?? (runComplexity.shouldConsultOracle && plans.length > 1);
+    if (shouldConsultOracle) {
+      const oracle = addTask(run, oracleConsultTask("TODO dependency analysis", input || plans.map((item) => item.body).join("\n\n"), source, "A", goBlockers, { complexity: runComplexity, orgPath: parsed.file }));
+      goBlockers = [oracle.id];
+      run.rootTaskIds.push(oracle.id);
+    }
+    const go = addTask(run, makeTask({ kind: "GO", title: "Analyze dependencies and launch chains", description: input, blockedBy: goBlockers, source, runner: runner("formula", "dependency-analysis", "read"), metadata: { formula: "stageChain", strict: mode === "todo-strict", complexity: runComplexity } }));
     for (const planId of planIds) {
       const p = run.tasks[planId];
-      const chain = appendStageChain(run, p.metadata.todoTitle ?? p.title, p.description, source, [go.id, planId], p.id, { planTaskId: planId, priority: p.priority, strict: mode === "todo-strict" });
+      const itemGates = gateIdsByPlan.get(planId) ?? [planId];
+      const chain = appendStageChain(run, p.metadata.todoTitle ?? p.title, p.description, source, [go.id, ...itemGates], p.id, { planTaskId: planId, priority: p.priority, strict: mode === "todo-strict", complexity: p.metadata.complexity });
       addEdge(run, planId, chain[0].id, "planned item executes after dependency analysis");
     }
     run.rootTaskIds.push(go.id);
@@ -222,19 +324,23 @@ export function createRun(cwd: string, mode: RunMode, input: string, options: Ta
   }
 
   if (mode === "pdo" || mode === "fulcrum") {
-    const plan = addTask(run, planTask(title, input, source, "B", { formula: "fulcrum", pressureTest: true }));
-    const grill = addTask(run, makeTask({ kind: "GRILL", title: `Resolve open decisions: ${title}`, description: input, blockedBy: [plan.id], source, runner: runner("manual_gate", "fulcrum-grill", "none"), metadata: { todoTitle: title, awaitingInput: { question: "Resolve each open plan decision one at a time before implementation.", recommended: "Accept the recommended plan decisions unless you disagree." } } }));
-    appendStageChain(run, title, input, source, [grill.id], plan.id, { planTaskId: plan.id, grillTaskId: grill.id });
+    const complexity = analyzePlanningComplexity(input, mode);
+    const plan = addTask(run, planTask(title, input, source, "B", { formula: "fulcrum", pressureTest: true, complexity }));
+    const gateIds = appendPlanningGates(run, title, input, source, "B", [plan.id], complexity, options, { planTaskId: plan.id, formula: "fulcrum", pressureTest: true });
+    const grill = addTask(run, makeTask({ kind: "GRILL", title: `Resolve open decisions: ${title}`, description: input, blockedBy: gateIds, source, runner: runner("manual_gate", "fulcrum-grill", "none"), metadata: { todoTitle: title, complexity, awaitingInput: { question: "Resolve each open plan decision one at a time before implementation.", recommended: "Accept the recommended plan decisions unless you disagree." } } }));
+    appendStageChain(run, title, input, source, [grill.id], plan.id, { planTaskId: plan.id, grillTaskId: grill.id, complexity, complex: complexity.shouldDecompose || complexity.shouldConsultOracle });
     run.rootTaskIds.push(plan.id);
     return run;
   }
 
   if (mode === "ticketdo") {
-    const ticket = addTask(run, makeTask({ kind: "DIRECT", title: `Resolve ticket: ${title}`, description: input, source, runner: runner("manual_gate", "ticket-resolution", "network"), metadata: { ticketKey: input.trim(), awaitingInput: { question: "Fetch or paste the ticket acceptance criteria, then continue through the pdo formula.", recommended: "Use ticket acceptance criteria as source of truth." } } }));
-    const plan = addTask(run, planTask(title, input, source, "B", { ticketKey: input.trim() }));
+    const complexity = analyzePlanningComplexity(input, mode);
+    const ticket = addTask(run, makeTask({ kind: "DIRECT", title: `Resolve ticket: ${title}`, description: input, source, runner: runner("manual_gate", "ticket-resolution", "network"), metadata: { ticketKey: input.trim(), complexity, awaitingInput: { question: "Fetch or paste the ticket acceptance criteria, then continue through the pdo formula.", recommended: "Use ticket acceptance criteria as source of truth." } } }));
+    const plan = addTask(run, planTask(title, input, source, "B", { ticketKey: input.trim(), complexity }));
     addEdge(run, ticket.id, plan.id, "ticket spec feeds plan");
-    const grill = addTask(run, makeTask({ kind: "GRILL", title: `Ticket decision pressure: ${title}`, description: input, blockedBy: [plan.id], source, runner: runner("manual_gate", "ticket-fulcrum-grill", "none"), metadata: { ticketKey: input.trim(), awaitingInput: { question: "Resolve implementation choices without violating acceptance criteria.", recommended: "Keep acceptance criteria unchanged." } } }));
-    appendStageChain(run, title, input, source, [grill.id], plan.id, { planTaskId: plan.id, ticketKey: input.trim() });
+    const gateIds = appendPlanningGates(run, title, input, source, "B", [plan.id], complexity, options, { planTaskId: plan.id, ticketKey: input.trim() });
+    const grill = addTask(run, makeTask({ kind: "GRILL", title: `Ticket decision pressure: ${title}`, description: input, blockedBy: gateIds, source, runner: runner("manual_gate", "ticket-fulcrum-grill", "none"), metadata: { ticketKey: input.trim(), complexity, awaitingInput: { question: "Resolve implementation choices without violating acceptance criteria.", recommended: "Keep acceptance criteria unchanged." } } }));
+    appendStageChain(run, title, input, source, [grill.id], plan.id, { planTaskId: plan.id, ticketKey: input.trim(), complexity, complex: complexity.shouldDecompose || complexity.shouldConsultOracle });
     run.rootTaskIds.push(ticket.id);
     return run;
   }
@@ -249,8 +355,10 @@ export function createRun(cwd: string, mode: RunMode, input: string, options: Ta
     return run;
   }
 
-  const plan = addTask(run, planTask(title, input, source, "B"));
-  appendStageChain(run, title, input, source, [plan.id], plan.id, { planTaskId: plan.id });
+  const complexity = analyzePlanningComplexity(input, mode);
+  const plan = addTask(run, planTask(title, input, source, "B", { complexity }));
+  const gateIds = appendPlanningGates(run, title, input, source, "B", [plan.id], complexity, options, { planTaskId: plan.id });
+  appendStageChain(run, title, input, source, gateIds, plan.id, { planTaskId: plan.id, complexity, complex: complexity.shouldDecompose || complexity.shouldConsultOracle });
   run.rootTaskIds.push(plan.id);
   return run;
 }

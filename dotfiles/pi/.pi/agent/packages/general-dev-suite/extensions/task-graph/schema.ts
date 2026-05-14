@@ -16,6 +16,8 @@ export type TaskStatus = (typeof TASK_STATUSES)[number];
 export const TASK_KINDS = [
   "INIT",
   "PLAN",
+  "ORACLE_CONSULT",
+  "DECOMPOSE",
   "GRILL",
   "PLANNED",
   "GO",
@@ -67,6 +69,12 @@ export interface TaskGraphOptions {
   mutateOrg?: boolean;
   maxParallel?: number;
   dryRun?: boolean;
+  /** Force or suppress Oracle consultation; omit for complexity-based auto mode. */
+  oracleConsult?: boolean;
+  /** Force or suppress decomposition; omit for complexity-based auto mode. */
+  decompose?: boolean;
+  /** Optional non-secret context paths to include in Oracle instructions. */
+  oracleContextPaths?: string[];
 }
 
 export interface WritePolicy {
@@ -131,6 +139,30 @@ export interface ApprovalRecord {
   note?: string;
 }
 
+export interface ComplexityMetadata {
+  score: number;
+  reasons: string[];
+  shouldDecompose: boolean;
+  shouldConsultOracle: boolean;
+}
+
+export interface OracleMetadata {
+  requested: boolean;
+  model: "GPT-5.5 Pro Extended";
+  mode: "browser";
+  noSecrets: boolean;
+  contextPaths?: string[];
+  oracleSessionSlug?: string;
+}
+
+export interface DecompositionMetadata {
+  expectedArtifact?: string;
+  subtaskCountHint?: number;
+  sourceTaskId?: string;
+  expandedAt?: string;
+  expandedTaskIds?: string[];
+}
+
 export interface TaskMetadata {
   source: string;
   todoTitle?: string;
@@ -148,6 +180,9 @@ export interface TaskMetadata {
   approvals?: ApprovalRecord[];
   awaitingInput?: AwaitingInput;
   failureContext?: FailureRecord;
+  complexity?: ComplexityMetadata;
+  oracle?: OracleMetadata;
+  decomposition?: DecompositionMetadata;
   deferred?: boolean;
   [key: string]: unknown;
 }

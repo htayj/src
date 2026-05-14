@@ -1,8 +1,9 @@
+import * as fs from "node:fs";
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
-import type { FailureRecord, RunMode, TaskGraphOptions, TaskGraphRun, TaskKind, TaskStatus } from "./schema";
+import type { FailureRecord, Priority, RunMode, TaskGraphOptions, TaskGraphRun, TaskKind, TaskStatus } from "./schema";
 import { TASK_KINDS, TASK_STATUSES, terminalDone } from "./schema";
-import { createAdHocTask, createRun } from "./formulas";
+import { appendStageChain, createAdHocTask, createRun } from "./formulas";
 import { footerStatus, renderReadyInstructions, renderStatus } from "./display";
 import { aliasTaskId, nextNumericId, readyTasks, routeFailure, updateTask } from "./scheduler";
 import { appendEvent, listRuns, loadRun, saveRun, writeArtifact } from "./store";
@@ -94,6 +95,178 @@ function unlinkDependency(run: TaskGraphRun, from: string, to: string) {
   run.edges = run.edges.filter((edge) => !(edge.from === from && edge.to === to && edge.type === "depends_on"));
 }
 
+interface DecompositionSubtask {
+  id: string;
+  title: string;
+  description?: string;
+  priority?: Priority;
+  dependsOn?: string[];
+  acceptanceCriteria?: string[];
+  suggestedChecks?: string[];
+  expectedWritePaths?: string[];
+}
+
+interface DecompositionPayload {
+  subtasks: DecompositionSubtask[];
+  notes?: string[];
+}
+
+function readDecompositionJson(task: TaskGraphRun["tasks"][string], provided?: string) {
+  if (provided?.trim()) return provided;
+  const artifact = task.artifacts.find((a) => a.path?.endsWith("decomposition.json") || a.type === "decomposition");
+  if (!artifact?.path) throw new Error("No decompositionJson provided and no decomposition.json artifact found on the task");
+  return fs.readFileSync(artifact.path, "utf8");
+}
+
+function parseDecompositionPayload(raw: string): DecompositionPayload {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`Invalid decomposition JSON: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  if (!parsed || typeof parsed !== "object" || !Array.isArray((parsed as { subtasks?: unknown }).subtasks)) {
+    throw new Error("Decomposition JSON must be an object with a subtasks array");
+  }
+  const subtasks = (parsed as { subtasks: unknown[] }).subtasks.map((entry, index) => {
+    if (!entry || typeof entry !== "object") throw new Error(`subtasks[${index}] must be an object`);
+    const obj = entry as Record<string, unknown>;
+    const id = typeof obj.id === "string" && obj.id.trim() ? obj.id.trim() : `subtask-${index + 1}`;
+    const title = typeof obj.title === "string" && obj.title.trim() ? obj.title.trim() : undefined;
+    if (!title) throw new Error(`subtasks[${index}].title is required`);
+    const priority = obj.priority === "A" || obj.priority === "B" || obj.priority === "C" ? obj.priority : "B";
+    const stringArray = (value: unknown) => Array.isArray(value) ? value.filter((x): x is string => typeof x === "string" && x.trim().length > 0).map((x) => x.trim()) : undefined;
+    return {
+      id,
+      title,
+      description: typeof obj.description === "string" && obj.description.trim() ? obj.description.trim() : title,
+      priority,
+      dependsOn: stringArray(obj.dependsOn) ?? [],
+      acceptanceCriteria: stringArray(obj.acceptanceCriteria) ?? [],
+      suggestedChecks: stringArray(obj.suggestedChecks) ?? [],
+      expectedWritePaths: stringArray(obj.expectedWritePaths) ?? [],
+    } satisfies DecompositionSubtask;
+  });
+  if (subtasks.length === 0) throw new Error("Decomposition must contain at least one subtask");
+  const ids = new Set<string>();
+  for (const subtask of subtasks) {
+    if (ids.has(subtask.id)) throw new Error(`Duplicate decomposition subtask id: ${subtask.id}`);
+    ids.add(subtask.id);
+  }
+  for (const subtask of subtasks) {
+    for (const dep of subtask.dependsOn ?? []) {
+      if (!ids.has(dep)) throw new Error(`Unknown dependency ${dep} on subtask ${subtask.id}`);
+    }
+  }
+  assertNoDecompositionCycle(subtasks);
+  const notes = Array.isArray((parsed as { notes?: unknown }).notes)
+    ? (parsed as { notes: unknown[] }).notes.filter((x): x is string => typeof x === "string")
+    : undefined;
+  return { subtasks, notes };
+}
+
+function assertNoDecompositionCycle(subtasks: DecompositionSubtask[]) {
+  const byId = new Map(subtasks.map((subtask) => [subtask.id, subtask]));
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const visit = (id: string, path: string[]) => {
+    if (visited.has(id)) return;
+    if (visiting.has(id)) throw new Error(`Decomposition dependency cycle: ${[...path, id].join(" -> ")}`);
+    visiting.add(id);
+    for (const dep of byId.get(id)?.dependsOn ?? []) visit(dep, [...path, id]);
+    visiting.delete(id);
+    visited.add(id);
+  };
+  for (const subtask of subtasks) visit(subtask.id, []);
+}
+
+function lastActiveTaskId(taskIds: string[], run: TaskGraphRun) {
+  const active = [...taskIds].reverse().find((id) => run.tasks[id]?.status !== "skipped");
+  return active ?? taskIds[taskIds.length - 1];
+}
+
+const FALLBACK_STAGE_KINDS = new Set<TaskKind>(["IMPLEMENT", "COMPILE", "UNIT_TEST", "PERF_TEST", "CODE_REVIEW", "RESTART", "API_TEST", "E2E_TEST", "UX_REVIEW", "SPEC_UPDATE", "LINT", "COMMIT", "PUSH"]);
+
+function reachableFrom(run: TaskGraphRun, startId: string) {
+  const seen = new Set<string>();
+  const queue = [...(run.tasks[startId]?.blocks ?? [])];
+  while (queue.length) {
+    const id = queue.shift()!;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    queue.push(...(run.tasks[id]?.blocks ?? []));
+  }
+  return seen;
+}
+
+function expandDecompositionIntoChains(run: TaskGraphRun, task: TaskGraphRun["tasks"][string], decompositionJson?: string) {
+  if (task.metadata.decomposition?.expandedAt) {
+    return {
+      alreadyExpanded: true,
+      expandedTaskIds: task.metadata.decomposition.expandedTaskIds ?? [],
+      supersededTaskIds: [] as string[],
+      subtasks: [] as DecompositionSubtask[],
+    };
+  }
+  const payload = parseDecompositionPayload(readDecompositionJson(task, decompositionJson));
+  const firstBySubtask = new Map<string, string>();
+  const lastBySubtask = new Map<string, string>();
+  const expandedTaskIds: string[] = [];
+  const expansionBlockers = [
+    task.id,
+    ...task.blocks.filter((blockedId) => {
+      const blocked = run.tasks[blockedId];
+      return blocked && (blocked.kind === "GRILL" || blocked.kind === "GO") && blocked.status !== "skipped";
+    }),
+  ];
+  for (const subtask of payload.subtasks) {
+    const chain = appendStageChain(run, subtask.title, subtask.description ?? subtask.title, task.metadata.source, expansionBlockers, task.id, {
+      decompositionTaskId: task.id,
+      decompositionSubtaskId: subtask.id,
+      acceptanceCriteria: subtask.acceptanceCriteria ?? [],
+      suggestedChecks: subtask.suggestedChecks ?? [],
+      expectedWritePaths: subtask.expectedWritePaths ?? [],
+      priority: subtask.priority ?? "B",
+      complex: true,
+    });
+    if (!chain.length) continue;
+    firstBySubtask.set(subtask.id, chain[0].id);
+    lastBySubtask.set(subtask.id, lastActiveTaskId(chain.map((t) => t.id), run));
+    expandedTaskIds.push(...chain.map((t) => t.id));
+    run.edges.push({ from: task.id, to: chain[0].id, type: "decomposes_to", reason: `decomposition subtask ${subtask.id}` });
+  }
+  for (const subtask of payload.subtasks) {
+    const first = firstBySubtask.get(subtask.id);
+    if (!first) continue;
+    for (const dep of subtask.dependsOn ?? []) {
+      const depLast = lastBySubtask.get(dep);
+      if (depLast) linkDependency(run, depLast, first, `decomposition dependency ${dep} -> ${subtask.id}`);
+    }
+  }
+  const reachable = reachableFrom(run, task.id);
+  const supersededTaskIds: string[] = [];
+  for (const candidate of Object.values(run.tasks)) {
+    if (!reachable.has(candidate.id)) continue;
+    if (!FALLBACK_STAGE_KINDS.has(candidate.kind)) continue;
+    if (candidate.metadata.decompositionSubtaskId !== undefined) continue;
+    if (candidate.status !== "pending" && candidate.status !== "ready") continue;
+    candidate.status = "skipped";
+    candidate.metadata.skip = { skipped: true, reason: "Superseded by decomposition expansion", gate: "decomposition" };
+    supersededTaskIds.push(candidate.id);
+  }
+  task.metadata.decomposition = {
+    ...(task.metadata.decomposition ?? {}),
+    expectedArtifact: task.metadata.decomposition?.expectedArtifact ?? "decomposition.json",
+    subtaskCountHint: payload.subtasks.length,
+    expandedAt: new Date().toISOString(),
+    expandedTaskIds,
+  };
+  if (payload.notes?.length) {
+    task.artifacts.push(writeArtifact(run, task.id, "decomposition-notes", "decomposition-notes.md", payload.notes.map((note) => `- ${note}`).join("\n"), "Notes from decomposition expansion"));
+  }
+  return { alreadyExpanded: false, expandedTaskIds, supersededTaskIds, subtasks: payload.subtasks };
+}
+
 export default function (pi: ExtensionAPI) {
   pi.on("session_start", async (_event, ctx) => {
     updateUi(ctx, loadRun(ctx.cwd));
@@ -133,11 +306,13 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: "task_graph_create",
     label: "Create Task Graph",
-    description: "Create a durable dependency-aware task/pipeline run. Use pdo/fulcrum for feature work with design choices, do for obvious implementation, todo/todo-strict for TODO.org, ticketdo for ticket-driven work. Executable tasks are intended to run through subagents by default.",
-    promptSnippet: "task_graph_create: create a durable dependent task pipeline for non-trivial work; follow with task_graph_next and task_graph_update.",
+    description: "Create a durable dependency-aware task/pipeline run. Use pdo/fulcrum for feature work with design choices, do for obvious implementation, todo/todo-strict for TODO.org, ticketdo for ticket-driven work. Complex/uncertain inputs may schedule ORACLE_CONSULT and DECOMPOSE gates before implementation. Executable tasks are intended to run through subagents by default.",
+    promptSnippet: "task_graph_create: create a durable dependent task pipeline for non-trivial work; complex inputs may add Oracle/decomposition gates; follow with task_graph_next and task_graph_update.",
     promptGuidelines: [
       "For non-trivial coding work, create or use a task graph instead of free-form TODOs.",
       "Use pdo/fulcrum when design decisions are open; use do when the plan is obvious.",
+      "If ORACLE_CONSULT is ready, call Oracle in browser mode with GPT-5.5 Pro Extended and ample non-secret context, then record the result.",
+      "If DECOMPOSE emits decomposition.json, call task_graph_expand_decomposition before implementation.",
       "Run dependency-ready executable tasks through subagents by default, then record outcomes with task_graph_update.",
     ],
     parameters: Type.Object({
@@ -151,6 +326,9 @@ export default function (pi: ExtensionAPI) {
         mutateOrg: Type.Optional(Type.Boolean()),
         maxParallel: Type.Optional(Type.Number()),
         dryRun: Type.Optional(Type.Boolean()),
+        oracleConsult: Type.Optional(Type.Boolean()),
+        decompose: Type.Optional(Type.Boolean()),
+        oracleContextPaths: Type.Optional(Type.Array(Type.String())),
       })),
     }),
     async execute(_toolCallId, params: { mode: RunMode; input: string; options?: TaskGraphOptions }, _signal, _onUpdate, ctx) {
@@ -185,7 +363,7 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: "task_graph_update",
     label: "Update Task Graph",
-    description: "Record task progress, artifacts, failures, and dependency edits. Use after each subagent/direct task. Failures can route back to implementation automatically when policy allows.",
+    description: "Record task progress, artifacts, failures, and dependency edits. Use after each subagent/direct task. Failures can route back to implementation automatically when policy allows. A succeeded DECOMPOSE task with decomposition.json auto-expands into implementation chains.",
     parameters: Type.Object({
       runId: Type.Optional(Type.String()),
       taskId: Type.String(),
@@ -231,7 +409,9 @@ export default function (pi: ExtensionAPI) {
         task.metadata.awaitingInput = params.awaitingInput;
         task.status = "awaiting_input";
       }
-      if (params.artifact) task.artifacts.push(writeArtifact(run, id, params.artifact.type, params.artifact.filename, params.artifact.content, params.artifact.summary));
+      const writtenArtifact = params.artifact ? writeArtifact(run, id, params.artifact.type, params.artifact.filename, params.artifact.content, params.artifact.summary) : undefined;
+      if (writtenArtifact) task.artifacts.push(writtenArtifact);
+      let autoExpansion: ReturnType<typeof expandDecompositionIntoChains> | undefined;
       if (params.status) {
         const failure: FailureRecord | undefined = params.status === "failed" ? { failedStage: task.kind, failureClass: params.failureClass ?? "unknown", message: params.errorMessage ?? params.summary ?? "Task failed", rawOutput: params.rawOutput } : undefined;
         closeOrOpenAttempt(task, params.status, params.summary, failure);
@@ -243,6 +423,10 @@ export default function (pi: ExtensionAPI) {
         } else {
           appendEvent(run, { type: "task_updated", taskId: id, status: params.status, summary: params.summary });
         }
+        if (params.status === "succeeded" && task.kind === "DECOMPOSE" && params.artifact && (params.artifact.filename === "decomposition.json" || params.artifact.type === "decomposition")) {
+          autoExpansion = expandDecompositionIntoChains(run, task, params.artifact.content);
+          if (!autoExpansion.alreadyExpanded) appendEvent(run, { type: "decomposition_expanded", taskId: id, auto: true, expandedTaskIds: autoExpansion.expandedTaskIds, supersededTaskIds: autoExpansion.supersededTaskIds, subtaskCount: autoExpansion.subtasks.length });
+        }
       } else {
         task.updatedAt = new Date().toISOString();
         appendEvent(run, { type: "task_patched", taskId: id });
@@ -250,7 +434,35 @@ export default function (pi: ExtensionAPI) {
       refreshRunStatus(run);
       saveRun(run);
       updateUi(ctx, run);
-      return text(renderStatus(run), { runId: run.runId, taskId: id, task });
+      return text(renderStatus(run), { runId: run.runId, taskId: id, task, autoExpansion });
+    },
+  });
+
+  pi.registerTool({
+    name: "task_graph_expand_decomposition",
+    label: "Expand Task Graph Decomposition",
+    description: "Expand a completed DECOMPOSE task artifact into multiple dependent implementation/check chains. Use after a DECOMPOSE task attaches decomposition.json.",
+    promptSnippet: "task_graph_expand_decomposition: turn a DECOMPOSE task's decomposition.json into dependent implementation/check chains.",
+    parameters: Type.Object({
+      runId: Type.Optional(Type.String()),
+      taskId: Type.String(),
+      decompositionJson: Type.Optional(Type.String()),
+    }),
+    async execute(_toolCallId, params: { runId?: string; taskId: string; decompositionJson?: string }, _signal, _onUpdate, ctx) {
+      const run = requireRun(ctx, params.runId);
+      const id = aliasTaskId(run, params.taskId) ?? params.taskId;
+      const task = run.tasks[id];
+      if (!task) throw new Error(`Unknown task id: ${params.taskId}`);
+      if (task.kind !== "DECOMPOSE") throw new Error(`Task ${id} is ${task.kind}, not DECOMPOSE`);
+      const expansion = expandDecompositionIntoChains(run, task, params.decompositionJson);
+      if (expansion.alreadyExpanded) {
+        return text(`Decomposition task ${id} was already expanded at ${task.metadata.decomposition?.expandedAt}.`, { runId: run.runId, taskId: id, expandedTaskIds: expansion.expandedTaskIds });
+      }
+      refreshRunStatus(run);
+      saveRun(run);
+      appendEvent(run, { type: "decomposition_expanded", taskId: id, expandedTaskIds: expansion.expandedTaskIds, supersededTaskIds: expansion.supersededTaskIds, subtaskCount: expansion.subtasks.length });
+      updateUi(ctx, run);
+      return text(renderStatus(run, { expanded: true }), { runId: run.runId, taskId: id, expandedTaskIds: expansion.expandedTaskIds, supersededTaskIds: expansion.supersededTaskIds, subtasks: expansion.subtasks });
     },
   });
 

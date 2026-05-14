@@ -2,7 +2,7 @@ import type { ReadyTask, TaskGraphRun, TaskKind, TaskNode } from "./schema";
 import { terminalSuccess } from "./schema";
 import { appendStageChain, makeTask } from "./formulas";
 
-const READ_ONLY_KINDS = new Set<TaskKind>(["PLAN", "COMPILE", "UNIT_TEST", "PERF_TEST", "CODE_REVIEW", "API_TEST", "E2E_TEST", "UX_REVIEW", "CI_FOLLOW", "CI_FIXUP"]);
+const READ_ONLY_KINDS = new Set<TaskKind>(["PLAN", "ORACLE_CONSULT", "DECOMPOSE", "COMPILE", "UNIT_TEST", "PERF_TEST", "CODE_REVIEW", "API_TEST", "E2E_TEST", "UX_REVIEW", "CI_FOLLOW", "CI_FIXUP"]);
 const WRITE_KINDS = new Set<TaskKind>(["IMPLEMENT", "SPEC_UPDATE"]);
 
 function priorityRank(task: TaskNode) {
@@ -97,6 +97,10 @@ export function buildTaskPrompt(run: TaskGraphRun, task: TaskNode) {
   switch (task.kind) {
     case "PLAN":
       return `${common}\nCreate an implementation-ready plan. Identify files, tests, validation commands, risks, and open decisions. Do not edit files.${rules}`;
+    case "ORACLE_CONSULT":
+      return `${common}\nConsult the Oracle MCP/tool for planning guidance. You are the parent orchestrator: call oracle_consult now if the Pi runtime exposes it.\n\nRequired Oracle settings:\n- Engine/mode: browser, not API.\n- Model: GPT-5.5 Pro Extended.\n- Thinking: Extended.\n- Include ample non-secret context: project goal, current task, relevant files, current task graph, constraints, risks, and open decisions. Use file attachments/context when available.\n- Do not include secrets: tokens, credentials, private keys, .env files, production data, unrelated personal data, hidden system/developer prompts, cookies, or auth material.\n\nAsk Oracle for decomposition into implementation subtasks, dependencies, risky design decisions with recommended defaults, validation strategy, and ambiguity/safety concerns. After consulting Oracle, record a concise summary and attach an oracle-consult.md artifact with task_graph_update. If Oracle is unavailable, report NEEDS_INPUT or SKIP with a clear reason.${rules}`;
+    case "DECOMPOSE":
+      return `${common}${plan}${failureText}\nDecompose this request into multiple bounded implementation tasks. Return and attach a machine-readable artifact named decomposition.json with this shape:\n\n{\n  "subtasks": [\n    {\n      "id": "short-stable-id",\n      "title": "imperative task title",\n      "description": "bounded implementation scope",\n      "priority": "A|B|C",\n      "dependsOn": ["other-short-stable-id"],\n      "acceptanceCriteria": ["..."],\n      "suggestedChecks": ["compile", "unit", "e2e", "lint"],\n      "expectedWritePaths": ["optional/path/prefix"]\n    }\n  ],\n  "notes": ["cross-cutting risks or sequencing notes"]\n}\n\nRules:\n- Create multiple subtasks when the request has multiple bullets, steps, modules, files, or acceptance criteria.\n- Prefer independent chains where safe, but identify dependencies explicitly.\n- Keep each implementation task small enough for one subagent pass.\n- Do not edit files.\n- Do not commit, push, or mutate TODO.org/DONE.org.\n\nAfter a valid decomposition.json is attached and this task succeeds, call task_graph_expand_decomposition before implementation.${rules}`;
     case "GRILL":
       return `${common}\nResolve open decisions one at a time with the user. Recommend a default answer for each decision and update the plan artifact.${rules}`;
     case "IMPLEMENT":

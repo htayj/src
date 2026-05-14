@@ -16,10 +16,11 @@ Loaded globally from `~/.pi/agent/settings.json` as a local Pi package. Subagent
 
 The local task graph extension provides:
 
-- `task_graph_create` for `do`, `pdo`/`fulcrum`, `todo`, `todo-strict`, `ticketdo`, and CI follow/fixup runs.
+- `task_graph_create` for `do`, `pdo`/`fulcrum`, `todo`, `todo-strict`, `ticketdo`, and CI follow/fixup runs. Complex inputs are annotated with planning complexity and can schedule `ORACLE_CONSULT` and `DECOMPOSE` gates before implementation.
 - `task_graph_next` for dependency-ready, parallel-safe work with subagent/chain runner prompts.
 - `task_graph_update` for recording status, artifacts, changed files, failure routing, and dependency edits.
+- `task_graph_expand_decomposition` for turning a completed `DECOMPOSE` task's `decomposition.json` artifact into multiple dependent implementation/check chains; `task_graph_update` also auto-expands when a succeeded `DECOMPOSE` task includes that artifact.
 - `task_graph_approve` for explicit commit, push, TODO.org mutation, and other safety gates.
 - `todo` compatibility backed by the same durable graph store.
 
-State is stored under `.pi/dev-suite/task-graph/` in the active project. Commit/push and TODO.org/DONE.org mutations are disabled unless approved.
+State is stored under `.pi/dev-suite/task-graph/` in the active project. Commit/push and TODO.org/DONE.org mutations are disabled unless approved. Oracle consult tasks are manual/read-only gates: the parent agent should call `oracle_consult` in browser mode with GPT-5.5 Pro Extended, attach ample non-secret context, then record the result as an artifact before continuing.
