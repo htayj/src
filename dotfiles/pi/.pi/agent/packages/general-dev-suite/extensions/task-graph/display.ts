@@ -64,6 +64,8 @@ export function renderReadyInstructions(run: TaskGraphRun) {
     lines.push("", `## ${task.id} — ${task.title}`);
     lines.push(`Runner: ${task.runner.kind}:${task.runner.name}`);
     if (task.subagent?.type) lines.push(`Subagent: ${task.subagent.type}`);
+    lines.push(`Context: ${task.context}${task.subagent?.contextReason ? ` (${task.subagent.contextReason})` : ""}`);
+    if (task.subagent?.type) lines.push(`Launch with: subagent({ agent: "${task.subagent.type}", task: <prompt>, context: "${task.context}" })`);
     lines.push(`Locks: ${task.lockKeys.join(", ") || "none"}`);
     lines.push("Prompt:");
     lines.push(task.prompt);

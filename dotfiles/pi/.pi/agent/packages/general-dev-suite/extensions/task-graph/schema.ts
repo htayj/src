@@ -235,6 +235,9 @@ export interface TaskNode {
     model?: string;
     chain?: string;
     skills?: string[];
+    /** Fresh by default: child gets its own context unless fork is justified. */
+    context?: "fresh" | "fork";
+    contextReason?: string;
   };
   attempts: Attempt[];
   artifacts: ArtifactRef[];
@@ -308,6 +311,7 @@ export interface ReadyTask {
   title: string;
   runner: RunnerSpec;
   subagent?: TaskNode["subagent"];
+  context: "fresh" | "fork";
   prompt: string;
   blockedBy: string[];
   lockKeys: string[];

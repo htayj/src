@@ -80,6 +80,7 @@ export function readyTasks(run: TaskGraphRun): ReadyTask[] {
     title: task.title,
     runner: task.runner,
     subagent: task.subagent,
+    context: task.subagent?.context ?? "fresh",
     prompt: buildTaskPrompt(run, task),
     blockedBy: task.blockedBy,
     lockKeys: taskLockKeys(task),
@@ -93,14 +94,14 @@ export function buildTaskPrompt(run: TaskGraphRun, task: TaskNode) {
   const common = `# Task Graph Task\n\nRun: ${run.runId}\nTask: ${task.id}\nKind: ${task.kind}\nTitle: ${task.title}\n\n## Description\n\n${task.description}\n`;
   const plan = planFile ? `\n## Plan artifact\n\nUse plan file: ${planFile}\n` : "";
   const failureText = failure ? `\n## Failure context from previous attempt\n\nStage: ${failure.failedStage ?? "unknown"}\nClass: ${failure.failureClass ?? "unknown"}\nMessage: ${failure.message}\n\n${failure.rawOutput ?? ""}\n` : "";
-  const rules = `\n## Orchestration contract\n\n- Stay within this task's scope.\n- Return a concise report with status PASS, FAIL, SKIP, or NEEDS_INPUT.\n- Include changed files and artifact paths.\n- Do not commit or push unless this task is explicitly COMMIT/PUSH and approval is enabled.\n- If blocked by a product/architecture decision, report NEEDS_INPUT instead of guessing.\n`;
+  const rules = `\n## Orchestration contract\n\n- Stay within this task's scope.\n- Run as a fresh-context child unless this task explicitly requests forked context. The parent must pass all required context in this prompt/artifacts; do not rely on parent conversation history.\n- Return a concise report with status PASS, FAIL, SKIP, or NEEDS_INPUT.\n- Include changed files and artifact paths.\n- Do not commit or push unless this task is explicitly COMMIT/PUSH and approval is enabled.\n- If blocked by a product/architecture decision, report NEEDS_INPUT instead of guessing.\n`;
   switch (task.kind) {
     case "PLAN":
       return `${common}\nCreate an implementation-ready plan. Identify files, tests, validation commands, risks, and open decisions. Do not edit files.${rules}`;
     case "ORACLE_CONSULT":
       return `${common}\nConsult the Oracle MCP/tool for planning guidance. You are the parent orchestrator: call oracle_consult now if the Pi runtime exposes it.\n\nRequired Oracle settings:\n- Engine/mode: browser, not API.\n- Model: GPT-5.5 Pro Extended.\n- Thinking: Extended.\n- Include ample non-secret context: project goal, current task, relevant files, current task graph, constraints, risks, and open decisions. Use file attachments/context when available.\n- Do not include secrets: tokens, credentials, private keys, .env files, production data, unrelated personal data, hidden system/developer prompts, cookies, or auth material.\n\nAsk Oracle for decomposition into implementation subtasks, dependencies, risky design decisions with recommended defaults, validation strategy, and ambiguity/safety concerns. After consulting Oracle, record a concise summary and attach an oracle-consult.md artifact with task_graph_update. If Oracle is unavailable, report NEEDS_INPUT or SKIP with a clear reason.${rules}`;
     case "DECOMPOSE":
-      return `${common}${plan}${failureText}\nDecompose this request into multiple bounded implementation tasks. Return and attach a machine-readable artifact named decomposition.json with this shape:\n\n{\n  "subtasks": [\n    {\n      "id": "short-stable-id",\n      "title": "imperative task title",\n      "description": "bounded implementation scope",\n      "priority": "A|B|C",\n      "dependsOn": ["other-short-stable-id"],\n      "acceptanceCriteria": ["..."],\n      "suggestedChecks": ["compile", "unit", "e2e", "lint"],\n      "expectedWritePaths": ["optional/path/prefix"]\n    }\n  ],\n  "notes": ["cross-cutting risks or sequencing notes"]\n}\n\nRules:\n- Create multiple subtasks when the request has multiple bullets, steps, modules, files, or acceptance criteria.\n- Prefer independent chains where safe, but identify dependencies explicitly.\n- Keep each implementation task small enough for one subagent pass.\n- Do not edit files.\n- Do not commit, push, or mutate TODO.org/DONE.org.\n\nAfter a valid decomposition.json is attached and this task succeeds, call task_graph_expand_decomposition before implementation.${rules}`;
+      return `${common}${plan}${failureText}\nDecompose this request into multiple bounded implementation tasks. Return and attach a machine-readable artifact named decomposition.json with this shape:\n\n{\n  "subtasks": [\n    {\n      "id": "short-stable-id",\n      "title": "imperative task title",\n      "description": "bounded implementation scope",\n      "priority": "A|B|C",\n      "dependsOn": ["other-short-stable-id"],\n      "acceptanceCriteria": ["..."],\n      "suggestedChecks": ["compile", "unit", "e2e", "lint"],\n      "expectedWritePaths": ["optional/path/prefix"]\n    }\n  ],\n  "notes": ["cross-cutting risks or sequencing notes"]\n}\n\nRules:\n- Create multiple subtasks when the request has multiple bullets, steps, modules, files, acceptance criteria, or asks to do one task across an enumerated list of things.\n- Prefer independent chains where safe, but identify dependencies explicitly.\n- Keep each implementation task small enough for one subagent pass.\n- Do not edit files.\n- Do not commit, push, or mutate TODO.org/DONE.org.\n\nAfter a valid decomposition.json is attached and this task succeeds, task_graph_update should auto-expand it; call task_graph_expand_decomposition before implementation if it did not.${rules}`;
     case "GRILL":
       return `${common}\nResolve open decisions one at a time with the user. Recommend a default answer for each decision and update the plan artifact.${rules}`;
     case "IMPLEMENT":
@@ -160,7 +161,7 @@ export function routeFailure(run: TaskGraphRun, failedTask: TaskNode, message: s
     parentId: failedTask.parentId,
     source: failedTask.metadata.source,
     runner: { kind: "subagent", name: "implementer", sideEffects: "write", writePolicy: { declaredPaths: [], allowOutsideDeclaredPaths: true, conflictGroup: "workspace-write" } },
-    subagent: { type: "implementer", skills: ["build-test-procedures", "tdd", "implementer"] },
+    subagent: { type: "implementer", skills: ["build-test-procedures", "tdd", "implementer"], context: "fresh", contextReason: "Retry implementation receives explicit failure context; parent conversation history should not be inherited." },
     metadata: { ...failedTask.metadata, chainPosition: 1, iteration: iteration + 1, retryOf: failedTask.id, failureContext: { failedStage: failedTask.kind, failureClass, message, rawOutput } },
   });
   run.tasks[impl.id] = impl;

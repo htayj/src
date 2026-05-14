@@ -344,7 +344,7 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: "task_graph_next",
     label: "Next Task Graph Work",
-    description: "Return dependency-ready parallel-safe tasks with subagent/direct runner prompts. This tool schedules but does not execute; call subagent/default tools for returned executable tasks and record results with task_graph_update.",
+    description: "Return dependency-ready parallel-safe tasks with subagent/direct runner prompts and context mode. This tool schedules but does not execute; call subagent/default tools for returned executable tasks (usually context=fresh) and record results with task_graph_update.",
     parameters: Type.Object({ runId: Type.Optional(Type.String()), markReady: Type.Optional(Type.Boolean()) }),
     async execute(_toolCallId, params: { runId?: string; markReady?: boolean }, _signal, _onUpdate, ctx) {
       const run = requireRun(ctx, params.runId);
