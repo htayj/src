@@ -2,8 +2,15 @@
 description: Run one concrete task through the Pi subagents development chain
 argument-hint: "<task>"
 ---
-Run this concrete task through the saved Pi subagents chain `general-dev-do`: $ARGUMENTS
+Run this concrete task through the local task graph: $ARGUMENTS
 
-Use the `subagent` tool chain directly, or `/run-chain general-dev-do -- $ARGUMENTS` if I am driving it manually. The chain performs: scout context → plan → implement → compile/typecheck verification → unit tests → code review → scoped fix pass.
+Use `task_graph_create` with `mode: "do"`, then drive the graph:
 
-Keep the parent session as orchestrator: synthesize chain output, ask me about unapproved product/architecture decisions, and do not commit or push unless explicitly requested.
+1. Call `task_graph_next` to get dependency-ready work.
+2. Run executable tasks via the returned subagent/chain runner prompts by default.
+3. After each task, call `task_graph_update` with status, summary, changed files, artifacts, or failure context.
+4. Repeat until the graph is complete or blocked.
+
+The default chain is: plan → implement → compile/typecheck verification → unit tests → performance check → code review → restart/API/E2E/UX checks where relevant → spec/lint. Commit/push stages stay skipped unless explicitly approved with `task_graph_approve`.
+
+Keep the parent session as orchestrator: synthesize outputs, ask me about unapproved product/architecture decisions, and do not mutate TODO.org/DONE.org, commit, or push unless explicitly approved through the graph.

@@ -2,10 +2,13 @@
 description: Work through TODO items with Pi subagents pipelines
 argument-hint: "[TODO file or item filter]"
 ---
-Process TODO items with Pi subagents. Scope: $ARGUMENTS
+Process TODO items through the local task graph. Scope: $ARGUMENTS
 
-Find a TODO file (`TODO.md`, `TODO.org`, issues list, or provided path). Pick the next actionable item, then use:
-- `general-dev-plan` when the item needs clarification/planning first.
-- `general-dev-do` when the item is concrete enough to execute.
+Use `task_graph_create` with `mode: "todo"` and `input: $ARGUMENTS` (a path/filter, or empty to use `TODO.org` when present). Then:
 
-Update the TODO item with status/results, then stop unless I explicitly asked for continuous looping. Keep this parent session as orchestrator and do not commit/push unless requested.
+1. Call `task_graph_next` to get dependency-ready planning/execution tasks.
+2. Run executable tasks via the returned subagent/chain runner prompts by default.
+3. Record each result with `task_graph_update`.
+4. Repeat until one actionable item is complete or the graph blocks; continue looping only if I explicitly asked for continuous mode.
+
+Do not mutate `TODO.org`/`DONE.org`, commit, or push unless explicitly approved with `task_graph_approve`.

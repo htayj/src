@@ -4,10 +4,12 @@ argument-hint: "<task>"
 ---
 Plan and execute this task after resolving ambiguities: $ARGUMENTS
 
-Use Pi subagents in two phases:
+Use the local task graph as the orchestrator:
 
-1. Run `general-dev-plan` to gather context and produce an implementation plan.
-2. Ask me one focused question at a time for every material open decision. Prefer your recommended answer in each question.
-3. After decisions are resolved, run `general-dev-do` with the clarified task/plan.
+1. Call `task_graph_create` with `mode: "pdo"` and `input: $ARGUMENTS`.
+2. Call `task_graph_next` to get dependency-ready work. Run executable tasks via the returned subagent/chain runner prompts by default.
+3. For each material open decision, ask me one focused question at a time and record the decision with `task_graph_update`.
+4. After each subagent/direct task, call `task_graph_update` with status, summary, changed files, artifacts, or failure context.
+5. Repeat `task_graph_next` until the graph is complete or blocked.
 
-Keep the parent session as orchestrator and synthesize the final result. Do not commit or push unless explicitly requested.
+Keep the parent session as orchestrator and synthesize the final result. Do not mutate TODO.org/DONE.org, commit, or push unless explicitly approved through the graph.

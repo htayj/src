@@ -14,7 +14,6 @@
     "/home/tay/.pi/agent/packages/general-dev-suite",
     "npm:pi-intercom",
     "npm:pi-subagents",
-    "npm:@juicesharp/rpiv-todo",
     "npm:pi-web-access",
     "npm:pi-powerline-footer",
     "npm:pi-smart-fetch",
@@ -43,6 +42,13 @@
         "statusKey": "provider-usage",
         "position": "right",
         "prefix": "usage",
+        "color": "accent"
+      },
+      {
+        "id": "task-graph",
+        "statusKey": "task-graph",
+        "position": "right",
+        "prefix": "tasks",
         "color": "accent"
       }
     ]
