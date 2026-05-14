@@ -1,6 +1,6 @@
 ---
 name: client-server-typescript-architecture
-description: Use at the start of non-trivial TypeScript client-server work: architecture, feature planning, frontend/backend split, API design, state ownership, project structure, React/Effect/TanStack integration, testing strategy, tooling, or deciding which TS stack skills to use.
+description: "Use at the start of non-trivial TypeScript client-server work: architecture, feature planning, frontend/backend split, API design, state ownership, project structure, React/Effect/TanStack integration, testing strategy, tooling, or deciding which TS stack skills to use."
 ---
 # Client-Server TypeScript Architecture
 

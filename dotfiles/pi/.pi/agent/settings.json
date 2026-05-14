@@ -22,7 +22,17 @@
     "/home/tay/.pi/agent/packages/codex-profile"
   ],
   "skills": [
-    "~/.codex/skills"
+    "~/.codex/skills/cl-charms/SKILL.md",
+    "~/.codex/skills/clim-spec/SKILL.md",
+    "~/.codex/skills/coalton/SKILL.md",
+    "~/.codex/skills/common-lisp/SKILL.md",
+    "~/.codex/skills/croatoan/SKILL.md",
+    "~/.codex/skills/franz-clim-guide/SKILL.md",
+    "~/.codex/skills/guix/SKILL.md",
+    "~/.codex/skills/lispworks-clim-guide/SKILL.md",
+    "~/.codex/skills/mcclim-manual/SKILL.md",
+    "~/.codex/skills/oracle/SKILL.md",
+    "~/.codex/skills/presentation-based-interfaces/SKILL.md"
   ],
   "workingVibe": "lisp machine",
   "powerline": {
