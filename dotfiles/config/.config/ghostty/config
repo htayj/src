@@ -49,3 +49,8 @@ font-family = unscii
 # resize-overlay-duration = 4s 200ms
 theme = CGA
 window-decoration = false
+
+# Keep Ghostty's Kitty-compatible graphics protocol enabled.
+# A value of 0 disables all image protocols; this explicit nonzero limit
+# makes inline image support intentional and easy to audit.
+image-storage-limit = 320000000
