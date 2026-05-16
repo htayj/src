@@ -17,6 +17,7 @@ import { pipeline } from "node:stream/promises";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1";
 const OPENAI_URL = "https://api.openai.com/v1";
+const DEFAULT_OPENROUTER_IMAGE_MODEL = "openai/gpt-5.4-image-2";
 const DEFAULT_OUTPUT_DIR = path.join(process.env.HOME || ".", "Pictures", "pi-images");
 const MAX_IMAGE_BYTES = 20 * 1024 * 1024;
 
@@ -24,16 +25,16 @@ const text = (s: string, details: Record<string, unknown> = {}) => ({ content: [
 
 const MODEL_GUIDE = {
   defaults: {
-    best_generation: "Use the newest available GPT-image model for normal prompt-to-image/editing work. Prior human feedback in this setup preferred newest GPT-image over the tested alternatives for instruction following and coherent results.",
+    best_generation: "Use OpenRouter model openai/gpt-5.4-image-2 for normal prompt-to-image work. This is the specific GPT-image-style model seen in the local OpenRouter WebUI comparison, and prior human feedback preferred it over the tested alternatives.",
     local_workflows: "Use ComfyUI for local/private generation, SDXL/Flux workflows, LoRAs, ControlNet, upscaling, inpainting, queue/history control, and reproducible node graphs.",
     analysis: "Use OpenRouter vision models for image understanding, critique, OCR-ish inspection, UI/screenshot review, and prompt iteration. Prefer stronger Gemini/OpenAI vision models for subtle layout or art critique; use cheaper flash/local vision for rough triage.",
   },
   models: [
     {
-      name: "OpenAI newest GPT-image (via openai_image_generate)",
-      use_when: "Highest quality general image generation/editing, text rendering, following precise natural-language art direction, product/mockup/story images, and final passes.",
-      strengths: ["Best observed local feedback", "strong instruction following", "coherent compositions", "good text/design adherence compared with diffusion defaults", "simple prompt-only workflow"],
-      weaknesses: ["remote/API-cost path", "less workflow-level control than ComfyUI", "not ideal for exact seed reproducibility", "requires OPENAI_API_KEY/PI_OPENAI_API_KEY"],
+      name: "OpenRouter openai/gpt-5.4-image-2 (via openrouter_image_generate)",
+      use_when: "Highest quality general prompt-to-image work from the local WebUI comparison, including text rendering, precise art direction, product/mockup/story images, and final passes.",
+      strengths: ["Best observed local feedback", "specific model from the OpenRouter WebUI comparison", "strong instruction following", "coherent compositions", "good text/design adherence compared with diffusion defaults", "simple prompt-only workflow"],
+      weaknesses: ["remote/API-cost path", "less workflow-level control than ComfyUI", "not ideal for exact seed reproducibility", "requires OPENROUTER_API_KEY/PI_OPENROUTER_API_KEY"],
     },
     {
       name: "ComfyUI Flux/SDXL/checkpoint workflows",
@@ -55,7 +56,7 @@ const MODEL_GUIDE = {
     },
   ],
   workflow: [
-    "For final-quality generation: draft prompt -> openai_image_generate with newest GPT-image -> show_image or /image -> openrouter_image_analyze for critique -> revise prompt/edit.",
+    "For final-quality generation: draft prompt -> openrouter_image_generate with openai/gpt-5.4-image-2 -> show_image or /image -> openrouter_image_analyze for critique -> revise prompt/edit.",
     "For local/control-heavy generation: comfyui_status -> comfyui_models/object_info -> comfyui_workflow/queue_workflow -> comfyui_image -> show_image -> openrouter_image_analyze.",
     "For variants: save every output path, keep the exact prompt/model/seed/workflow in notes or file metadata, and compare with openrouter_image_analyze.",
   ],
@@ -113,6 +114,47 @@ async function writeBase64Image(base64: string, outputDir: string, filename: str
   await fs.promises.mkdir(outDir, { recursive: true });
   await fs.promises.writeFile(out, Buffer.from(base64, "base64"));
   return out;
+}
+
+function extFromDataUrl(dataUrl: string) {
+  const match = /^data:image\/([^;]+);base64,/i.exec(dataUrl);
+  const subtype = match?.[1]?.toLowerCase();
+  if (subtype === "jpeg") return "jpg";
+  return subtype && /^[a-z0-9.+-]+$/.test(subtype) ? subtype : "png";
+}
+
+function extractImageUrlsFromOpenRouter(result: any): string[] {
+  const urls: string[] = [];
+  for (const choice of result?.choices || []) {
+    const message = choice?.message;
+    for (const image of message?.images || []) {
+      const url = image?.image_url?.url || image?.imageUrl?.url;
+      if (typeof url === "string") urls.push(url);
+    }
+    const content = message?.content;
+    if (typeof content === "string") {
+      for (const match of content.matchAll(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/g)) urls.push(match[0]);
+    } else if (Array.isArray(content)) {
+      for (const part of content) {
+        const url = part?.image_url?.url || part?.imageUrl?.url;
+        if (typeof url === "string") urls.push(url);
+        const b64 = typeof part?.b64_json === "string" ? part.b64_json : undefined;
+        if (b64) urls.push(`data:image/png;base64,${b64}`);
+        const inlineData = part?.inlineData || part?.inline_data;
+        if (typeof inlineData?.data === "string") {
+          const mimeType = inlineData.mimeType || inlineData.mime_type || "image/png";
+          urls.push(`data:${mimeType};base64,${inlineData.data}`);
+        }
+      }
+    }
+  }
+  return urls;
+}
+
+async function saveDataUrl(dataUrl: string, outputDir: string, filename: string) {
+  const match = /^data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)$/i.exec(dataUrl.trim());
+  if (!match) throw new Error("Expected image data URL from OpenRouter.");
+  return writeBase64Image(match[1], outputDir, filename);
 }
 
 async function downloadImage(url: string, outputDir: string, filename: string, signal?: AbortSignal) {
@@ -190,6 +232,68 @@ export default function (pi: ExtensionAPI) {
       }, signal);
       const answer = result.choices?.[0]?.message?.content ?? summarize(result, params.max_chars ?? 20000);
       return text(String(answer), { model: body.model, localImages, usage: result.usage, id: result.id });
+    },
+  });
+
+  pi.registerTool({
+    name: "openrouter_image_generate",
+    label: "OpenRouter Image Generate/Edit",
+    description: "Generate or edit images through OpenRouter chat-completions image models. Defaults to openai/gpt-5.4-image-2, the specific model seen in the local OpenRouter WebUI comparison.",
+    promptSnippet: "Generate final-quality images with OpenRouter openai/gpt-5.4-image-2 and save outputs to local files.",
+    promptGuidelines: ["Use openrouter_image_generate for the preferred GPT-image-style generation path from the local WebUI comparison: openai/gpt-5.4-image-2. Save paths can be displayed with show_image or /image."],
+    parameters: Type.Object({
+      prompt: Type.String(),
+      model: Type.Optional(Type.String({ description: "OpenRouter image model. Defaults to PI_OPENROUTER_IMAGE_MODEL or openai/gpt-5.4-image-2." })),
+      paths: Type.Optional(Type.Array(Type.String({ description: "Optional reference images for edit/image-to-image-capable models." }))),
+      urls: Type.Optional(Type.Array(Type.String({ description: "Optional reference image URLs for edit/image-to-image-capable models." }))),
+      count: Type.Optional(Type.Number()),
+      aspect_ratio: Type.Optional(Type.String({ description: "Gemini-compatible hint such as 1:1, 16:9, 9:16." })),
+      resolution: Type.Optional(Type.String({ description: "Gemini-compatible hint such as 1K, 2K, 4K." })),
+      output_dir: Type.Optional(Type.String()),
+      filename_prefix: Type.Optional(Type.String()),
+      show_hint: Type.Optional(Type.Boolean()),
+    }),
+    async execute(_id, params: any, signal, onUpdate, ctx) {
+      const key = apiKey("openrouter");
+      if (!key) throw new Error("OPENROUTER_API_KEY or PI_OPENROUTER_API_KEY is required.");
+      const model = params.model || process.env.PI_OPENROUTER_IMAGE_MODEL || DEFAULT_OPENROUTER_IMAGE_MODEL;
+      const content: any[] = [{ type: "text", text: params.prompt }];
+      const localImages = [];
+      for (const p of params.paths || []) {
+        const converted = await pathToDataUrl(p, ctx.cwd);
+        localImages.push({ path: converted.full, bytes: converted.bytes });
+        content.push({ type: "image_url", image_url: { url: converted.dataUrl } });
+      }
+      for (const url of params.urls || []) content.push({ type: "image_url", image_url: { url } });
+      const imageConfig: Record<string, string> = {};
+      if (params.aspect_ratio) imageConfig.aspect_ratio = params.aspect_ratio;
+      if (params.resolution) imageConfig.image_size = params.resolution;
+      const body: any = {
+        model,
+        messages: [{ role: "user", content: content.length === 1 ? params.prompt : content }],
+        modalities: ["image", "text"],
+        n: Math.max(1, Math.min(Number(params.count || 1), 4)),
+      };
+      if (Object.keys(imageConfig).length > 0) body.image_config = imageConfig;
+      onUpdate?.({ content: [{ type: "text", text: `Generating image with OpenRouter ${model}...` }], details: {} });
+      const result: any = await fetchJson(`${OPENROUTER_URL}/chat/completions`, {
+        method: "POST",
+        headers: { authorization: `Bearer ${key}`, "content-type": "application/json", "http-referer": "https://pi.local", "x-title": "Pi Image Toolkit" },
+        body: JSON.stringify(body),
+      }, signal);
+      const outputDir = params.output_dir || DEFAULT_OUTPUT_DIR;
+      const prefix = safeName(params.filename_prefix || `openrouter-image-${Date.now()}`, "openrouter-image").replace(/\.[^.]+$/, "");
+      const urls = extractImageUrlsFromOpenRouter(result);
+      const files: string[] = [];
+      let i = 0;
+      for (const url of urls) {
+        i += 1;
+        if (url.startsWith("data:image/")) files.push(await saveDataUrl(url, outputDir, `${prefix}-${i}.${extFromDataUrl(url)}`));
+        else files.push(await downloadImage(url, outputDir, `${prefix}-${i}.png`, signal));
+      }
+      if (files.length === 0) throw new Error(`OpenRouter image generation response missing image data: ${summarize(result, 4000)}`);
+      const hint = params.show_hint === false ? "" : "\nDisplay with show_image or /image, e.g. /image " + files[0];
+      return text(`Saved ${files.length} image(s):\n${files.join("\n")}${hint}`, { model, files, localImages, usage: result.usage, id: result.id });
     },
   });
 

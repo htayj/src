@@ -6,12 +6,12 @@ This guide is local-practice oriented rather than a universal benchmark. Model a
 
 | Task | Default | Why |
 |---|---|---|
-| Best final generation/editing | Newest available GPT-image via `openai_image_generate` | Prior human feedback in this setup preferred newest GPT-image. Strong prompt following, coherent scenes, and better text/design adherence. |
+| Best final generation/editing | OpenRouter `openai/gpt-5.4-image-2` via `openrouter_image_generate` | This is the specific model seen in the local OpenRouter WebUI comparison; prior human feedback preferred it. Strong prompt following, coherent scenes, and better text/design adherence. |
 | Local/private generation | ComfyUI | Keeps images local; supports checkpoints, LoRAs, ControlNet, inpainting, upscaling, batching, seed/sampler control, and reusable workflows. |
 | Image analysis/critique | OpenRouter vision model via `openrouter_image_analyze` | Good for visual reasoning, variant comparison, screenshot critique, artifact diagnosis, and revised prompt writing. |
 | Fast private rough analysis | Local LM Studio vision model through normal Pi model selection | No upload/cost, but weaker than top hosted vision models. |
 
-## GPT-image family
+## OpenRouter openai/gpt-5.4-image-2
 
 Use for:
 - final user-facing images;
@@ -30,7 +30,7 @@ Weaknesses:
 - remote API/cost path;
 - less low-level control than ComfyUI;
 - less suitable for exact seeded reproducibility;
-- model names evolve, so check available models and set `PI_OPENAI_IMAGE_MODEL` to the newest GPT-image model if needed.
+- OpenRouter model names evolve, so check available models and set `PI_OPENROUTER_IMAGE_MODEL` if a newer preferred image model replaces `openai/gpt-5.4-image-2`.
 
 ## ComfyUI local workflows
 
@@ -96,7 +96,7 @@ Weaknesses:
 
 ### Highest-quality image loop
 
-1. `openai_image_generate` with newest GPT-image.
+1. `openrouter_image_generate` with `openai/gpt-5.4-image-2`.
 2. `show_image` the saved output.
 3. `openrouter_image_analyze` with the original prompt and image path.
 4. Ask for concrete defects plus a revised prompt/edit instruction.

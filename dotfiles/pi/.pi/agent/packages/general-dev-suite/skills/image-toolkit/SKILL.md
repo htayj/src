@@ -8,7 +8,7 @@ Use this skill for image generation and image analysis work in Pi.
 
 ## First choice by task
 
-1. **Final-quality generation/editing:** use `openai_image_generate` with the newest available GPT-image model. Prior human feedback in this setup preferred the newest GPT-image result over tested alternatives.
+1. **Final-quality generation/editing:** use `openrouter_image_generate` with `openai/gpt-5.4-image-2`. This is the specific model from the local OpenRouter WebUI comparison, and prior human feedback preferred it over tested alternatives.
 2. **Local/private/control-heavy generation:** use ComfyUI tools (`comfyui_status`, `comfyui_models`, `comfyui_object_info`, `comfyui_workflow`, `comfyui_queue_workflow`, `comfyui_image`, `comfyui_upload_image`) for local models, Flux/SDXL/checkpoints, LoRAs, ControlNet, inpainting, upscaling, and reproducible workflows.
 3. **Analysis/critique/revision prompts:** use `openrouter_image_analyze` on generated images/screenshots. Ask it for concrete defects, prompt improvements, and variant ranking.
 4. **Viewing:** use `show_image` or `/image` for local image paths returned by the generators.
@@ -19,7 +19,7 @@ For model-by-model strengths and weaknesses, read [references/model-guide.md](re
 
 1. Call `image_model_guide` if the route is not obvious.
 2. Generate:
-   - `openai_image_generate` for GPT-image final images.
+   - `openrouter_image_generate` for OpenRouter `openai/gpt-5.4-image-2` final images; keep `openai_image_generate` only for direct OpenAI Images API tests or transparent-background OpenAI work.
    - `comfyui_queue_workflow` for local ComfyUI workflows.
 3. Display the saved output with `show_image` or `/image`.
 4. Analyze with `openrouter_image_analyze`, asking for:
