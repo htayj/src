@@ -7,6 +7,7 @@
     "pi-package"
   ],
   "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
     "@mariozechner/pi-coding-agent": "*",
     "typebox": "*"
   },
