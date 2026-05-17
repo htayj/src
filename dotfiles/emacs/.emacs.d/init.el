@@ -201,6 +201,18 @@
   :straight t
   :init
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+;; =============================================================================
+;; Common Lisp
+;; =============================================================================
+(use-package slime
+  :init
+  (setq inferior-lisp-program
+        (or (executable-find "sbcl")
+            (executable-find "ecl")
+            "sbcl"))
+  :custom
+  (slime-contribs '(slime-fancy slime-asdf slime-quicklisp)))
 ;; =============================================================================
 ;; evil mode
 ;; =============================================================================
