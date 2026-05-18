@@ -37,10 +37,6 @@ if [[ "$cmd" =~ git[[:space:]]+reset[[:space:]]+.*--hard ]]; then
   emit_deny "git reset --hard discards uncommitted work. Ask the user first, or save HEAD (git rev-parse HEAD) before proceeding."
 fi
 
-if [[ "$cmd" =~ git[[:space:]]+commit[[:space:]]+.*--amend ]]; then
-  emit_deny "git commit --amend rewrites the previous commit and can destroy work (especially after a failed hook). Create a new commit instead, or confirm with the user."
-fi
-
 if [[ "$cmd" =~ git[[:space:]]+clean[[:space:]]+-[a-zA-Z]*f ]]; then
   emit_deny "git clean -f deletes untracked files. Ask the user first; preview with \`git clean -nxd\`."
 fi
