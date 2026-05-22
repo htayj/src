@@ -210,6 +210,58 @@ it can still be edited before evaluation."
       (float-this)))
 
 ;; ===========================================================================
+;; Mouse-drag frame resize
+;; ===========================================================================
+;; Hold the Alt modifier (the physical Alt, separate from Meta which sits on
+;; the key commonly called "alt") and drag Button3 anywhere inside a frame to
+;; resize that frame's split.  Like iresize but with a pointer.  Operates on
+;; the *frame*, not the window — neighbours shrink/grow to compensate.
+
+(defvar *mouse-resize-step* 8
+  "Pixels of pointer motion per `resize' tick during Alt+Button3 drag.")
+
+(defcommand mouse-resize-frame () ()
+  "Grab the pointer and resize the current frame by drag.
+Press releases trigger exit.  Intended to be bound to a modifier+button
+combo on *top-map* so the button press itself starts the drag."
+  (let* ((screen (current-screen))
+         (root   (screen-root screen))
+         (lx 0) (ly 0))
+    (multiple-value-bind (x y same-screen-p child state-mask)
+        (xlib:query-pointer root)
+      (declare (ignore same-screen-p child state-mask))
+      (setf lx (or x 0) ly (or y 0)))
+    (labels ((on-event (&rest event-slots &key event-key &allow-other-keys)
+               (case event-key
+                 (:button-release :done)
+                 (:motion-notify
+                  (let* ((rx (getf event-slots :root-x))
+                         (ry (getf event-slots :root-y)))
+                    (when (and rx ry)
+                      (let* ((dx (- rx lx))
+                             (dy (- ry ly))
+                             (use-x (>= (abs dx) *mouse-resize-step*))
+                             (use-y (>= (abs dy) *mouse-resize-step*)))
+                        (when (or use-x use-y)
+                          (resize (if use-x dx 0)
+                                  (if use-y dy 0))
+                          (when use-x (setf lx rx))
+                          (when use-y (setf ly ry))))))
+                  t)
+                 ;; Eat these or they backlog and lag the drag.
+                 (:configure-notify t)
+                 (:exposure       t)
+                 (t nil))))
+      (xlib:grab-pointer root '(:button-release :pointer-motion))
+      (unwind-protect
+           (loop for ev = (xlib:process-event *display*
+                                              :handler #'on-event
+                                              :timeout nil
+                                              :discard-p t)
+                 until (eq ev :done))
+        (ungrab-pointer)))))
+
+;; ===========================================================================
 ;; X11 keymap selection
 ;; ===========================================================================
 (defun chomp (s)
@@ -324,6 +376,18 @@ hidden behind the previously displayed window."
 
 ;;; float control
 (define-key *top-map* (kbd "A-f") "my-toggle-float")
+
+;;; Alt+Button3 drag → resize current frame (frame split, not window).
+;;; The kbd parser doesn't accept "ButtonN", so dispatch via an :around
+;;; method on group-button-press for tile-group.  We intercept before the
+;;; default click-to-focus handler so the press doesn't double-act.
+(defmethod group-button-press :around
+    ((group tile-group) button x y where)
+  (declare (ignore x y where))
+  (if (and (eq button :right-button)
+           (intersection (modifiers-alt *modifiers*) *button-state*))
+      (mouse-resize-frame)
+      (call-next-method)))
 
 ;;; focus a group using s-[number]
 (define-key *top-map* (kbd "A-1") "gnew one")
