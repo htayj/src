@@ -19,6 +19,7 @@ if [ -z "${DISPLAY:-}" ] || [ -z "${XAUTHORITY:-}" ]; then
 fi
 
 for stumpish in \
+    "$HOME/.stumpwm.d/modules/util/stumpish/stumpish" \
     "$HOME/.stumpwm.d.immutable/modules/util/stumpish/stumpish" \
     "$HOME/.emacs.d/straight/repos/stumpwm-contrib/util/stumpish/stumpish" \
     /usr/share/stumpwm/contrib/util/stumpish/stumpish
