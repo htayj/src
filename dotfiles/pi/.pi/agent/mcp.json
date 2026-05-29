@@ -51,6 +51,16 @@
       "command": "oracle-mcp",
       "args": [],
       "lifecycle": "lazy",
+      "idleTimeout": 10,
+      "directTools": true
+    },
+    "effect-docs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "effect-mcp@latest"
+      ],
+      "lifecycle": "lazy",
       "idleTimeout": 10
     }
   }
