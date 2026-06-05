@@ -14,6 +14,7 @@ case "$profile" in
     advantage2)           config="$HOME/kinesis.advantage2.layered.kanata.kbd"   ;;
     advantage2-chords)    config="$HOME/kinesis.advantage2.kanata.kbd"           ;;
     advantage2-layered)   config="$HOME/kinesis.advantage2.layered.kanata.kbd"   ;;
+    footswitch|footswitches) config="$HOME/footswitches.kanata.kbd"              ;;
     normal)               config="$HOME/normal.kanata.kbd"                       ;;
     *) echo "kanata-launch.sh: unknown profile '$profile'" >&2; exit 2 ;;
 esac
