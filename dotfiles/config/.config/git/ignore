@@ -1,1 +1,10 @@
 **/.claude/settings.local.json
+
+# Emacs lock / autosave / backup artifacts — recur in every repo and trip
+# clean-tree preconditions (e.g. /todo-bg --stack halted on #translation.json#).
+\#*\#
+.\#*
+*~
+
+# gitlab-ci-local tool cache
+.gitlab-ci-local/
