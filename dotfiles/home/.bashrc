@@ -130,6 +130,7 @@ export PATH="/home/tay/.local/bin:$PATH"
 [ -d /home/tay/.cargo/bin ]           && export PATH="/home/tay/.cargo/bin:$PATH"
 
 alias gtime=/usr/bin/time
+alias gs=git-spice
 
 
 errcho(){ >&2 echo $@; }
