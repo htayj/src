@@ -13,17 +13,21 @@
     "openrouter/google/gemma-4-31b-it"
   ],
   "packages": [
-    "/home/tay/.pi/agent/packages/general-dev-suite",
+    {
+      "source": "/home/tay/.pi/agent/packages/general-dev-suite",
+      "extensions": [
+        "./extensions",
+        "!extensions/task-graph/**"
+      ]
+    },
     "npm:pi-intercom",
     "npm:pi-subagents",
     "npm:pi-web-access",
-    "npm:pi-powerline-footer",
     "npm:pi-smart-fetch",
     "/home/tay/.pi/agent/packages/machine-profile",
     "/home/tay/.pi/agent/packages/codex-profile",
     "npm:pi-mcp-adapter",
     "npm:pi-docparser",
-    "npm:pi-schedule-prompt",
     "git:github.com/mattleong/pi-better-openai"
   ],
   "skills": [
