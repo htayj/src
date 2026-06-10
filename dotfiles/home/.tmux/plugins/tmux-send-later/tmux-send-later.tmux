@@ -14,10 +14,9 @@ cancel_key="${cancel_key:-C-l}"
 
 tmux set-option -gq '@tmux-send-later-command' "$CMD"
 
-tmux bind-key "$schedule_key" command-prompt \
-  -p 'when,target,line' \
-  -I '5m,#{pane_id},' \
-  "run-shell -b '$CMD schedule --at \"%1\" -t \"%2\" -- \"%3\" >/tmp/tmux-send-later.last 2>&1; tmux display-message \"#(cat /tmp/tmux-send-later.last)\"'"
+tmux bind-key "$schedule_key" display-popup -E -w 90% -h 12 \
+  -T 'tmux-send-later' \
+  "$CMD prompt"
 
 tmux bind-key "$list_key" display-popup -E -w 90% -h 70% "$CMD list --all; printf '\nPress Enter to close...'; read -r _"
 

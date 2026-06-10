@@ -10,6 +10,7 @@ tmux-send-later - schedule literal text to be sent to a tmux pane later
 
 Usage:
   tmux-send-later schedule (--in DURATION | --at WHEN) [-t TARGET] [--no-enter] -- LINE
+  tmux-send-later prompt [DEFAULT_TARGET]
   tmux-send-later list [--all]
   tmux-send-later cancel <ID|all>
   tmux-send-later run <ID>
@@ -18,6 +19,7 @@ Usage:
 Examples:
   tmux-send-later schedule --in 5m -t %7 -- make test
   tmux-send-later schedule --at 23:30 -t editor:1.0 -- 'echo done'
+  tmux-send-later prompt %7
   tmux-send-later list
   tmux-send-later cancel tmux-abc123
 
@@ -331,6 +333,53 @@ cancel() {
   cancel_one "$(resolve_job_file "$id")"
 }
 
+prompt_schedule() {
+  local default_target="${1:-${TMUX_SEND_LATER_DEFAULT_TARGET:-}}" when target line rc
+
+  if [[ -z "$default_target" && -n "${TMUX:-}" ]]; then
+    default_target=$(tmux display-message -p '#{pane_id}' 2>/dev/null || true)
+  fi
+  default_target="${default_target:-${TMUX_PANE:-}}"
+
+  printf 'tmux-send-later schedule\n\n'
+  printf 'When [5m]: '
+  IFS= read -r when || return 1
+  when="${when:-5m}"
+
+  if [[ -n "$default_target" ]]; then
+    printf 'Target [%s]: ' "$default_target"
+  else
+    printf 'Target: '
+  fi
+  IFS= read -r target || return 1
+  target="${target:-$default_target}"
+  if [[ -z "$target" ]]; then
+    printf 'Missing target; not scheduling.\n'
+    printf '\nPress Enter to close...'
+    IFS= read -r _ || true
+    return 2
+  fi
+
+  printf 'Line: '
+  IFS= read -r line || return 1
+  if [[ -z "$line" ]]; then
+    printf 'No line entered; not scheduling.\n'
+    printf '\nPress Enter to close...'
+    IFS= read -r _ || true
+    return 2
+  fi
+
+  printf '\n'
+  if schedule --at "$when" -t "$target" -- "$line"; then
+    rc=0
+  else
+    rc=$?
+  fi
+  printf '\nPress Enter to close...'
+  IFS= read -r _ || true
+  return "$rc"
+}
+
 run_one() {
   local job_file
   job_file=$(resolve_job_file "${1:-}")
@@ -368,6 +417,7 @@ main() {
   local command="${1:-}"
   case "$command" in
     schedule) shift; schedule "$@" ;;
+    prompt) shift; prompt_schedule "$@" ;;
     list) shift; list_jobs "$@" ;;
     cancel) shift; cancel "$@" ;;
     run) shift; run_one "$@" ;;

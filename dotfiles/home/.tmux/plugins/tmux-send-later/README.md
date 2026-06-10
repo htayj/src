@@ -9,6 +9,7 @@ The dotfiles package also installs `~/.local/bin/tmux-send-later`.
 ```sh
 tmux-send-later schedule --in 5m -t %7 -- make test
 tmux-send-later schedule --at 23:30 -t editor:1.0 -- 'echo done'
+tmux-send-later prompt %7
 tmux-send-later list
 tmux-send-later list --all
 tmux-send-later cancel tmux-20260610153000-abc123
@@ -31,7 +32,7 @@ run-shell '~/.tmux/plugins/tmux-send-later/tmux-send-later.tmux'
 
 Defaults:
 
-- `prefix S` — prompt for `when,target,line` and schedule.
+- `prefix S` — open a popup form for `when`, `target`, and `line`, then schedule. The default target is the pane where the binding was invoked.
 - `prefix L` — popup with all jobs.
 - `prefix C-l` — prompt to cancel a job id or `all`.
 
