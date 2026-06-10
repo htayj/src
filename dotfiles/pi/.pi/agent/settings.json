@@ -26,6 +26,7 @@
       "extensions": []
     },
     "npm:pi-web-access",
+    "/home/tay/src/pi-dynamic-workflows",
     "npm:pi-smart-fetch",
     "/home/tay/.pi/agent/packages/machine-profile",
     "/home/tay/.pi/agent/packages/codex-profile",

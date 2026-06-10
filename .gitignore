@@ -81,6 +81,7 @@ dotfiles/config/.config/systemd/user/xgame-keep-going-reminder.timer
 /normal.kanata.kbd
 /setup-services.sh
 /manna-cadet/
+/pi-dynamic-workflows/
 /ComfyUI/
 /DorXNG/
 /SenseNova-U1/
