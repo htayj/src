@@ -21,7 +21,10 @@
       ]
     },
     "npm:pi-intercom",
-    "npm:pi-subagents",
+    {
+      "source": "npm:pi-subagents",
+      "extensions": []
+    },
     "npm:pi-web-access",
     "npm:pi-smart-fetch",
     "/home/tay/.pi/agent/packages/machine-profile",
