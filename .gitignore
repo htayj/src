@@ -18,6 +18,7 @@ claudeoauth.txt
 .pi/
 !dotfiles/pi/.pi/
 !dotfiles/pi/.pi/**
+dotfiles/pi/.pi/agent/packages/*/.pi/
 .codex
 .serena/project.local.yml
 .aider.chat.history.md
@@ -30,6 +31,9 @@ claudeoauth.txt
 **/tree-sitter/
 **/eln-cache/
 **/auto-save-list/
+**/__pycache__/
+*.py[cod]
+dotfiles/clawmacs/.clawmacs.d/packages/
 dotfiles/stumpwm/stumpwm.log
 dotfiles/config/.config/htop/htop_history
 

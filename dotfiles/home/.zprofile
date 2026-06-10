@@ -2,3 +2,7 @@
 source /etc/profile
 # Set up the home environment profile.
 source ~/.profile
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/tay/.local/bin:$PATH"

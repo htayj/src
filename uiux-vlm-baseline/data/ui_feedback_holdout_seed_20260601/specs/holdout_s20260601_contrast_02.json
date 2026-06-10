@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "id": "holdout_s20260601_contrast_02",
+  "components": [
+    {
+      "id": "button",
+      "role": "button",
+      "box": [
+        381,
+        263,
+        644,
+        329
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "contrast",
+      "type": "contrast",
+      "target": "button",
+      "min_ratio": 4.5
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

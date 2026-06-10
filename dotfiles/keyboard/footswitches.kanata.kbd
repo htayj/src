@@ -23,20 +23,20 @@
   -------------------------------------------------------------------------- |#
 
 (defsrc
-  f13 f14 f15 f16
+  ralt f24 menu rmet
 )
 
 (defalias
   ;; Edit these four aliases to rebind the foot switches without opening the
   ;; firmware flasher. Examples: `mute', `volu', `vold', `lctl', `S-f13'.
-  fs1 f13
+  fs1 kp1
   fs2 f14
   fs3 f15
   fs4 f16
 )
 
 (deflayer base
-  @fs1 @fs2 @fs3 @fs4
+  f1 f2 f3 f4
 )
 
 (defcfg

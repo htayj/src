@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "image": "data/local_feedback_sample/feedback_issues.png",
+  "spec_id": null,
+  "components": [
+    {
+      "id": "auto_1",
+      "role": "panel",
+      "box": [
+        56,
+        48,
+        1065,
+        671
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 6428
+      }
+    },
+    {
+      "id": "auto_2",
+      "role": "card",
+      "box": [
+        636,
+        172,
+        1011,
+        551
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 70640
+      }
+    },
+    {
+      "id": "auto_3",
+      "role": "button",
+      "box": [
+        120,
+        176,
+        301,
+        239
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 11213
+      }
+    },
+    {
+      "id": "auto_4",
+      "role": "button",
+      "box": [
+        340,
+        188,
+        549,
+        251
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 12961
+      }
+    },
+    {
+      "id": "auto_5",
+      "role": "card",
+      "box": [
+        120,
+        288,
+        321,
+        469
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 36085
+      }
+    },
+    {
+      "id": "auto_6",
+      "role": "card",
+      "box": [
+        364,
+        288,
+        565,
+        469
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 36085
+      }
+    },
+    {
+      "id": "auto_7",
+      "role": "button",
+      "box": [
+        120,
+        520,
+        521,
+        627
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 41755
+      }
+    },
+    {
+      "id": "auto_8",
+      "role": "button",
+      "box": [
+        570,
+        520,
+        731,
+        583
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 9959
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "auto-contrast-auto_3",
+      "type": "contrast",
+      "status": "fail",
+      "severity": "fail",
+      "message": "contrast ratio is 3.45:1",
+      "targets": [
+        "auto_3"
+      ],
+      "metrics": {
+        "foreground_box": [
+          200,
+          196,
+          220,
+          204
+        ],
+        "foreground_rgb": [
+          193.5,
+          211.5,
+          249.0
+        ],
+        "background_rgb": [
+          37.0,
+          99.0,
+          235.0
+        ],
+        "contrast_ratio": 3.4496514700894125,
+        "min_ratio": 4.5
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": "Increase contrast to at least 4.5:1."
+    },
+    {
+      "id": "auto-contrast-auto_4",
+      "type": "contrast",
+      "status": "fail",
+      "severity": "fail",
+      "message": "contrast ratio is 3.58:1",
+      "targets": [
+        "auto_4"
+      ],
+      "metrics": {
+        "foreground_box": [
+          428,
+          208,
+          461,
+          216
+        ],
+        "foreground_rgb": [
+          199.0,
+          215.0,
+          250.0
+        ],
+        "background_rgb": [
+          37.0,
+          99.0,
+          235.0
+        ],
+        "contrast_ratio": 3.575907935871457,
+        "min_ratio": 4.5
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": "Increase contrast to at least 4.5:1."
+    },
+    {
+      "id": "auto-contrast-auto_8",
+      "type": "contrast",
+      "status": "fail",
+      "severity": "fail",
+      "message": "contrast ratio is 2.03:1",
+      "targets": [
+        "auto_8"
+      ],
+      "metrics": {
+        "foreground_box": [
+          623,
+          540,
+          679,
+          548
+        ],
+        "foreground_rgb": [
+          132.0,
+          137.0,
+          151.0
+        ],
+        "background_rgb": [
+          80.0,
+          88.0,
+          108.0
+        ],
+        "contrast_ratio": 2.03358421859738,
+        "min_ratio": 4.5
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": "Increase contrast to at least 4.5:1."
+    },
+    {
+      "id": "auto-button-top-alignment",
+      "type": "alignment",
+      "status": "fail",
+      "severity": "fail",
+      "message": "top alignment spread is 12.0px",
+      "targets": [
+        "auto_3",
+        "auto_4"
+      ],
+      "metrics": {
+        "edge": "top",
+        "values_px": [
+          176.0,
+          188.0
+        ],
+        "delta_px": 12.0,
+        "tolerance_px": 6.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": "Align top values within 6px; current spread is 12.0px."
+    },
+    {
+      "id": "auto-card-spacing",
+      "type": "spacing_consistency",
+      "status": "fail",
+      "severity": "fail",
+      "message": "x-axis gap spread is 28.0px",
+      "targets": [
+        "auto_5",
+        "auto_6",
+        "auto_2"
+      ],
+      "metrics": {
+        "axis": "x",
+        "gaps_px": [
+          43.0,
+          71.0
+        ],
+        "delta_px": 28.0,
+        "tolerance_px": 8.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": "Make adjacent x-axis gaps consistent; spread is 28.0px."
+    }
+  ],
+  "issues": [
+    {
+      "check_id": "auto-contrast-auto_3",
+      "severity": "fail",
+      "message": "contrast ratio is 3.45:1",
+      "suggestion": "Increase contrast to at least 4.5:1."
+    },
+    {
+      "check_id": "auto-contrast-auto_4",
+      "severity": "fail",
+      "message": "contrast ratio is 3.58:1",
+      "suggestion": "Increase contrast to at least 4.5:1."
+    },
+    {
+      "check_id": "auto-contrast-auto_8",
+      "severity": "fail",
+      "message": "contrast ratio is 2.03:1",
+      "suggestion": "Increase contrast to at least 4.5:1."
+    },
+    {
+      "check_id": "auto-button-top-alignment",
+      "severity": "fail",
+      "message": "top alignment spread is 12.0px",
+      "suggestion": "Align top values within 6px; current spread is 12.0px."
+    },
+    {
+      "check_id": "auto-card-spacing",
+      "severity": "fail",
+      "message": "x-axis gap spread is 28.0px",
+      "suggestion": "Make adjacent x-axis gaps consistent; spread is 28.0px."
+    }
+  ],
+  "summary": {
+    "pass": 0,
+    "fail": 5,
+    "warning": 0,
+    "needs_review": 0,
+    "error": 0
+  },
+  "diagnostics": {
+    "used_fields": [
+      "image_pixels",
+      "auto_detection"
+    ],
+    "warnings": [],
+    "detected_count": 8
+  },
+  "artifacts": {
+    "annotation": "results/local-feedback-auto-annotated.png",
+    "markdown": "results/local-feedback-auto.md"
+  }
+}

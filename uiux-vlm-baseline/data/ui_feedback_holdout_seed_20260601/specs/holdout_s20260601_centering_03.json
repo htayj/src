@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "holdout_s20260601_centering_03",
+  "components": [
+    {
+      "id": "button",
+      "role": "button",
+      "box": [
+        426,
+        218,
+        546,
+        338
+      ]
+    },
+    {
+      "id": "icon",
+      "role": "icon",
+      "box": [
+        453,
+        245,
+        519,
+        311
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "centering",
+      "type": "content_centering",
+      "target": "button",
+      "content": "icon",
+      "tolerance_px": 6
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

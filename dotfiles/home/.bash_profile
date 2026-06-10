@@ -22,3 +22,7 @@ if [ -e /home/tay/.nix-profile/etc/profile.d/nix.sh ]; then . /home/tay/.nix-pro
 export PATH="$PATH:/home/tay/.lmstudio/bin"
 # End of LM Studio CLI section
 
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/tay/.local/bin:$PATH"

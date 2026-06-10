@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "holdout_s20260525_padding_02",
+  "components": [
+    {
+      "id": "panel",
+      "role": "panel",
+      "box": [
+        252,
+        192,
+        654,
+        461
+      ]
+    },
+    {
+      "id": "content",
+      "role": "content",
+      "box": [
+        297,
+        256,
+        609,
+        419
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "padding",
+      "type": "padding_balance",
+      "target": "panel",
+      "content": "content",
+      "tolerance_px": 8
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

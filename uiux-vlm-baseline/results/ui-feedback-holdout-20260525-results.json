@@ -1,0 +1,725 @@
+{
+  "manifest": "data/ui_feedback_holdout_seed_20260525/manifest.jsonl",
+  "total": 28,
+  "passed": 28,
+  "accuracy": 1.0,
+  "by_family": {
+    "alignment": {
+      "total": 4,
+      "passed": 4
+    },
+    "size": {
+      "total": 4,
+      "passed": 4
+    },
+    "spacing": {
+      "total": 4,
+      "passed": 4
+    },
+    "padding": {
+      "total": 4,
+      "passed": 4
+    },
+    "centering": {
+      "total": 4,
+      "passed": 4
+    },
+    "texture": {
+      "total": 4,
+      "passed": 4
+    },
+    "contrast": {
+      "total": 4,
+      "passed": 4
+    }
+  },
+  "failures": [],
+  "results": [
+    {
+      "id": "holdout_s20260525_alignment_01",
+      "family": "alignment",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_alignment_01.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_alignment_01.json",
+      "expected": {
+        "alignment": "fail"
+      },
+      "observed": {
+        "alignment": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "alignment",
+          "severity": "fail",
+          "message": "top alignment spread is 11.0px",
+          "suggestion": "Align top values within 4px; current spread is 11.0px."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_alignment_02",
+      "family": "alignment",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_alignment_02.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_alignment_02.json",
+      "expected": {
+        "alignment": "pass"
+      },
+      "observed": {
+        "alignment": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_alignment_03",
+      "family": "alignment",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_alignment_03.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_alignment_03.json",
+      "expected": {
+        "alignment": "fail"
+      },
+      "observed": {
+        "alignment": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "alignment",
+          "severity": "fail",
+          "message": "top alignment spread is 11.0px",
+          "suggestion": "Align top values within 4px; current spread is 11.0px."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_alignment_04",
+      "family": "alignment",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_alignment_04.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_alignment_04.json",
+      "expected": {
+        "alignment": "pass"
+      },
+      "observed": {
+        "alignment": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_size_01",
+      "family": "size",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_size_01.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_size_01.json",
+      "expected": {
+        "size": "pass"
+      },
+      "observed": {
+        "size": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_size_02",
+      "family": "size",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_size_02.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_size_02.json",
+      "expected": {
+        "size": "fail"
+      },
+      "observed": {
+        "size": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "size",
+          "severity": "fail",
+          "message": "size spread width=24.0px height=12.0px",
+          "suggestion": "Make compared components the same size or update the spec tolerance."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_size_03",
+      "family": "size",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_size_03.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_size_03.json",
+      "expected": {
+        "size": "pass"
+      },
+      "observed": {
+        "size": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_size_04",
+      "family": "size",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_size_04.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_size_04.json",
+      "expected": {
+        "size": "fail"
+      },
+      "observed": {
+        "size": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "size",
+          "severity": "fail",
+          "message": "size spread width=16.0px height=0.0px",
+          "suggestion": "Make compared components the same size or update the spec tolerance."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_spacing_01",
+      "family": "spacing",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_spacing_01.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_spacing_01.json",
+      "expected": {
+        "spacing": "fail"
+      },
+      "observed": {
+        "spacing": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "spacing",
+          "severity": "fail",
+          "message": "x-axis gap spread is 18.0px",
+          "suggestion": "Make adjacent x-axis gaps consistent; spread is 18.0px."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_spacing_02",
+      "family": "spacing",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_spacing_02.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_spacing_02.json",
+      "expected": {
+        "spacing": "pass"
+      },
+      "observed": {
+        "spacing": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_spacing_03",
+      "family": "spacing",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_spacing_03.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_spacing_03.json",
+      "expected": {
+        "spacing": "fail"
+      },
+      "observed": {
+        "spacing": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "spacing",
+          "severity": "fail",
+          "message": "x-axis gap spread is 16.0px",
+          "suggestion": "Make adjacent x-axis gaps consistent; spread is 16.0px."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_spacing_04",
+      "family": "spacing",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_spacing_04.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_spacing_04.json",
+      "expected": {
+        "spacing": "pass"
+      },
+      "observed": {
+        "spacing": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_padding_01",
+      "family": "padding",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_padding_01.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_padding_01.json",
+      "expected": {
+        "padding": "pass"
+      },
+      "observed": {
+        "padding": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_padding_02",
+      "family": "padding",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_padding_02.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_padding_02.json",
+      "expected": {
+        "padding": "fail"
+      },
+      "observed": {
+        "padding": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "padding",
+          "severity": "fail",
+          "message": "padding deltas horizontal=0.0px vertical=22.0px",
+          "suggestion": "Balance inner content padding or adjust the container/content box."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_padding_03",
+      "family": "padding",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_padding_03.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_padding_03.json",
+      "expected": {
+        "padding": "pass"
+      },
+      "observed": {
+        "padding": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_padding_04",
+      "family": "padding",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_padding_04.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_padding_04.json",
+      "expected": {
+        "padding": "fail"
+      },
+      "observed": {
+        "padding": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "padding",
+          "severity": "fail",
+          "message": "padding deltas horizontal=0.0px vertical=14.0px",
+          "suggestion": "Balance inner content padding or adjust the container/content box."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_centering_01",
+      "family": "centering",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_centering_01.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_centering_01.json",
+      "expected": {
+        "centering": "fail"
+      },
+      "observed": {
+        "centering": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "centering",
+          "severity": "fail",
+          "message": "content center offset is (-11.0, 10.0)px",
+          "suggestion": "Move content by approximately (11.0, -10.0)px."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_centering_02",
+      "family": "centering",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_centering_02.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_centering_02.json",
+      "expected": {
+        "centering": "pass"
+      },
+      "observed": {
+        "centering": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_centering_03",
+      "family": "centering",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_centering_03.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_centering_03.json",
+      "expected": {
+        "centering": "fail"
+      },
+      "observed": {
+        "centering": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "centering",
+          "severity": "fail",
+          "message": "content center offset is (0.0, -14.0)px",
+          "suggestion": "Move content by approximately (-0.0, 14.0)px."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_centering_04",
+      "family": "centering",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_centering_04.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_centering_04.json",
+      "expected": {
+        "centering": "pass"
+      },
+      "observed": {
+        "centering": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_texture_01",
+      "family": "texture",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_texture_01.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_texture_01.json",
+      "expected": {
+        "texture": "fail"
+      },
+      "observed": {
+        "texture": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "texture",
+          "severity": "fail",
+          "message": "texture continuity score 33.81",
+          "suggestion": "Inspect the highlighted periodic discontinuity for a tiling seam."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_texture_02",
+      "family": "texture",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_texture_02.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_texture_02.json",
+      "expected": {
+        "texture": "pass"
+      },
+      "observed": {
+        "texture": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_texture_03",
+      "family": "texture",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_texture_03.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_texture_03.json",
+      "expected": {
+        "texture": "pass"
+      },
+      "observed": {
+        "texture": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_texture_04",
+      "family": "texture",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_texture_04.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_texture_04.json",
+      "expected": {
+        "texture": "fail"
+      },
+      "observed": {
+        "texture": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "texture",
+          "severity": "fail",
+          "message": "texture continuity score 35.14",
+          "suggestion": "Inspect the highlighted periodic discontinuity for a tiling seam."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_contrast_01",
+      "family": "contrast",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_contrast_01.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_contrast_01.json",
+      "expected": {
+        "contrast": "fail"
+      },
+      "observed": {
+        "contrast": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "contrast",
+          "severity": "fail",
+          "message": "contrast ratio is 1.74:1",
+          "suggestion": "Increase contrast to at least 4.5:1."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_contrast_02",
+      "family": "contrast",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_contrast_02.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_contrast_02.json",
+      "expected": {
+        "contrast": "pass"
+      },
+      "observed": {
+        "contrast": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    },
+    {
+      "id": "holdout_s20260525_contrast_03",
+      "family": "contrast",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_contrast_03.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_contrast_03.json",
+      "expected": {
+        "contrast": "fail"
+      },
+      "observed": {
+        "contrast": "fail"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 0,
+        "fail": 1,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": [
+        {
+          "check_id": "contrast",
+          "severity": "fail",
+          "message": "contrast ratio is 2.12:1",
+          "suggestion": "Increase contrast to at least 4.5:1."
+        }
+      ]
+    },
+    {
+      "id": "holdout_s20260525_contrast_04",
+      "family": "contrast",
+      "image": "data/ui_feedback_holdout_seed_20260525/images/holdout_s20260525_contrast_04.png",
+      "spec": "data/ui_feedback_holdout_seed_20260525/specs/holdout_s20260525_contrast_04.json",
+      "expected": {
+        "contrast": "pass"
+      },
+      "observed": {
+        "contrast": "pass"
+      },
+      "ok": true,
+      "summary": {
+        "pass": 1,
+        "fail": 0,
+        "warning": 0,
+        "needs_review": 0,
+        "error": 0
+      },
+      "issues": []
+    }
+  ]
+}

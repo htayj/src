@@ -36,6 +36,28 @@
         ]
       }
     },
+    "common-lisp-task-graphs": {
+      "priority": "high",
+      "description": "Use packaged task graph presets for Common Lisp ASDF/library and CLIM/TUI workflows.",
+      "promptTriggers": {
+        "keywords": [
+          "common lisp",
+          "asdf",
+          "sbcl",
+          "fiveam",
+          "clim",
+          "mcclim",
+          "defpackage",
+          "defsystem",
+          "lisp tui",
+          "terminal ui"
+        ],
+        "intentPatterns": [
+          "\\b(common[- ]lisp|asdf|sbcl|fiveam)\\b.*\\b(implement|fix|add|test|compile|load|package|export)\\b",
+          "\\b(clim|mcclim|tui|terminal ui)\\b.*\\b(render|pane|command|presentation|visible|launch|screenshot)\\b"
+        ]
+      }
+    },
     "add-rest-endpoint": {
       "priority": "high",
       "description": "Use contract-first API endpoint workflow.",
@@ -67,13 +89,51 @@
       "description": "Use UI/accessibility/design-system checklist.",
       "promptTriggers": {
         "keywords": [
-          "ui",
           "ux",
           "component",
           "frontend",
           "accessibility",
           "form",
           "modal"
+        ],
+        "intentPatterns": [
+          "\\bui\\b",
+          "\\b(user interface|visual design|responsive layout|accessibility)\\b"
+        ]
+      }
+    },
+    "ai-9slice-web-surfaces": {
+      "priority": "high",
+      "description": "Generate and package AI-made 9-slice web button/surface assets with CSS border-image and validation.",
+      "promptTriggers": {
+        "keywords": [
+          "9-slice",
+          "9slice",
+          "nine-slice",
+          "9-patch",
+          "nine-patch",
+          "border-image",
+          "button surface",
+          "surface plate",
+          "tileable button",
+          "ornate panel",
+          "web button asset",
+          "panel frame",
+          "scalable ui surface",
+          "fantasy game ui",
+          "gothic game ui",
+          "sci-fi game ui",
+          "sci fi game ui",
+          "game ui panel",
+          "rune panel",
+          "ember panel",
+          "metal glass panel",
+          "ip-safe game ui inspired"
+        ],
+        "intentPatterns": [
+          "\\b(generate|make|create|design|slice|package)\\b.*\\b(button|panel|frame|card|surface|plate)\\b.*\\b(9-slice|9slice|nine-slice|9-patch|border-image|tileable|image|web asset|game ui)\\b",
+          "\\b(button|panel|frame|card|surface|plate)\\b.*\\b(9-slice|9slice|nine-slice|9-patch|border-image|tileable|image model|web asset|game ui)\\b",
+          "\\b(high-fantasy|dark-gothic|sci-fi|fantasy|gothic)\\b.*\\b(game ui|ui panel|9-slice|border-image|surface plate)\\b"
         ]
       }
     },
@@ -82,10 +142,75 @@
       "description": "Capture decisions and session summaries in notes.",
       "promptTriggers": {
         "keywords": [
-          "note",
           "remember",
-          "daily log",
-          "decision"
+          "daily log"
+        ],
+        "intentPatterns": [
+          "\\b(note to self|daily log)\\b",
+          "\\bread\\s+(?:my\\s+|the\\s+)?notes?\\b",
+          "\\b(capture|write|append|record|save|log|summari[sz]e|search)\\b.*\\b(notes?|decision)\\b",
+          "\\b(notes?|decision)\\b.*\\b(capture|write|append|record|save|log|summari[sz]e|search)\\b"
+        ]
+      }
+    },
+    "tmux-task-graph-dogfooding": {
+      "priority": "high",
+      "description": "Use tmux-puppeted child Pi sessions to dogfood task graph workflows with evidence and transcripts.",
+      "promptTriggers": {
+        "keywords": [
+          "tmux",
+          "puppeted pi",
+          "child pi",
+          "task graph dogfooding",
+          "external worker",
+          "task_graph_spawn_tmux_worker"
+        ],
+        "intentPatterns": [
+          "\\b(tmux|puppet).*\\bpi\\b",
+          "\\bchild pi\\b.*\\btask[_ -]?graph\\b",
+          "\\bdogfood\\b.*\\btask[_ -]?graph\\b"
+        ]
+      }
+    },
+    "task-graph-autoimprove-loop": {
+      "priority": "high",
+      "description": "Continue task graph autoimprove loops safely; for explicit extension-bridge iterations, keep bridge guidance read-only and evidence-driven.",
+      "promptTriggers": {
+        "keywords": [
+          "continue autoimprove",
+          "autoimprove loop",
+          "next autoimprove iteration",
+          "keep autoimproving"
+        ],
+        "intentPatterns": [
+          "\\bcontinue\\s+(?:the\\s+)?autoimprove\\b",
+          "\\bautoimprove\\b.*\\b(iteration|loop|again)\\b",
+          "(?:^|[.!?;:]\\s*)(?:please\\s+)?(?:call|use|run|invoke|preview|create)\\s+task_graph_continue_autoimprove\\b",
+          "\\btask_graph_continue_autoimprove\\b.*\\b(next|linked|iteration|successor|preview|create)\\b",
+          "\\b(autoimprove|successor|next iteration|continuation)\\b.*\\b(future loop queue|root work queue|future work queue|future root work|queued successor)\\b",
+          "\\b(future loop queue|root work queue|future work queue|future root work|queued successor)\\b.*\\b(autoimprove|successor|next iteration|continuation)\\b",
+          "\\b(autoimprove|iteration|continuation|successor|loop)\\b.*\\b(task_graph_extension_guide|extension workflow bridge|extension guide|before-agent advisory|generated task prompt hints|read[- ]?only task[-_ ]?graph extension guidance)\\b",
+          "\\b(task_graph_extension_guide|extension workflow bridge|extension guide|before-agent advisory|generated task prompt hints|read[- ]?only task[-_ ]?graph extension guidance)\\b.*\\b(autoimprove|iteration|continuation|successor|loop)\\b"
+        ]
+      }
+    },
+    "task-graph-deterministic-nodes": {
+      "priority": "high",
+      "description": "Use descriptor metadata for deterministic, isolated, privacy-safe task graph node labels/prompts/status/flowcharts without changing task IDs or readiness.",
+      "promptTriggers": {
+        "keywords": [
+          "task graph descriptors",
+          "deterministic nodes",
+          "stable key",
+          "stableKey",
+          "nodeDescriptor",
+          "descriptor prompt",
+          "task_graph_flowchart"
+        ],
+        "intentPatterns": [
+          "\\btask[-_ ]graph\\b.*\\b(descriptor|stable key|deterministic node)\\b",
+          "\\bnodeDescriptor\\b",
+          "\\bstableKey\\b.*\\btask[-_ ]graph\\b"
         ]
       }
     }

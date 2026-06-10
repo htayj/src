@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "id": "holdout_s20260525_alignment_04",
+  "components": [
+    {
+      "id": "a",
+      "role": "button",
+      "box": [
+        146,
+        191,
+        313,
+        248
+      ]
+    },
+    {
+      "id": "b",
+      "role": "button",
+      "box": [
+        489,
+        191,
+        660,
+        248
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "alignment",
+      "type": "alignment",
+      "targets": [
+        "a",
+        "b"
+      ],
+      "edge": "top",
+      "tolerance_px": 4
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

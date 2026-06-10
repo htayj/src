@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "id": "holdout_s20260601_texture_01",
+  "components": [
+    {
+      "id": "surface",
+      "role": "texture",
+      "box": [
+        280,
+        278,
+        731,
+        478
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "texture",
+      "type": "texture_continuity",
+      "target": "surface",
+      "threshold": 8.0
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Local default: run interactive Crush in yolo mode unless the caller explicitly
+# supplies a yolo flag (for example, `--yolo=false` to restore permission
+# prompts). `--yolo` is a root-only Crush flag, so do not add it for subcommands
+# like `crush run` or `crush models`.
+upstream=${CRUSH_UPSTREAM_BIN:-/home/tay/.local/lib/node_modules/@charmland/crush/run-crush.js}
+
+has_yolo_flag=false
+interactive_invocation=true
+skip_next=false
+
+for arg in "$@"; do
+  if "$skip_next"; then
+    skip_next=false
+    continue
+  fi
+
+  case "$arg" in
+    --)
+      break
+      ;;
+    --yolo|--yolo=*|-y)
+      has_yolo_flag=true
+      ;;
+    --cwd|--data-dir|--host|--session|-c|-D|-H|-s)
+      skip_next=true
+      ;;
+    --cwd=*|--data-dir=*|--host=*|--session=*)
+      ;;
+    --debug|--continue|--help|--version|-d|-C|-h|-v)
+      ;;
+    -*)
+      # Let upstream report unknown root flags.
+      ;;
+    *)
+      interactive_invocation=false
+      break
+      ;;
+  esac
+done
+
+if "$interactive_invocation" && ! "$has_yolo_flag"; then
+  exec "$upstream" --yolo "$@"
+fi
+
+exec "$upstream" "$@"
