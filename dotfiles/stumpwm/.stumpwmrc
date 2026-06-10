@@ -24,6 +24,11 @@
 ;; change the prefix key to something else
 (set-prefix-key (kbd "A-x"))
 
+;; Preferred terminal emulator.  Used by the ssh binding and the
+;; app-launcher below for "run this inside a terminal"; ghostty's
+;; `-e <command>' flag mirrors xterm's, so call sites are interchangeable.
+(defvar *terminal-program* "ghostty")
+
 ;; (ql:quickload :slynk)
 ;; prompt the user for an interactive command. The first arg is an
 ;; optional initial contents.
@@ -342,7 +347,8 @@ hidden behind the previously displayed window."
 (define-key *root-map* (kbd "b") "colon1 exec firefox http://www.")
 (define-key *root-map* (kbd "A-b") "pull-global-window")
 ;; Ssh somewhere
-(define-key *root-map* (kbd "C-s") "colon1 exec xterm -e ssh ")
+(define-key *root-map* (kbd "C-s")
+  (format nil "colon1 exec ~A -e ssh " *terminal-program*))
 ;; Lock screen
 (define-key *root-map* (kbd "A-l") "exec slock")
 
@@ -385,6 +391,7 @@ hidden behind the previously displayed window."
     ((group tile-group) button x y where)
   (declare (ignore x y where))
   (if (and (eq button :right-button)
+           (member :shift *button-state*)
            (intersection (modifiers-alt *modifiers*) *button-state*))
       (mouse-resize-frame)
       (call-next-method)))
@@ -413,8 +420,11 @@ hidden behind the previously displayed window."
 (define-key *top-map* (kbd "A-(") "gmove nine")
 (define-key *top-map* (kbd "A-)") "gmove Default")
 
-;;; application launcher
-(define-key *top-map* (kbd "A-SPC") "exec rofi -config ~/.config/rofi/NsCDE.rasi -show drun")
+;;; application launcher — native fuzzy menu over .desktop entries.
+;;; The app-launcher command is defined further down, after the
+;;; desktop-entry module is loaded (the command body references that
+;;; package, so it must be read after the package exists).
+(define-key *top-map* (kbd "A-SPC") "app-launcher")
 
 ;;; mouseover focus
 (setf *mouse-focus-policy* :click)
@@ -427,7 +437,6 @@ hidden behind the previously displayed window."
 ;;; TODO: replicate C-x C-B 
 
 ;; modules
-;; (load-module "stumptray")
 (list-modules)
 (ql:quickload "cl-diskspace")
 ;; on GNU/linux only
@@ -436,15 +445,88 @@ hidden behind the previously displayed window."
 (load-module "hostname")
 (load-module "disk")
 (load-module "mem")
-                                        ;(ql:quickload "xembed")
-                                        ;(load-module "stumptray")
+;; System tray.  xembed (provided by clx-xembed via Quicklisp) implements
+;; the XEMBED protocol that stumptray needs to socket icons; load it
+;; before the module itself.  add-mode-line-hooks installs the
+;; new-mode-line-hook so a tray is attached automatically whenever a
+;; mode-line is created (including the one toggled on a few lines below).
+(ql:quickload "xembed")
+(load-module "stumptray")
+(stumptray:add-mode-line-hooks)
+
+;; Application launcher data source.  The desktop-entry module parses
+;; freedesktop .desktop files (py-configparser + cl-ppcre are its deps);
+;; quickload those first so load-module can resolve the system, then prime
+;; the entry list once at startup so the first A-SPC opens instantly.
+(ql:quickload '("py-configparser" "cl-ppcre"))
+(load-module "desktop-entry")
+;; init-entry-list parses every .desktop file with no per-file guard, so a
+;; single malformed entry would abort the whole rc load.  Swallow that here
+;; (the launcher re-scans lazily if the list ends up empty).
+(ignore-errors (desktop-entry:init-entry-list))
+
+(defvar *app-launcher-history* nil
+  "Application names launched via app-launcher, most-recent first.")
+(defparameter *app-launcher-history-length* 10
+  "How many recent launches app-launcher pins at the top of its menu.")
+
+(defcommand app-launcher () ()
+  "Fuzzy-pick a desktop application from the native menu and launch it.
+Recently launched apps are pinned to the top in most-recent-first order,
+with the most recent pre-selected as the default; start typing to filter
+the full list.  Replaces the old `rofi -show drun' binding on A-SPC.
+Re-scans the .desktop entry list only if it is empty; reinit StumpWM to
+pick up newly installed applications."
+  (when (null desktop-entry:*entry-list*)
+    (desktop-entry:init-entry-list))
+  (let* ((*menu-maximum-height* *tay-completion-menu-height*)
+         (sorted
+          (sort
+           (loop for entry in desktop-entry:*entry-list*
+                 for name = (desktop-entry::name entry)
+                 when (and name
+                           (equal "Application" (desktop-entry::entry-type entry))
+                           (not (desktop-entry::no-display entry))
+                           (not (desktop-entry::only-show-in entry)))
+                   collect (list name entry))
+           #'string-lessp :key #'first))
+         ;; Pin recently launched apps to the top, most-recent first; the
+         ;; remainder stays alphabetical.  A history name whose entry has
+         ;; since vanished (app uninstalled) is simply skipped.
+         (recent (loop for name in *app-launcher-history*
+                       for hit = (find name sorted :key #'first :test #'string=)
+                       when hit collect hit))
+         (entries (append recent
+                          (remove-if (lambda (e)
+                                       (member (first e) *app-launcher-history*
+                                               :test #'string=))
+                                     sorted)))
+         ;; Index 0 is the most-recent launch (or, with no history, the
+         ;; alphabetical head) — pre-select it as the default.
+         (selection (and entries
+                         (select-from-menu (current-screen) entries "Launch:" 0))))
+    (cond
+      ((null entries) (message "No applications found."))
+      (selection
+       (let ((name (first selection))
+             (entry (second selection)))
+         (setf *app-launcher-history*
+               (cons name (remove name *app-launcher-history* :test #'string=)))
+         (when (> (length *app-launcher-history*) *app-launcher-history-length*)
+           (setf *app-launcher-history*
+                 (subseq *app-launcher-history* 0 *app-launcher-history-length*)))
+         (if (desktop-entry::terminal entry)
+             (run-shell-command (format nil "~A -e ~A"
+                                        *terminal-program*
+                                        (desktop-entry::command-line entry)))
+             (run-shell-command (desktop-entry::command-line entry)))))
+      (t (throw 'error :abort)))))
 ;; (install-modules)
 ;; (load-path)
 ;;; connect to mpd
                                         ;(stumpwm:run-commands "mpd-connect")
 
 (define-key *top-map* (kbd "A-M") '*mpd-map*)
-                                        ;(stumptray::stumptray)
 
 
 (setf *disk-usage-paths* (list "/" "/mnt/nas"))
@@ -458,9 +540,20 @@ hidden behind the previously displayed window."
       *mode-line-pad-y* 1)
 (setf *screen-mode-line-format* (list "[" '(:eval (RUN-SHELL-COMMAND "date '+%F %H:%M'|tr -d [:cntrl:]" T)) "] [%n]  %w ^> [%D][%M][%m] [tay@%h] %T"))
 
-                                        ;(mode-line)
-;; (stumpwm:toggle-mode-line (stumpwm:current-screen) (stumpwm:current-head))
-;; (load-module "stumptray")
+;; Turn on the mode-line for every head so the %T tray placeholder above
+;; actually has a window to attach to.  new-mode-line-hook (registered
+;; via stumptray:add-mode-line-hooks) fires here and creates the tray.
+;; On reinit the mode-line already exists, so the hook is a no-op; we
+;; then walk the screens and attach a tray manually where one is missing.
+(dolist (screen *screen-list*)
+  (dolist (head (screen-heads screen))
+    (unless (head-mode-line head)
+      (toggle-mode-line screen head)))
+  (unless (stumptray::screen-tray screen)
+    (let ((ml (some (lambda (head) (head-mode-line head))
+                    (screen-heads screen))))
+      (when ml
+        (stumptray::new-mode-line-hook ml)))))
 
 
 ;; Web jump (works for DuckDuckGo and Imdb)
