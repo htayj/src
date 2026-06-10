@@ -59,8 +59,8 @@
 ;; call functions from compat-31 such as `set-local'; require that layer from
 ;; straight explicitly so find-file/completion does not fail with
 ;; "void-function set-local".
-(straight-use-package 'compat)
-(require 'compat-31)
+;; (straight-use-package 'compat)
+;; (require 'compat-31)
 
 ;; have to install org early for some reason
 (straight-use-package 'org)
@@ -476,6 +476,25 @@
   :config
   (setq magit-push-always-verify nil)
   (setq git-commit-summary-max-length 180))
+
+;; =============================================================================
+;; magit-delta — syntax-highlighted diffs in magit via the `delta' CLI.
+;; Subprocess cost is non-trivial on huge diffs; toggle off with
+;; `M-x magit-delta-mode' if a giant MR drags.  Skipped entirely on hosts
+;; without the `delta' binary so this config stays portable.
+;;
+;; NB: magit-delta does `(require 'dash)' but does NOT declare dash in its
+;; Package-Requires, so straight will not pull it in transitively.  Declare
+;; it explicitly here to register dash's load-path entry before magit-delta
+;; loads (otherwise: "no such file or directory `dash'" at first diff).
+;; =============================================================================
+(use-package dash :straight t)
+
+(use-package magit-delta
+  :straight t
+  :after magit
+  :if (executable-find "delta")
+  :hook (magit-mode . magit-delta-mode))
 
 ;; =============================================================================
 ;; tramp
