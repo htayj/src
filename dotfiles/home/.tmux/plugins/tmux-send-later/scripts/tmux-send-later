@@ -210,10 +210,18 @@ send_job_now() {
   fi
   while IFS= read -r line || [[ -n "$line" ]]; do
     if [[ -n "$line" ]]; then
-      tmux send-keys -t "$target" -l -- "$line"
+      if ! tmux send-keys -t "$target" -l -- "$line"; then
+        err "failed to send literal text for job $id to target $target"
+        mark_status "$job_file" failed "${pid:-}"
+        return 1
+      fi
     fi
     if [[ "${enter:-1}" = 1 ]]; then
-      tmux send-keys -t "$target" Enter
+      if ! tmux send-keys -t "$target" Enter; then
+        err "failed to send Enter for job $id to target $target"
+        mark_status "$job_file" failed "${pid:-}"
+        return 1
+      fi
     fi
   done <"$line_file"
   mark_status "$job_file" sent ""
@@ -283,9 +291,8 @@ schedule() {
   write_job "$job_file" "$id" "$target" "$run_at" "$enter" pending "" "$line_file" "$created_at" "$created_at"
   chmod 600 "$job_file"
 
-  ("$0" __worker "$job_file" >/dev/null 2>&1 & echo $! >"$JOBS_DIR/$id.pid.tmp")
-  pid=$(cat "$JOBS_DIR/$id.pid.tmp")
-  rm -f "$JOBS_DIR/$id.pid.tmp"
+  nohup "$0" __worker "$job_file" >"$JOBS_DIR/$id.worker.log" 2>&1 &
+  pid=$!
   write_job "$job_file" "$id" "$target" "$run_at" "$enter" pending "$pid" "$line_file" "$created_at" "$(now_epoch)"
 
   printf 'Scheduled %s for %s to %s: %s\n' "$id" "$(date -d "@$run_at" '+%Y-%m-%d %H:%M:%S')" "$target" "$(preview_line "$line_file")"
