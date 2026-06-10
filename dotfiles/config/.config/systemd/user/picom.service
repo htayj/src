@@ -1,0 +1,18 @@
+[Unit]
+Description=Picom X11 compositor
+Documentation=man:picom(1)
+# Anchored to graphical-session.target (NOT default.target like dunst):
+# picom needs a live X display and has no D-Bus activation to defer its
+# start, so it must come up only once the graphical session exists and
+# go down with it.
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/picom --config %h/.config/picom.conf
+Slice=session.slice
+Restart=on-failure
+RestartSec=2s
+
+[Install]
+WantedBy=graphical-session.target

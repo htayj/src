@@ -14,3 +14,14 @@ xset fp rehash >/dev/null 2>&1 || true
 if [ -n "${DISPLAY:-}" ] && [ -r "$HOME/.config/xkb/keymap/spacecadet.xkb" ] && command -v xkbcomp >/dev/null 2>&1; then
     xkbcomp -I"$HOME/.config/xkb" -w 0 "$HOME/.config/xkb/keymap/spacecadet.xkb" "$DISPLAY" >/dev/null 2>&1 || true
 fi
+
+# Hand the live X environment to the systemd --user instance so any user-level
+# graphical service (dunst, etc.) can see DISPLAY/XAUTHORITY.
+#
+# picom is intentionally NOT started here: it was causing visible lag and has
+# been disabled. To re-enable, uncomment the `systemctl --user start
+# picom.service` line below and `systemctl --user enable picom.service`.
+if [ -n "${DISPLAY:-}" ] && command -v systemctl >/dev/null 2>&1; then
+    systemctl --user import-environment DISPLAY XAUTHORITY
+    # systemctl --user start picom.service   # disabled — compositor lag
+fi
