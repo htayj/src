@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -euo pipefail
+exec "$HOME/.tmux/plugins/tmux-send-later/scripts/tmux-send-later" "$@"
