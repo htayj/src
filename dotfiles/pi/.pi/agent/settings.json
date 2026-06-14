@@ -15,10 +15,7 @@
   "packages": [
     "/home/tay/.pi/agent/packages/general-dev-suite",
     "npm:pi-intercom",
-    {
-      "source": "npm:pi-subagents",
-      "extensions": []
-    },
+    "npm:pi-subagents",
     "npm:pi-web-access",
     "npm:pi-powerline-footer",
     "npm:pi-smart-fetch",
