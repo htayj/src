@@ -139,8 +139,11 @@ export function runnerExecutionGuidance(task: Pick<TaskNode, "kind" | "runner" |
     return "Manual gate: do not launch a subagent. Resolve the decision in the parent/operator context, then call task_graph_update with succeeded, awaiting_input, skipped, or failed.";
   }
   if (task.runner.kind === "direct_safe") {
-    if (task.kind === "COMMIT" || task.kind === "PUSH") {
-      return "Direct-safe gated operation: run only after explicit task_graph_approve. Record exact command/output with task_graph_update; do not make product-code edits in this stage.";
+    if (task.kind === "COMMIT") {
+      return "Direct-safe git operation: commit only the reviewed task changes when this stage becomes ready. Record exact command/output with task_graph_update; do not make product-code edits in this stage.";
+    }
+    if (task.kind === "PUSH") {
+      return "Direct-safe gated operation: push only after explicit task_graph_approve. Record exact command/output with task_graph_update; do not make product-code edits in this stage.";
     }
     return "Direct-safe stage: run only the bounded command/action implied by this task, do not write product code, and record exact command/output with task_graph_update.";
   }

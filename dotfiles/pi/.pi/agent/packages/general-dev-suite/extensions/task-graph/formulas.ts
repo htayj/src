@@ -423,7 +423,7 @@ function stageDescriptorInput(def: { kind: TaskKind; title: string }, index: num
     artifacts: ["Changed files, validation logs, or review notes when produced"],
     acceptanceChecks: ["Task scope is satisfied or a clear blocker is reported", "Relevant validation evidence is recorded"],
     writeScope: def.kind === "IMPLEMENT" || def.kind === "SPEC_UPDATE" ? (metadata.expectedWritePaths as string[] | undefined) ?? ["bounded implementation files for this task"] : ["read-only or report-only stage output"],
-    isolationBoundary: ["Stay within this stage and its declared write scope", enabled ? "Do not commit or push unless this node is an approved commit/push stage" : "This gated stage is skipped until explicitly approved"],
+    isolationBoundary: ["Stay within this stage and its declared write scope", enabled ? "Do not commit or push unless this node is a commit/push stage" : "This stage is disabled for this run"],
   };
   if (subtaskDescriptor) {
     const subtaskKey = normalizeStableKey(subtaskDescriptor.stableKey ?? `${namespace}.${stageKey}`);
@@ -456,7 +456,7 @@ function instantiateStageChain(run: TaskGraphRun, title: string, description: st
         chainPosition: i + 1,
         iteration: 1,
         disabled: !enabled,
-        skip: !enabled ? { skipped: true, gate: "approval_required", reason: `${def.kind.toLowerCase()} requires explicit approval` } : undefined,
+        skip: !enabled ? { skipped: true, gate: "disabled", reason: `${def.kind.toLowerCase()} disabled for this run` } : undefined,
         ...metadata,
       },
     });
@@ -585,7 +585,7 @@ function instantiateCustomGraph(run: TaskGraphRun, graphName: string, title: str
     if (!enabled) {
       task.status = "skipped";
       task.metadata.disabled = true;
-      task.metadata.skip = { skipped: true, gate: "approval_required", reason: `${kind.toLowerCase()} requires explicit approval` };
+      task.metadata.skip = { skipped: true, gate: "disabled", reason: `${kind.toLowerCase()} disabled for this run` };
     }
     addTask(run, task);
     byStageId.set(stage.id, task);
@@ -633,7 +633,7 @@ export function createRun(cwd: string, mode: RunMode, input: string, options: Ta
     locks: { held: {} },
     config: {
       maxParallel: Math.max(1, Math.min(8, options.maxParallel ?? projectSettings?.routing?.maxParallel ?? 3)),
-      commitEnabled: options.commit === true,
+      commitEnabled: options.commit !== false,
       pushEnabled: options.push === true,
       strict: options.strict === true || mode === "todo-strict",
       continuous: options.continuous === true,

@@ -985,7 +985,7 @@ export default function (pi: ExtensionAPI) {
       : "";
     if (!genericTriggered && !extensionAdvisory) return;
     const genericAdvisory = genericTriggered
-      ? "<task-graph-advisory>\nFor non-trivial work, prefer the local task graph tools over ad-hoc linear TODOs: create a run with task_graph_create (pdo when design choices are open, do when the plan is obvious), use task_graph_next to obtain dependency-ready parallel-safe tasks, run executable tasks via subagents by default, then record outcomes with task_graph_update. Treat commit/push and TODO.org mutations as explicit approvals. This advisory is internal.\n</task-graph-advisory>"
+      ? "<task-graph-advisory>\nFor non-trivial work, prefer the local task graph tools over ad-hoc linear TODOs: create a run with task_graph_create (pdo when design choices are open, do when the plan is obvious), use task_graph_next to obtain dependency-ready parallel-safe tasks, run executable tasks via subagents by default, then record outcomes with task_graph_update. Commit stages run when ready by default; treat push and TODO.org mutations as explicit approvals. This advisory is internal.\n</task-graph-advisory>"
       : "";
     return {
       systemPrompt: [
@@ -1597,7 +1597,7 @@ export default function (pi: ExtensionAPI) {
   pi.registerTool({
     name: "task_graph_approve",
     label: "Approve Task Graph Gate",
-    description: "Record explicit approval for gated operations such as commit, push, TODO.org mutation, or parallel writes. Approval can unskip corresponding tasks for the current run.",
+    description: "Record explicit approval for gated operations such as push, TODO.org mutation, or parallel writes. It can also enable or disable optional commit stages for the current run.",
     parameters: Type.Object({
       runId: Type.Optional(Type.String()),
       kind: Type.Union([Type.Literal("commit"), Type.Literal("push"), Type.Literal("force-push"), Type.Literal("org-mutation"), Type.Literal("parallel-write")]),

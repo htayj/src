@@ -332,7 +332,7 @@ export class TaskGraphComponent implements TaskGraphUiComponent {
 
     const totalTasks = this.allTasks().length;
     lines.push(truncate(`Run ${reportingIdForDisplay(this.run.runId)} (${this.run.mode}) ${this.run.status}${customGraphLabel(this.run)} · tasks ${totalTasks} · visible ${rowsList.filter((row) => row.rowKind === "task").length} · ready ${vm.counts.ready}/${this.run.config.maxParallel} · current ${vm.counts.current} · blocked ${vm.counts.blocked} · updated ${this.run.updatedAt}`, w));
-    lines.push(truncate(`Approval gates: commit=${this.run.config.commitEnabled ? "approved" : "gated"} push=${this.run.config.pushEnabled ? "approved" : "gated"} org=${this.run.config.mutateOrg ? "approved" : "gated"}`, w));
+    lines.push(truncate(`Stage gates: commit=${this.run.config.commitEnabled ? "enabled" : "disabled"} push=${this.run.config.pushEnabled ? "approved" : "gated"} org=${this.run.config.mutateOrg ? "approved" : "gated"}`, w));
     for (const line of loopLines(loopMetadata(this.run))) lines.push(truncate(line, w));
     for (const line of rootWorkLines(this.run)) lines.push(truncate(line, w));
     lines.push("");
