@@ -34,10 +34,8 @@ Worker prompts may include the fixed `## Deterministic node descriptor` block. S
 Run the focused descriptor validation after changes:
 
 ```sh
-cd /home/tay/src/dotfiles/pi/.pi/agent/packages/general-dev-suite
-NODE_PATH=/home/tay/.local/lib/node_modules/@earendil-works/pi-coding-agent/node_modules:/home/tay/.local/lib/node_modules \
-  /home/tay/.local/lib/node_modules/pi-intercom/node_modules/.bin/tsx \
-  extensions/task-graph/deterministic-nodes.validation.ts
+cd /home/tay/src/pi-task-graph
+npm run validate:deterministic-nodes
 ```
 
 Also run nearby settings/UI/flowchart validations when descriptor rendering or custom graph settings change.

@@ -13,6 +13,7 @@
     "openrouter/google/gemma-4-31b-it"
   ],
   "packages": [
+    "git:git@github.com:htayj/pi-task-graph",
     "/home/tay/.pi/agent/packages/general-dev-suite",
     "npm:pi-intercom",
     "npm:pi-subagents",
