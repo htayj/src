@@ -34,7 +34,7 @@ Worker prompts may include the fixed `## Deterministic node descriptor` block. S
 Run the focused descriptor validation after changes:
 
 ```sh
-cd /home/tay/src/pi-task-graph
+cd /home/tay/projects/pi-task-graph
 npm run validate:deterministic-nodes
 ```
 

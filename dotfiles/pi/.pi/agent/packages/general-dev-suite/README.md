@@ -16,9 +16,9 @@ Loaded globally from `~/.pi/agent/settings.json` as a local Pi package. Subagent
 
 The task graph extension now lives in its own package/repository:
 
-- Local development checkout: `/home/tay/src/pi-task-graph`
+- Local development checkout: `/home/tay/projects/pi-task-graph`
 - GitHub remote: `git@github.com:htayj/pi-task-graph.git`
-- Pi package source: `git:git@github.com:htayj/pi-task-graph`
+- Pi package source: `/home/tay/projects/pi-task-graph`
 
 This package intentionally excludes `extensions/task-graph/` from its active Pi extension manifest to avoid duplicate `task_graph_*` and `todo` tools. The old source tree is still preserved here for reference while the standalone package is the canonical active source.
 
