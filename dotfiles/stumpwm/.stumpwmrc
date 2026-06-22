@@ -545,7 +545,10 @@ pick up newly installed applications."
 ;; via stumptray:add-mode-line-hooks) fires here and creates the tray.
 ;; On reinit the mode-line already exists, so the hook is a no-op; we
 ;; then walk the screens and attach a tray manually where one is missing.
-(dolist (screen *screen-list*)
+(defun tay-ensure-mode-lines-and-tray (screen)
+  "Give every head on SCREEN a mode line, then ensure SCREEN has a tray.
+Idempotent: heads that already have a mode line are left alone, and the
+tray is only created when one is missing."
   (dolist (head (screen-heads screen))
     (unless (head-mode-line head)
       (toggle-mode-line screen head)))
@@ -554,6 +557,46 @@ pick up newly installed applications."
                     (screen-heads screen))))
       (when ml
         (stumptray::new-mode-line-hook ml)))))
+
+(dolist (screen *screen-list*)
+  (tay-ensure-mode-lines-and-tray screen))
+
+;;; ---- Live RandR / monitor hot-plug handling -----------------------------
+;; StumpWM only re-reads its heads on a root-window :configure-notify, which
+;; the X server emits solely when the overall framebuffer size changes.
+;; Rotating a monitor, disabling one without shrinking the framebuffer, or
+;; rearranging outputs never reaches that path, so frame layout, window
+;; placement and the mode line all go stale.  StumpWM also never selects
+;; RandR events on the root window, so ScreenChangeNotify is never delivered
+;; in the first place.  Subscribe to it and refresh heads when it arrives.
+
+(defun tay-refresh-screen-for-randr (screen)
+  "Re-read RandR heads for SCREEN and rebuild frames, mode lines and tray.
+Mirrors the :configure-notify path (head-force-refresh + update-mode-lines)
+and additionally creates mode lines for newly-added heads and (re)attaches
+the tray, which head-force-refresh does not do on its own."
+  (let ((new-heads (make-screen-heads screen (screen-root screen))))
+    (when new-heads
+      (head-force-refresh screen new-heads)
+      (tay-ensure-mode-lines-and-tray screen)
+      (update-mode-lines screen))))
+
+(define-stump-event-handler :rr-screen-change-notify (root-window)
+  (when-let ((screen (find-screen root-window)))
+    (tay-refresh-screen-for-randr screen)))
+
+(defun tay-enable-randr-events ()
+  "Subscribe each screen's root window to RandR ScreenChangeNotify events.
+No-op when the X server lacks the RANDR extension."
+  (when (xlib:query-extension *display* "RANDR")
+    (dolist (screen *screen-list*)
+      (xlib:rr-select-input (screen-root screen)
+                            '(:screen-change-notify-mask)))))
+
+(tay-enable-randr-events)
+
+;; Manual escape hatch in case an event is ever missed.
+(define-key *root-map* (kbd "F5") "refresh-heads")
 
 
 ;; Web jump (works for DuckDuckGo and Imdb)
