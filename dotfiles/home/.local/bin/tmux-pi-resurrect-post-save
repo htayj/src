@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Rewrite tmux-resurrect's saved Pi panes so restore opens the actual Pi
+# session file recorded by the Pi extension in @pi-session-file. If a running
+# Pi pane has no metadata yet (for example before /reload after installing the
+# extension), fall back to `pi --continue` instead of a blank shell/new session.
+set -euo pipefail
+
+state_file="${1:-}"
+if [[ -z "$state_file" || ! -f "$state_file" ]]; then
+  exit 0
+fi
+
+tmp="$(mktemp "${state_file}.pi.XXXXXX")"
+cleanup() {
+  rm -f "$tmp"
+}
+trap cleanup EXIT
+
+shell_quote() {
+  printf '%q' "$1"
+}
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+  IFS=$'\t' read -r \
+    line_type \
+    session_name \
+    window_number \
+    window_active \
+    window_flags \
+    pane_index \
+    pane_title \
+    dir \
+    pane_active \
+    pane_command \
+    pane_full_command \
+    extra <<< "$line"
+
+  if [[ "$line_type" == "pane" && "$pane_command" == "pi" && -z "${extra:-}" ]]; then
+    target="${session_name}:${window_number}.${pane_index}"
+    session_file="$(tmux show-option -p -t "$target" -qv @pi-session-file 2>/dev/null || true)"
+
+    if [[ -n "$session_file" && -f "$session_file" ]]; then
+      pane_full_command=":pi --session $(shell_quote "$session_file")"
+    elif [[ "$pane_full_command" == ":pi" ]]; then
+      pane_full_command=":pi --continue"
+    fi
+
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      "$line_type" \
+      "$session_name" \
+      "$window_number" \
+      "$window_active" \
+      "$window_flags" \
+      "$pane_index" \
+      "$pane_title" \
+      "$dir" \
+      "$pane_active" \
+      "$pane_command" \
+      "$pane_full_command" >> "$tmp"
+  else
+    printf '%s\n' "$line" >> "$tmp"
+  fi
+done < "$state_file"
+
+mv "$tmp" "$state_file"
+trap - EXIT
