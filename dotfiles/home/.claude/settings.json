@@ -1,0 +1,22 @@
+{
+  "model": "opus[1m]",
+  "enabledPlugins": {
+    "clim-spec@kvc-claude-code-skills": true,
+    "croatoan@kvc-claude-code-skills": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "effortLevel": "high",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tmux-agent-session from-hook claude",
+            "timeout": 2
+          }
+        ]
+      }
+    ]
+  }
+}

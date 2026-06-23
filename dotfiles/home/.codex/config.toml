@@ -1,0 +1,79 @@
+personality = "pragmatic"
+model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
+plan_mode_reasoning_effort = "xhigh"
+approvals_reviewer = "guardian_subagent"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+[projects."/home/tay/src"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/flag-hack-ink/flag-hack"]
+trust_level = "untrusted"
+
+[projects."/home/tay/projects/qbcl"]
+trust_level = "trusted"
+
+[projects."/home/tay/src/guix-config/dotfiles/.emacs.d"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/clawmacs"]
+trust_level = "trusted"
+
+[projects."/home/tay/.codex"]
+trust_level = "trusted"
+
+[projects."/home/tay/Documents/nethackguide"]
+trust_level = "trusted"
+
+[projects."/home/tay/reference/external_src/codex"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/clim-tutorial"]
+trust_level = "trusted"
+
+[projects."/home/tay/.emacs.d"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/genera-emu"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/lispmdoc"]
+trust_level = "trusted"
+
+[projects."/home/tay/.config"]
+trust_level = "trusted"
+
+[projects."/home/tay"]
+trust_level = "trusted"
+
+[projects."/home/tay/Games/World of Warcraft/_retail_/wim"]
+trust_level = "trusted"
+
+[mcp_servers.oracle]
+command = "npx"
+args = ["-y", "@steipete/oracle", "oracle-mcp"]
+
+[mcp_servers.oracle.tools.sessions]
+approval_mode = "approve"
+
+[mcp_servers.oracle.tools.consult]
+approval_mode = "approve"
+
+[features]
+memories = true
+terminal_resize_reflow = true
+hooks = true
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+[hooks]
+
+[[hooks.SessionStart]]
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "tmux-agent-session from-hook codex"
+timeout = 2
+statusMessage = "remembering tmux session id"
