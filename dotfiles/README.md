@@ -33,9 +33,11 @@ Managed packages:
   Per-host and per-project overrides go in `~/.claude/.claude/settings.local.json`
   (untracked) per Claude Code's override convention.
 - `pi`: Pi Coding Agent global config under `~/.pi/agent`, including
-  `settings.json`, custom subagents/chains, and the local `general-dev-suite`
-  package. Runtime state, auth, sessions, binaries, and intercom sockets are
-  intentionally excluded.
+  `settings.json`, custom subagents/chains, and local packages such as
+  `general-dev-suite` and `okf-knowledge`. Mutable OKF knowledge bundles
+  (`~/.pi/agent/knowledge` and project `.pi/knowledge`) are runtime/user data,
+  not stowed dotfiles. Runtime state, auth, sessions, binaries, and intercom
+  sockets are intentionally excluded.
 
 ## Per-host fragments
 
