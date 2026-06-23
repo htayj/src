@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Rewrite tmux-resurrect's saved Pi panes so restore opens the actual Pi
-# session file recorded by the Pi extension in @pi-session-file. If a running
-# Pi pane has no metadata yet (for example before /reload after installing the
-# extension), fall back to `pi --continue` instead of a blank shell/new session.
+# Rewrite tmux-resurrect's saved agent panes so restore opens the agent session
+# instead of a plain shell or a fresh prompt. Pi gets an exact session file from
+# the companion Pi extension's @pi-session-file pane option. Codex, Claude Code,
+# and opencode fall back to their cwd-scoped "continue last session" commands.
 set -euo pipefail
 
 state_file="${1:-}"
@@ -10,7 +10,7 @@ if [[ -z "$state_file" || ! -f "$state_file" ]]; then
   exit 0
 fi
 
-tmp="$(mktemp "${state_file}.pi.XXXXXX")"
+tmp="$(mktemp "${state_file}.agents.XXXXXX")"
 cleanup() {
   rm -f "$tmp"
 }
@@ -18,6 +18,58 @@ trap cleanup EXIT
 
 shell_quote() {
   printf '%q' "$1"
+}
+
+command_matches() {
+  local name="$1"
+  [[ "$pane_command" == "$name" || "$pane_full_command" == *"$name"* ]]
+}
+
+pi_command_matches() {
+  [[ "$pane_command" == "pi" ||
+     "$pane_full_command" == ":pi" ||
+     "$pane_full_command" == :pi\ * ||
+     "$pane_full_command" == */pi ||
+     "$pane_full_command" == */pi\ * ]]
+}
+
+rewrite_agent_command() {
+  if pi_command_matches; then
+    local target="${session_name}:${window_number}.${pane_index}"
+    local session_file
+    session_file="$(tmux show-option -p -t "$target" -qv @pi-session-file 2>/dev/null || true)"
+
+    if [[ -n "$session_file" && -f "$session_file" ]]; then
+      pane_full_command=":pi --session $(shell_quote "$session_file")"
+    elif [[ "$pane_full_command" == ":pi" ]]; then
+      pane_full_command=":pi --continue"
+    fi
+  elif command_matches "codex"; then
+    # Codex exposes exact resume (`codex resume <id>`), but a running bare
+    # `codex` process does not expose its active id to tmux. `--last` is scoped
+    # by the restored cwd, which is the best safe automatic restore behavior.
+    [[ "$pane_full_command" == :codex\ resume* ]] || pane_full_command=":codex resume --last"
+  elif command_matches "claude" || command_matches "claude-code"; then
+    # Claude Code's executable is usually `claude`; match `claude-code` too for
+    # npm package paths/product-name references in process command lines.
+    if [[ "$pane_full_command" != *" --resume"* && \
+          "$pane_full_command" != *" --resume "* && \
+          "$pane_full_command" != *" -r"* && \
+          "$pane_full_command" != *" -r "* && \
+          "$pane_full_command" != *" --continue"* && \
+          "$pane_full_command" != *" -c"* ]]; then
+      pane_full_command=":claude --continue"
+    fi
+  elif command_matches "opencode"; then
+    if [[ "$pane_full_command" != *" --session"* && \
+          "$pane_full_command" != *" --session "* && \
+          "$pane_full_command" != *" -s"* && \
+          "$pane_full_command" != *" -s "* && \
+          "$pane_full_command" != *" --continue"* && \
+          "$pane_full_command" != *" -c"* ]]; then
+      pane_full_command=":opencode --continue"
+    fi
+  fi
 }
 
 while IFS= read -r line || [[ -n "$line" ]]; do
@@ -35,16 +87,8 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     pane_full_command \
     extra <<< "$line"
 
-  if [[ "$line_type" == "pane" && "$pane_command" == "pi" && -z "${extra:-}" ]]; then
-    target="${session_name}:${window_number}.${pane_index}"
-    session_file="$(tmux show-option -p -t "$target" -qv @pi-session-file 2>/dev/null || true)"
-
-    if [[ -n "$session_file" && -f "$session_file" ]]; then
-      pane_full_command=":pi --session $(shell_quote "$session_file")"
-    elif [[ "$pane_full_command" == ":pi" ]]; then
-      pane_full_command=":pi --continue"
-    fi
-
+  if [[ "$line_type" == "pane" && -z "${extra:-}" ]]; then
+    rewrite_agent_command
     printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
       "$line_type" \
       "$session_name" \
