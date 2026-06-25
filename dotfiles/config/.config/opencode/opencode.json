@@ -90,6 +90,7 @@
     }
   },
   "plugin": [
-    "/home/tay/.config/opencode/plugins/tmux-session-restore.js"
+    "/home/tay/.config/opencode/plugins/tmux-session-restore.js",
+    "/home/tay/.config/opencode/plugins/do-pdo-nudge.js"
   ]
 }
