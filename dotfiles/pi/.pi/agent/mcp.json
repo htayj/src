@@ -54,6 +54,20 @@
       "idleTimeout": 10,
       "directTools": true
     },
+    "gitea": {
+      "command": "gitea-mcp",
+      "args": [
+        "-t",
+        "stdio",
+        "--host",
+        "https://gitea.com"
+      ],
+      "env": {
+        "GITEA_ACCESS_TOKEN": "${GITEA_ACCESS_TOKEN}"
+      },
+      "lifecycle": "lazy",
+      "idleTimeout": 10
+    },
     "effect-docs": {
       "command": "npx",
       "args": [

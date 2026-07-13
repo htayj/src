@@ -60,6 +60,11 @@ approval_mode = "approve"
 [mcp_servers.oracle.tools.consult]
 approval_mode = "approve"
 
+[mcp_servers.gitea]
+command = "gitea-mcp"
+args = ["-t", "stdio", "--host", "https://gitea.com"]
+env_vars = ["GITEA_ACCESS_TOKEN"]
+
 [features]
 memories = true
 terminal_resize_reflow = true

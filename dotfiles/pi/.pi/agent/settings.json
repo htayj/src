@@ -13,7 +13,6 @@
     "openrouter/google/gemma-4-31b-it"
   ],
   "packages": [
-    "/home/tay/projects/pi-task-graph",
     "/home/tay/.pi/agent/packages/general-dev-suite",
     "/home/tay/.pi/agent/packages/okf-knowledge",
     "npm:pi-intercom",
@@ -50,13 +49,6 @@
         "statusKey": "provider-usage",
         "position": "right",
         "prefix": "usage",
-        "color": "accent"
-      },
-      {
-        "id": "task-graph",
-        "statusKey": "task-graph",
-        "position": "right",
-        "prefix": "tasks",
         "color": "accent"
       }
     ]
