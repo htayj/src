@@ -62,7 +62,7 @@ approval_mode = "approve"
 
 [mcp_servers.gitea]
 command = "gitea-mcp"
-args = ["-t", "stdio", "--host", "https://gitea.com"]
+args = ["-t", "stdio", "--host", "https://git.nogroup.group"]
 env_vars = ["GITEA_ACCESS_TOKEN"]
 
 [features]

@@ -60,7 +60,7 @@
         "-t",
         "stdio",
         "--host",
-        "https://gitea.com"
+        "https://git.nogroup.group"
       ],
       "env": {
         "GITEA_ACCESS_TOKEN": "${GITEA_ACCESS_TOKEN}"
