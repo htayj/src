@@ -61,9 +61,8 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.gitea]
-command = "gitea-mcp"
-args = ["-t", "stdio", "--host", "https://git.nogroup.group"]
-env_vars = ["GITEA_ACCESS_TOKEN"]
+command = "bash"
+args = ["-lc", "source /home/tay/.local/share/private-env.d/gitea-mcp.sh 2>/dev/null || true; exec gitea-mcp -t stdio --host https://git.nogroup.group"]
 
 [features]
 memories = true

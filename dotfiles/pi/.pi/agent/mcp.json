@@ -55,16 +55,11 @@
       "directTools": true
     },
     "gitea": {
-      "command": "gitea-mcp",
+      "command": "bash",
       "args": [
-        "-t",
-        "stdio",
-        "--host",
-        "https://git.nogroup.group"
+        "-lc",
+        "source /home/tay/.local/share/private-env.d/gitea-mcp.sh 2>/dev/null || true; exec gitea-mcp -t stdio --host https://git.nogroup.group"
       ],
-      "env": {
-        "GITEA_ACCESS_TOKEN": "${GITEA_ACCESS_TOKEN}"
-      },
       "lifecycle": "lazy",
       "idleTimeout": 10
     },
