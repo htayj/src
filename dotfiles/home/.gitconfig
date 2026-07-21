@@ -1,6 +1,15 @@
 [user]
 	name = htayj
 	email = htayj@users.noreply.github.com
+	signingkey = 3EA36B492D7E76450D2C59267B55A97A62F6D6C0 # gitleaks:allow (public PGP fingerprint)
+
+[gpg]
+	format = openpgp
+	program = gpg
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
 
 [maintenance]
 	repo = /home/tay/.emacs.d

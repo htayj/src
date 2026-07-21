@@ -1,0 +1,5 @@
+# Keep GnuPG pinentry attached to the current interactive terminal.
+if _gpg_tty=$(tty 2>/dev/null); then
+	export GPG_TTY="$_gpg_tty"
+fi
+unset _gpg_tty
