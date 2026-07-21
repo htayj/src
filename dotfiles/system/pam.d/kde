@@ -1,0 +1,11 @@
+#%PAM-1.0
+
+auth       include                     system-local-login
+# Refresh the existing gpg-agent cache after a password-based screen unlock.
+-auth      optional                    pam_gnupg.so
+
+account    include                     system-local-login
+
+password   include                     system-local-login
+
+session    include                     system-local-login

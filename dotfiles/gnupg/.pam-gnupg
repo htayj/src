@@ -1,0 +1,2 @@
+# Ed25519 signing subkey used by Git. Keep PAM access least-privileged.
+8038583B89F148CCF5F35E04FAE9BDFECCBB5317 # gitleaks:allow (public GnuPG keygrip)
