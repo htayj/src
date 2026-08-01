@@ -1,4 +1,5 @@
 ---
+disable: true
 description: Hidden scoped implementation subagent for /do and /pdo; writes code/tests/docs within the assigned scope and never commits or pushes.
 mode: subagent
 hidden: true

@@ -1,4 +1,5 @@
 ---
+disable: true
 description: Hidden read-only UX reviewer for /do and /pdo UI, accessibility, responsive layout, copy, and screenshot evidence.
 mode: subagent
 hidden: true

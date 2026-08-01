@@ -1,4 +1,5 @@
 ---
+disable: true
 description: Hidden read/shell verifier for /do and /pdo compile, typecheck, unit, perf, restart, API, E2E, and lint stages.
 mode: subagent
 hidden: true

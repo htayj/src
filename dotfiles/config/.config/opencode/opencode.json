@@ -1,5 +1,15 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "references": {
+    "okf-network": {
+      "path": "~/okf/network",
+      "description": "Source of truth for the home network: hosts, Tailscale topology, domains, services, storage, runbooks. Start with index.md."
+    },
+    "okf-models": {
+      "path": "~/okf/models",
+      "description": "Catalog of AI models accessible via OpenCode: providers, lineages, benchmark limitations, independent reputation, routing guidance, and capability gaps. Start with index.md."
+    }
+  },
   "provider": {
     "lmstudio": {
       "npm": "@ai-sdk/openai-compatible",
@@ -56,12 +66,14 @@
         "start-mcp-server",
         "--context",
         "ide",
+        "--open-web-dashboard",
+        "False",
         "--project-from-cwd"
       ]
     },
     "supermodel": {
       "type": "local",
-      "enabled": true,
+      "enabled": false,
       "timeout": 120000,
       "command": [
         "npx",
@@ -75,7 +87,7 @@
     },
     "supermodel_graphrag": {
       "type": "local",
-      "enabled": true,
+      "enabled": false,
       "timeout": 120000,
       "command": [
         "npx",
@@ -91,6 +103,6 @@
   },
   "plugin": [
     "/home/tay/.config/opencode/plugins/tmux-session-restore.js",
-    "/home/tay/.config/opencode/plugins/do-pdo-nudge.js"
+    "@ex-machina/opencode-anthropic-auth@1.8.1"
   ]
 }

@@ -1,4 +1,5 @@
 ---
+disable: true
 description: Orchestrates /do and /pdo staged implementation pipelines, delegates to hidden do-* agents, and enforces verification and git gates.
 mode: primary
 temperature: 0.1

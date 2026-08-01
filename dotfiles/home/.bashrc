@@ -202,3 +202,23 @@ export EDITOR='emacsclient -nw'
 [ -d /home/tay/.lmstudio/bin ] && export PATH="$PATH:/home/tay/.lmstudio/bin"
 # End of LM Studio CLI section
 export PATH="$HOME/.local/bin/:$PATH"
+
+# opencode
+export PATH=/home/tay/.opencode/bin:$PATH
+
+# Keep GnuPG pinentry out of interactive application panes. A dedicated tmux
+# pane advertises its terminal through the global GPG_PINENTRY_TTY variable.
+if [[ -t 1 ]]; then
+    if [[ -n "${TMUX:-}" ]]; then
+        gpg_pinentry_tty="$(tmux show-environment -g GPG_PINENTRY_TTY 2>/dev/null | cut -d= -f2-)"
+    else
+        gpg_pinentry_tty=""
+    fi
+    if [[ -n "$gpg_pinentry_tty" && -w "$gpg_pinentry_tty" ]]; then
+        export GPG_TTY="$gpg_pinentry_tty"
+    else
+        export GPG_TTY="$(tty)"
+    fi
+    gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
+    unset gpg_pinentry_tty
+fi

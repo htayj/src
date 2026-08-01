@@ -1,11 +1,5 @@
 {
-  "model": "opus[1m]",
-  "enabledPlugins": {
-    "clim-spec@kvc-claude-code-skills": true,
-    "croatoan@kvc-claude-code-skills": true,
-    "skill-creator@claude-plugins-official": true
-  },
-  "effortLevel": "high",
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -18,5 +12,12 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "clim-spec@kvc-claude-code-skills": true,
+    "croatoan@kvc-claude-code-skills": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "effortLevel": "xhigh",
+  "tui": "fullscreen"
 }

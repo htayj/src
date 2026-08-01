@@ -1,4 +1,5 @@
 ---
+disable: true
 description: Hidden read-only code reviewer for /do and /pdo implementation diffs.
 mode: subagent
 hidden: true

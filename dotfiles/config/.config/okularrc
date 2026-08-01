@@ -18,5 +18,26 @@ HDMI-1 eDP-1=HDMI-1
 eDP-1=eDP-1
 
 [Recent Files]
-File1[$e]=$HOME/Downloads/flagazine.pdf
-Name1[$e]=flagazine.pdf
+File1[$e]=$HOME/projects/General-Corpus/bin/pdf/OctC-oracle-iter06.pdf
+File10[$e]=$HOME/projects/rest-sim/README.md
+File2[$e]=$HOME/projects/General-Corpus/bin/pdf/RuleServLd-oracle-iter05.pdf
+File3[$e]=$HOME/projects/General-Corpus/bin/pdf/Gawain-oracle-iter05.pdf
+File4[$e]=$HOME/projects/General-Corpus/dist/CME00099.pdf
+File5[$e]=$HOME/projects/General-Corpus/dist/3KCol.pdf
+File6[$e]=$HOME/projects/genera-emu/docs/genera/font-catalog.md
+File7[$e]=$HOME/projects/genera-emu/docs/mit-cadr/font-sources-and-recovery.md
+File8[$e]=$HOME/projects/genera-emu/docs/mit-cadr/index.md
+File9[$e]=$HOME/projects/genera-emu/docs/mit-cadr/eine.md
+Name1[$e]=OctC-oracle-iter06.pdf
+Name10[$e]=README.md
+Name2[$e]=RuleServLd-oracle-iter05.pdf
+Name3[$e]=Gawain-oracle-iter05.pdf
+Name4[$e]=CME00099.pdf
+Name5[$e]=3KCol.pdf
+Name6[$e]=font-catalog.md
+Name7[$e]=font-sources-and-recovery.md
+Name8[$e]=index.md
+Name9[$e]=eine.md
+
+[UiSettings]
+ColorScheme=BreezeDark
