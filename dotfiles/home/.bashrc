@@ -222,3 +222,12 @@ if [[ -t 1 ]]; then
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
     unset gpg_pinentry_tty
 fi
+omo() {
+    local omo_bin
+    omo_bin="$(find "$HOME/.cache/opencode/packages" -path '*/node_modules/.bin/omo' \( -type f -o -type l \) 2>/dev/null | sort -V | tail -n 1)"
+    if [[ -z "$omo_bin" ]]; then
+        echo "omo: oh-my-openagent CLI not found in ~/.cache/opencode/packages" >&2
+        return 127
+    fi
+    OMO_SEND_ANONYMOUS_TELEMETRY=0 "$omo_bin" "$@"
+}
