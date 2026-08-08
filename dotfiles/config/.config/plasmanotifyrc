@@ -1,6 +1,9 @@
 [Applications][chromium]
 Seen=true
 
+[Applications][com.mitchellh.ghostty]
+Seen=true
+
 [Applications][firefox]
 Seen=true
 

@@ -95,6 +95,12 @@ trust_level = "trusted"
 [projects."/home/tay/projects/rplaca"]
 trust_level = "trusted"
 
+[projects."/home/tay/projects/jobsearch"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/price-comparison"]
+trust_level = "trusted"
+
 [mcp_servers.oracle]
 command = "npx"
 args = ["-y", "@steipete/oracle", "oracle-mcp"]

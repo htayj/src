@@ -1,0 +1,22 @@
+{
+  "biome": {
+    "decision": "declined",
+    "decidedAt": "2026-08-02T19:13:31.951Z"
+  },
+  "yaml-ls": {
+    "decision": "declined",
+    "decidedAt": "2026-08-02T20:30:41.769Z"
+  },
+  "bash": {
+    "decision": "declined",
+    "decidedAt": "2026-08-02T20:30:41.992Z"
+  },
+  "basedpyright": {
+    "decision": "declined",
+    "decidedAt": "2026-08-04T22:19:31.111Z"
+  },
+  "dockerfile": {
+    "decision": "declined",
+    "decidedAt": "2026-08-06T05:34:58.366Z"
+  }
+}

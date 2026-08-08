@@ -10,6 +10,12 @@
       "description": "Catalog of AI models accessible via OpenCode: providers, lineages, benchmark limitations, independent reputation, routing guidance, and capability gaps. Start with index.md."
     }
   },
+  "skills": {
+    "paths": [
+      "/home/tay/.codex/skills",
+      "/home/tay/.codex/skills/.system"
+    ]
+  },
   "provider": {
     "lmstudio": {
       "npm": "@ai-sdk/openai-compatible",
@@ -50,6 +56,409 @@
         },
         "text-embedding-nomic-embed-text-v1.5": {
           "name": "text-embedding-nomic-embed-text-v1.5"
+        }
+      }
+    },
+    "omniroute": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Omniroute (LAN gateway)",
+      "options": {
+        "baseURL": "http://192.168.7.116/v1",
+        "apiKey": "{env:OMNIROUTE_API_KEY}"
+      },
+      "models": {
+        "auto/best-chaos": {
+          "name": "auto/best-chaos"
+        },
+        "auto/best-chat": {
+          "name": "auto/best-chat"
+        },
+        "auto/best-coding": {
+          "name": "auto/best-coding"
+        },
+        "auto/best-coding-fast": {
+          "name": "auto/best-coding-fast"
+        },
+        "auto/best-fast": {
+          "name": "auto/best-fast"
+        },
+        "auto/best-free": {
+          "name": "auto/best-free"
+        },
+        "auto/best-reasoning": {
+          "name": "auto/best-reasoning"
+        },
+        "auto/best-vision": {
+          "name": "auto/best-vision"
+        },
+        "auto/chaos": {
+          "name": "auto/chaos"
+        },
+        "auto/chat": {
+          "name": "auto/chat"
+        },
+        "auto/cheap": {
+          "name": "auto/cheap"
+        },
+        "auto/claude-opus": {
+          "name": "auto/claude-opus"
+        },
+        "auto/claude-sonnet": {
+          "name": "auto/claude-sonnet"
+        },
+        "auto/coding": {
+          "name": "auto/coding"
+        },
+        "auto/coding:cheap": {
+          "name": "auto/coding:cheap"
+        },
+        "auto/coding:fast": {
+          "name": "auto/coding:fast"
+        },
+        "auto/coding:free": {
+          "name": "auto/coding:free"
+        },
+        "auto/coding:pro": {
+          "name": "auto/coding:pro"
+        },
+        "auto/coding:reliable": {
+          "name": "auto/coding:reliable"
+        },
+        "auto/fast": {
+          "name": "auto/fast"
+        },
+        "auto/gemini": {
+          "name": "auto/gemini"
+        },
+        "auto/gemma": {
+          "name": "auto/gemma"
+        },
+        "auto/glm": {
+          "name": "auto/glm"
+        },
+        "auto/llama": {
+          "name": "auto/llama"
+        },
+        "auto/mimo": {
+          "name": "auto/mimo"
+        },
+        "auto/minimax": {
+          "name": "auto/minimax"
+        },
+        "auto/multimodal": {
+          "name": "auto/multimodal"
+        },
+        "auto/offline": {
+          "name": "auto/offline"
+        },
+        "auto/pro-chat": {
+          "name": "auto/pro-chat"
+        },
+        "auto/pro-coding": {
+          "name": "auto/pro-coding"
+        },
+        "auto/pro-fast": {
+          "name": "auto/pro-fast"
+        },
+        "auto/pro-reasoning": {
+          "name": "auto/pro-reasoning"
+        },
+        "auto/pro-vision": {
+          "name": "auto/pro-vision"
+        },
+        "auto/reasoning": {
+          "name": "auto/reasoning"
+        },
+        "auto/reasoning:pro": {
+          "name": "auto/reasoning:pro"
+        },
+        "auto/smart": {
+          "name": "auto/smart"
+        },
+        "auto/vision": {
+          "name": "auto/vision"
+        },
+        "auto/zai": {
+          "name": "auto/zai"
+        },
+        "opencode/big-pickle": {
+          "name": "opencode/big-pickle"
+        },
+        "opencode/claude-fable-5": {
+          "name": "opencode/claude-fable-5"
+        },
+        "opencode/claude-fable-5-high": {
+          "name": "opencode/claude-fable-5-high"
+        },
+        "opencode/claude-fable-5-low": {
+          "name": "opencode/claude-fable-5-low"
+        },
+        "opencode/claude-fable-5-medium": {
+          "name": "opencode/claude-fable-5-medium"
+        },
+        "opencode/claude-fable-5-xhigh": {
+          "name": "opencode/claude-fable-5-xhigh"
+        },
+        "opencode/claude-haiku-4-5": {
+          "name": "opencode/claude-haiku-4-5"
+        },
+        "opencode/claude-opus-4-1": {
+          "name": "opencode/claude-opus-4-1"
+        },
+        "opencode/claude-opus-4-5": {
+          "name": "opencode/claude-opus-4-5"
+        },
+        "opencode/claude-opus-4-5-high": {
+          "name": "opencode/claude-opus-4-5-high"
+        },
+        "opencode/claude-opus-4-5-low": {
+          "name": "opencode/claude-opus-4-5-low"
+        },
+        "opencode/claude-opus-4-5-medium": {
+          "name": "opencode/claude-opus-4-5-medium"
+        },
+        "opencode/claude-opus-4-6": {
+          "name": "opencode/claude-opus-4-6"
+        },
+        "opencode/claude-opus-4-6-high": {
+          "name": "opencode/claude-opus-4-6-high"
+        },
+        "opencode/claude-opus-4-6-low": {
+          "name": "opencode/claude-opus-4-6-low"
+        },
+        "opencode/claude-opus-4-6-medium": {
+          "name": "opencode/claude-opus-4-6-medium"
+        },
+        "opencode/claude-opus-4-7": {
+          "name": "opencode/claude-opus-4-7"
+        },
+        "opencode/claude-opus-4-7-high": {
+          "name": "opencode/claude-opus-4-7-high"
+        },
+        "opencode/claude-opus-4-7-low": {
+          "name": "opencode/claude-opus-4-7-low"
+        },
+        "opencode/claude-opus-4-7-medium": {
+          "name": "opencode/claude-opus-4-7-medium"
+        },
+        "opencode/claude-opus-4-7-xhigh": {
+          "name": "opencode/claude-opus-4-7-xhigh"
+        },
+        "opencode/claude-opus-4-8": {
+          "name": "opencode/claude-opus-4-8"
+        },
+        "opencode/claude-opus-4-8-high": {
+          "name": "opencode/claude-opus-4-8-high"
+        },
+        "opencode/claude-opus-4-8-low": {
+          "name": "opencode/claude-opus-4-8-low"
+        },
+        "opencode/claude-opus-4-8-medium": {
+          "name": "opencode/claude-opus-4-8-medium"
+        },
+        "opencode/claude-opus-4-8-xhigh": {
+          "name": "opencode/claude-opus-4-8-xhigh"
+        },
+        "opencode/claude-opus-5": {
+          "name": "opencode/claude-opus-5"
+        },
+        "opencode/claude-opus-5-high": {
+          "name": "opencode/claude-opus-5-high"
+        },
+        "opencode/claude-opus-5-low": {
+          "name": "opencode/claude-opus-5-low"
+        },
+        "opencode/claude-opus-5-medium": {
+          "name": "opencode/claude-opus-5-medium"
+        },
+        "opencode/claude-opus-5-xhigh": {
+          "name": "opencode/claude-opus-5-xhigh"
+        },
+        "opencode/claude-sonnet-4": {
+          "name": "opencode/claude-sonnet-4"
+        },
+        "opencode/claude-sonnet-4-5": {
+          "name": "opencode/claude-sonnet-4-5"
+        },
+        "opencode/claude-sonnet-4-5-high": {
+          "name": "opencode/claude-sonnet-4-5-high"
+        },
+        "opencode/claude-sonnet-4-5-low": {
+          "name": "opencode/claude-sonnet-4-5-low"
+        },
+        "opencode/claude-sonnet-4-5-medium": {
+          "name": "opencode/claude-sonnet-4-5-medium"
+        },
+        "opencode/claude-sonnet-4-6": {
+          "name": "opencode/claude-sonnet-4-6"
+        },
+        "opencode/claude-sonnet-4-6-high": {
+          "name": "opencode/claude-sonnet-4-6-high"
+        },
+        "opencode/claude-sonnet-4-6-low": {
+          "name": "opencode/claude-sonnet-4-6-low"
+        },
+        "opencode/claude-sonnet-4-6-medium": {
+          "name": "opencode/claude-sonnet-4-6-medium"
+        },
+        "opencode/claude-sonnet-5": {
+          "name": "opencode/claude-sonnet-5"
+        },
+        "opencode/claude-sonnet-5-high": {
+          "name": "opencode/claude-sonnet-5-high"
+        },
+        "opencode/claude-sonnet-5-low": {
+          "name": "opencode/claude-sonnet-5-low"
+        },
+        "opencode/claude-sonnet-5-medium": {
+          "name": "opencode/claude-sonnet-5-medium"
+        },
+        "opencode/claude-sonnet-5-xhigh": {
+          "name": "opencode/claude-sonnet-5-xhigh"
+        },
+        "opencode/deepseek-v4-flash": {
+          "name": "opencode/deepseek-v4-flash"
+        },
+        "opencode/deepseek-v4-flash-free": {
+          "name": "opencode/deepseek-v4-flash-free"
+        },
+        "opencode/deepseek-v4-pro": {
+          "name": "opencode/deepseek-v4-pro"
+        },
+        "opencode/gemini-3-flash": {
+          "name": "opencode/gemini-3-flash"
+        },
+        "opencode/gemini-3.1-pro": {
+          "name": "opencode/gemini-3.1-pro"
+        },
+        "opencode/gemini-3.5-flash": {
+          "name": "opencode/gemini-3.5-flash"
+        },
+        "opencode/gemini-3.5-flash-lite": {
+          "name": "opencode/gemini-3.5-flash-lite"
+        },
+        "opencode/gemini-3.6-flash": {
+          "name": "opencode/gemini-3.6-flash"
+        },
+        "opencode/glm-5": {
+          "name": "opencode/glm-5"
+        },
+        "opencode/glm-5.1": {
+          "name": "opencode/glm-5.1"
+        },
+        "opencode/glm-5.2": {
+          "name": "opencode/glm-5.2"
+        },
+        "opencode/gpt-5": {
+          "name": "opencode/gpt-5"
+        },
+        "opencode/gpt-5-codex": {
+          "name": "opencode/gpt-5-codex"
+        },
+        "opencode/gpt-5-nano": {
+          "name": "opencode/gpt-5-nano"
+        },
+        "opencode/gpt-5.1": {
+          "name": "opencode/gpt-5.1"
+        },
+        "opencode/gpt-5.1-codex": {
+          "name": "opencode/gpt-5.1-codex"
+        },
+        "opencode/gpt-5.1-codex-max": {
+          "name": "opencode/gpt-5.1-codex-max"
+        },
+        "opencode/gpt-5.1-codex-mini": {
+          "name": "opencode/gpt-5.1-codex-mini"
+        },
+        "opencode/gpt-5.2": {
+          "name": "opencode/gpt-5.2"
+        },
+        "opencode/gpt-5.2-codex": {
+          "name": "opencode/gpt-5.2-codex"
+        },
+        "opencode/gpt-5.3-codex": {
+          "name": "opencode/gpt-5.3-codex"
+        },
+        "opencode/gpt-5.3-codex-spark": {
+          "name": "opencode/gpt-5.3-codex-spark"
+        },
+        "opencode/gpt-5.4": {
+          "name": "opencode/gpt-5.4"
+        },
+        "opencode/gpt-5.4-mini": {
+          "name": "opencode/gpt-5.4-mini"
+        },
+        "opencode/gpt-5.4-nano": {
+          "name": "opencode/gpt-5.4-nano"
+        },
+        "opencode/gpt-5.4-pro": {
+          "name": "opencode/gpt-5.4-pro"
+        },
+        "opencode/gpt-5.5": {
+          "name": "opencode/gpt-5.5"
+        },
+        "opencode/gpt-5.5-pro": {
+          "name": "opencode/gpt-5.5-pro"
+        },
+        "opencode/gpt-5.6-luna": {
+          "name": "opencode/gpt-5.6-luna"
+        },
+        "opencode/gpt-5.6-sol": {
+          "name": "opencode/gpt-5.6-sol"
+        },
+        "opencode/gpt-5.6-terra": {
+          "name": "opencode/gpt-5.6-terra"
+        },
+        "opencode/grok-4.5": {
+          "name": "opencode/grok-4.5"
+        },
+        "opencode/grok-build-0.1": {
+          "name": "opencode/grok-build-0.1"
+        },
+        "opencode/kimi-k2.5": {
+          "name": "opencode/kimi-k2.5"
+        },
+        "opencode/kimi-k2.6": {
+          "name": "opencode/kimi-k2.6"
+        },
+        "opencode/kimi-k2.7-code": {
+          "name": "opencode/kimi-k2.7-code"
+        },
+        "opencode/kimi-k3": {
+          "name": "opencode/kimi-k3"
+        },
+        "opencode/laguna-s-2.1-free": {
+          "name": "opencode/laguna-s-2.1-free"
+        },
+        "opencode/ling-3.0-flash-free": {
+          "name": "opencode/ling-3.0-flash-free"
+        },
+        "opencode/longcat-2.0-free": {
+          "name": "opencode/longcat-2.0-free"
+        },
+        "opencode/mimo-v2.5-free": {
+          "name": "opencode/mimo-v2.5-free"
+        },
+        "opencode/minimax-m2.5": {
+          "name": "opencode/minimax-m2.5"
+        },
+        "opencode/minimax-m2.7": {
+          "name": "opencode/minimax-m2.7"
+        },
+        "opencode/minimax-m3": {
+          "name": "opencode/minimax-m3"
+        },
+        "opencode/nemotron-3-ultra-free": {
+          "name": "opencode/nemotron-3-ultra-free"
+        },
+        "opencode/north-mini-code-free": {
+          "name": "opencode/north-mini-code-free"
+        },
+        "opencode/qwen3.5-plus": {
+          "name": "opencode/qwen3.5-plus"
+        },
+        "opencode/qwen3.6-plus": {
+          "name": "opencode/qwen3.6-plus"
         }
       }
     }
@@ -98,6 +507,16 @@
         "SUPERMODEL_API_KEY": "{env:SUPERMODEL_API_KEY}",
         "SUPERMODEL_EXPERIMENT": "graphrag",
         "SUPERMODEL_TIMEOUT_MS": "900000"
+      }
+    },
+    "omniroute": {
+      "type": "remote",
+      "enabled": true,
+      "timeout": 120000,
+      "url": "http://192.168.7.116/api/mcp/stream",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:OMNIROUTE_API_KEY}"
       }
     }
   },

@@ -202,6 +202,8 @@ export EDITOR='emacsclient -nw'
 [ -d /home/tay/.lmstudio/bin ] && export PATH="$PATH:/home/tay/.lmstudio/bin"
 # End of LM Studio CLI section
 export PATH="$HOME/.local/bin/:$PATH"
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
 # opencode
 export PATH=/home/tay/.opencode/bin:$PATH
@@ -222,6 +224,7 @@ if [[ -t 1 ]]; then
     gpg-connect-agent updatestartuptty /bye >/dev/null 2>&1 || true
     unset gpg_pinentry_tty
 fi
+alias lispw=/usr/local/lib64/LispWorksPersonal/lispworks-personal-8-1-2-amd64-linux
 omo() {
     local omo_bin
     omo_bin="$(find "$HOME/.cache/opencode/packages" -path '*/node_modules/.bin/omo' \( -type f -o -type l \) 2>/dev/null | sort -V | tail -n 1)"

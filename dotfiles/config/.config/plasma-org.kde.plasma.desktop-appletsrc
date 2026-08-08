@@ -178,5 +178,5 @@ knownItems=org.kde.kdeconnect,org.kde.plasma.bluetooth,org.kde.plasma.cameraindi
 AppletOrder=4;5;6;7;8;22;23
 
 [ScreenMapping]
-itemsOnDisabledScreens=
-screenMapping=desktop:/user-home.desktop,0,93177266-24bd-4134-918b-dafbc217617d,desktop:/network.desktop,0,93177266-24bd-4134-918b-dafbc217617d,desktop:/launcher.desktop,0,93177266-24bd-4134-918b-dafbc217617d,desktop:/computer.desktop,0,93177266-24bd-4134-918b-dafbc217617d
+itemsOnDisabledScreens=1,93177266-24bd-4134-918b-dafbc217617d,1,desktop:/steam.desktop,0,93177266-24bd-4134-918b-dafbc217617d,4,desktop:/computer.desktop,desktop:/user-home.desktop,desktop:/network.desktop,desktop:/launcher.desktop
+screenMapping=desktop:/user-home.desktop,0,93177266-24bd-4134-918b-dafbc217617d,desktop:/computer.desktop,0,93177266-24bd-4134-918b-dafbc217617d,desktop:/launcher.desktop,0,93177266-24bd-4134-918b-dafbc217617d,desktop:/network.desktop,0,93177266-24bd-4134-918b-dafbc217617d,desktop:/steam.desktop,1,93177266-24bd-4134-918b-dafbc217617d
