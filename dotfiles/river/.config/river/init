@@ -1,0 +1,149 @@
+#!/bin/sh
+# river session bootstrap.
+#
+# river runs this executable once, after its Wayland server is up but before the
+# main loop. On exit river SIGTERMs this whole process group, so everything
+# started here dies with the session.
+#
+# river is ONLY a compositor: it has no window management, no keybindings beyond
+# Ctrl+Alt+F1-F12 (VT switch), and no session services. The window manager is a
+# separate process, chosen below.
+#
+# Design rule for this file: it starts the things that NO river window manager
+# provides — notifications, idle/lock, clipboard history, a polkit agent, tray
+# applets. It deliberately does NOT theme or re-bind the window manager. Each WM
+# keeps its own look and its own key bindings; kwm's bar, canoe's Motif chrome
+# and rhine's animations are the point of trying them.
+
+# ---------------------------------------------------------------------------
+# NOTE ON THE KEYMAP — it is NOT set here, and must not be.
+# ---------------------------------------------------------------------------
+# river builds its xkb keymap during startup, BEFORE it runs this file, so
+# exporting XKB_DEFAULT_* here is too late and silently does nothing. Measured:
+#
+#   exported from this init  -> a bogus layout produces no error at all
+#   exported by the parent   -> a bogus layout makes river exit 1
+#
+# XKB_DEFAULT_LAYOUT therefore lives in ~/.local/bin/river-session, which is what
+# the session .desktop launches. Everything below is consumed by this file's
+# CHILDREN, so setting it here is correct.
+
+# ---------------------------------------------------------------------------
+# Environment for spawned programs
+# ---------------------------------------------------------------------------
+# VA-API only; valid because libva-nvidia-driver is installed. NOT a compositor
+# variable. Deliberately absent: GBM_BACKEND, __GLX_VENDOR_LIBRARY_NAME,
+# NVD_BACKEND (all redundant) and WLR_DRM_NO_ATOMIC (actively harmful — it
+# forces the legacy DRM path and silently disables explicit sync).
+export LIBVA_DRIVER_NAME=nvidia
+
+export QT_QPA_PLATFORM='wayland;xcb'
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# Every one of these WMs defaults to a terminal that is not installed here —
+# foot, kitty or alacritty. triad probes a candidate list and honours $TERMINAL,
+# so this fixes it without touching triad's config. WMs that hardcode their
+# terminal get a per-WM config instead (see ../kwm, ./rrwm.toml).
+export TERMINAL=ghostty
+
+# river does not ship the systemd/dbus bootstrap that Arch's sway package does,
+# so do it here. Without it the tray stays empty and xdg-desktop-portal-wlr
+# never starts (its unit has ConditionEnvironment=WAYLAND_DISPLAY).
+systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
+hash dbus-update-activation-environment 2>/dev/null && \
+  dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
+
+# ---------------------------------------------------------------------------
+# Window manager
+# ---------------------------------------------------------------------------
+# Pick one. Either edit ~/.config/river/wm, or run `river-wm <name>`.
+# Precedence: $RIVER_WM from the environment beats ~/.config/river/wm, so a
+# per-WM session entry ("River: kwm") can override the persistent default
+# without editing it. river passes its own environment to this init, so the
+# session wrapper exporting RIVER_WM is enough.
+if [ -z "${RIVER_WM:-}" ]; then
+    WM_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/river/wm"
+    [ -r "$WM_FILE" ] && RIVER_WM=$(sed 's/#.*//' "$WM_FILE" | tr -d '[:space:]')
+fi
+RIVER_WM="${RIVER_WM:-kwm}"
+
+command -v "$RIVER_WM" >/dev/null 2>&1 || {
+    # Fall back to something packaged so a typo doesn't leave you with a blank
+    # screen and no way to launch a terminal.
+    notify-send "river" "WM '$RIVER_WM' not found — falling back to rhine" 2>/dev/null
+    RIVER_WM=rhine
+}
+"$RIVER_WM" &
+
+# ---------------------------------------------------------------------------
+# Output configuration
+# ---------------------------------------------------------------------------
+# river has NO output configuration of its own — no modes, no positions, no
+# scale — and neither does any of these window managers. river(1) says so
+# directly: "kanshi(1) could be started to manage output configuration".
+#
+# So without this the G9 comes up at whatever mode wlroots picks and the second
+# panel lands wherever it likes. kanshi is the only thing setting geometry here,
+# which also means there is nothing for it to fight with (unlike under sway,
+# where sway's own `output' directives own that state).
+#
+# Config lives in the shared `config' stow package at ~/.config/kanshi/config
+# because monitor geometry is hardware, not compositor.
+kanshi &
+
+# ---------------------------------------------------------------------------
+# Quality-of-life daemons — the gaps every river WM leaves.
+# ---------------------------------------------------------------------------
+# Background. kwm paints its own solid colour, so skip swaybg there and let it.
+case "$RIVER_WM" in
+    kwm) ;;
+    *) swaybg -c '#000000' & ;;
+esac
+
+# Notifications. mako is D-Bus activated, but starting it explicitly means the
+# first notification isn't delayed by activation.
+mako &
+
+# Idle and lock. Nothing in river or any of its WMs does this, and it is the
+# only burn-in mitigation available for the OLED.
+swayidle -w \
+    timeout 300  'swaylock -f' \
+    timeout 600  'wlopm --off \*' \
+    resume       'wlopm --on \*' \
+    before-sleep 'swaylock -f' &
+
+# Clipboard history. Do NOT add wl-clip-persist alongside cliphist — they race
+# and produce duplicate entries and failed copies.
+wl-paste --type text  --watch cliphist store &
+wl-paste --type image --watch cliphist store &
+
+# Polkit agent, or GUI privilege escalation silently fails. polkit-kde-agent is
+# a plain binary, not a plasmoid, so it works outside Plasma.
+/usr/lib/polkit-kde-authentication-agent-1 &
+
+# Volume / caps-lock OSD server. The key BINDINGS belong to the WM — see the
+# per-WM notes in river-README.md for which ones support media keys.
+swayosd-server &
+
+# Tray applets. nm-applet and udiskie default to Gtk.StatusIcon, which is XEmbed,
+# which does not exist on Wayland — without these flags they start invisible.
+# blueman needs no flag: native SNI since 2.3.
+#
+# Only useful under a WM that hosts a tray. kwm's bar does not implement SNI, so
+# these are started anyway (harmless) but you will only see them if you run
+# waybar below.
+blueman-applet &
+nm-applet --indicator &
+udiskie --appindicator &
+
+# A bar, only for WMs that ship none. kwm has its own; rhine, rill, rrwm,
+# ashrwm, triad and canoe do not. This is the one place where adding something
+# risks overriding a WM's intent, so it is easy to turn off: create
+# ~/.config/river/no-bar and it will be skipped.
+case "$RIVER_WM" in
+    kwm) ;;
+    *)
+        [ -e "${XDG_CONFIG_HOME:-$HOME/.config}/river/no-bar" ] || waybar &
+        ;;
+esac

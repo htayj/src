@@ -1,0 +1,37 @@
+# rrwm — bindings moved off Mod1 onto Mod4.
+#
+# WHY THIS FILE EXISTS
+#
+# rrwm's built-in defaults (src/config.rs, get_default_bindings) are all
+# `Modifiers::Mod1'. On this keymap Mod1 is <LALT>, which kanata produces from
+# the homerow `s'/`l' hold — that is EMACS META. Leaving the defaults in place
+# means every rrwm binding fights Emacs.
+#
+# Mod4 is <RALT>, produced by holding either big thumb key, and is the modifier
+# every other river WM here already uses. rrwm accepts "super", "mod4" or "logo"
+# for it (src/wm/binds.rs: `"super" | "mod4" | "logo" => Modifiers::Mod4`).
+#
+# The bindings below are rrwm's own defaults, unchanged except for the modifier
+# and the terminal. Note the key choice is Colemak-ish (n/i/u/e for
+# left/right/up/down) — that is rrwm's design, left as-is.
+#
+# Presence of a [keybindings] table disables the built-in defaults entirely
+# (binds.rs: `if let Some(entries) = state.config.keybindings ... else load
+# defaults`), so this must list everything you want.
+
+[keybindings.mod4]
+# focus — rrwm's own n/i/u/e directional layout
+n = { action = "focus", args = ["left"] }
+i = { action = "focus", args = ["right"] }
+u = { action = "focus", args = ["up"] }
+e = { action = "focus", args = ["down"] }
+
+# window
+q = { action = "close_focused" }
+
+# terminal — rrwm defaults to kitty, which is not installed here
+Return = { action = "spawn", args = ["ghostty"] }
+
+# launcher — not in rrwm's defaults at all; added because nothing else provides
+# one and every other WM in this set can launch something
+space = { action = "spawn", args = ["fuzzel"] }

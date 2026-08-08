@@ -1,0 +1,210 @@
+// Triad Configuration (KDL 2.0)
+
+// theme {
+//     accent-color "#ffffff"
+// }
+
+layout {
+    gaps 16
+    center-focused-column "on-overflow"
+    default-column-width { proportion 0.5; }
+    default-window-width { proportion 0.5; }
+    default-window-height { proportion 1.0; }
+    master {
+        count 1
+        split-ratio 0.55
+    }
+    border {
+        width 2
+        active-color "#ffffff"
+        inactive-color "#666666"
+    }
+    frame-tabs {
+        active-color "#3f7fd5"
+        active-unfocused-color "#303846"
+        inactive-color "#161a22ee"
+        active-line-color "#ffffff"
+        active-unfocused-line-color "#62a8ff"
+        empty-background-color "#00000001"
+    }
+    enable-animations #true
+    animation-speed 0.15
+    animation-snap-threshold 0.5
+    frame-rate "auto"
+    smart-gaps #false
+    layout-cycle "scroller" "tile" "grid" "spiral" "monocle" "vertical-scroller"
+}
+
+scratchpad {
+    width-ratio 0.8
+    height-ratio 0.9
+}
+
+overview {
+    outer-gap 64
+    inner-gap-multiplier 2.0
+    zoom 0.5
+    scroller-indicators #false
+}
+
+floating {
+    x-ratio 0.25
+    y-ratio 0.25
+    width-ratio 0.5
+    height-ratio 0.5
+    min-width 50
+    min-height 50
+}
+
+workspaces {
+    default-count 3
+    default-layout "scroller"
+}
+
+screenshot {
+    directory "~/Pictures/Screenshots"
+    filename-prefix "triad-screenshot"
+    capture-command "grim"
+    region-selector-command "slurp"
+    clipboard-command "wl-copy --type image/png"
+    show-pointer #false
+}
+
+janet {
+    enabled #true
+    automation-dir "~/.config/triad/automation"
+    layout-dir "~/.config/triad/layouts"
+    fuel-limit 500000
+}
+
+// output {
+//     layout "DP-3" "DP-2" "DP-1"
+//
+//     monitor "HDMI-A-1" {
+//         mode "preferred"
+//         position "auto"
+//         scale "auto"
+//         focus-at-startup
+//         workspaces 2 4
+//     }
+//
+//     default {
+//         scale "auto"
+//     }
+// }
+
+// cursor {
+//     theme "default"
+//     size 24
+//     shake-to-find #true
+// }
+
+// Shells, bars, launchers, lock screens, startup services, and app rules are
+// intentionally configured outside this fallback.
+// When shell profiles are configured, their watchdog defaults to enabled with
+// a 30000 ms exclusive layer focus timeout.
+
+allow-exit-session #true
+
+recent-windows {
+    debounce-ms 750
+    open-delay-ms 150
+    highlight {
+        active-color "#999999"
+        urgent-color "#ff9999"
+        padding 30
+        corner-radius 0
+    }
+    previews {
+        max-height 480
+        max-scale 0.5
+    }
+    binds {
+        bind "Mod4+Shift+Tab" "recent-window-next"
+        bind "Mod4+Ctrl+Tab" "recent-window-prev"
+        bind "Mod4+grave" "recent-window-next --filter app-id"
+        bind "Mod4+Shift+grave" "recent-window-prev --filter app-id"
+    }
+}
+
+hotkey-overlay {
+    skip-at-startup #false
+    hide-not-bound
+    position "center"
+}
+
+layout-switch-toast {
+    enabled #true
+    timeout-ms 900
+    ring-color "#ff3b30"
+}
+
+// environment {
+//     GTK_THEME "Adwaita:dark"
+//     SSH_AUTH_SOCK #null
+// }
+
+bindings {
+    bind "Ctrl+Alt+Delete" "exit-session" allow-inhibiting=#false hotkey-overlay-title="Exit Triad"
+    bind "Mod4+?" "toggle-hotkey-overlay" allow-inhibiting=#false hotkey-overlay-title="Show Important Hotkeys"
+    bind "Mod4+q" "close-window"
+    bind "Mod4+f" "maximize-window-to-edges"
+    bind "Mod4+Shift+f" "fullscreen-window"
+    bind "Mod4+m" "maximize-column"
+    bind "Mod4+Shift+b" "minimize"
+    bind "Mod4+Alt+b" "restore-minimized"
+    bind "Mod4+s" "move-to-scratchpad"
+    bind "Mod4+Alt+s" "toggle-scratchpad"
+    bind "Mod4+Shift+s" "restore-scratchpad"
+    bind "Mod4+n" "switch-layout"
+    bind "Mod4+Alt+1" "scroller"
+    bind "Mod4+Alt+2" "notion"
+    bind "Mod4+Alt+3" "dwindle"
+    bind "Mod4+Alt+4" "grid"
+    bind "Mod4+Alt+5" "center-tile"
+    bind "Mod4+Alt+6" "spiral"
+    bind "Mod4+Alt+7" "i3"
+    bind "Mod4+Shift+n" "new-workspace"
+    layout "i3" {
+        bind "Mod4+e" "split-tree-layout-toggle-split"
+        bind "Mod4+s" "split-tree-layout-stacking"
+        bind "Mod4+Ctrl+s" "move-to-scratchpad"
+        bind "Mod4+w" "split-tree-layout-tabbed"
+    }
+    bind "Mod4+Ctrl+Escape" "toggle-keyboard-shortcuts-inhibit" allow-inhibiting=#false
+    bind "Ctrl+Alt+Escape" "focus-last" allow-inhibiting=#false
+    bind "Ctrl+Alt+r" "triad-reload" allow-inhibiting=#false
+    bind "Mod4+t" "spawn-terminal"
+    bind "Print" "screenshot"
+    bind "Ctrl+Print" "screenshot-screen"
+    bind "Mod4+Shift+Print" "screenshot-window"
+    bind "Mod4+Print" "screenshot --clipboard-only"
+    bind "Mod4+Tab" "focus-next"
+    bind "Mod4+Page_Up" "frame-tab-prev"
+    bind "Mod4+Page_Down" "frame-tab-next"
+    // Focus — vim keys, matching the sway and StumpWM bindings. triad shipped
+    // these on the arrow keys (and originally on Alt, i.e. Emacs Meta).
+    bind "Mod4+h" "focus-left"
+    bind "Mod4+j" "focus-down"
+    bind "Mod4+k" "focus-up"
+    bind "Mod4+l" "focus-right"
+    // Move the focused window. Not bound by triad at all; added to complete the
+    // pattern, same as $mod+Shift+hjkl in the sway config.
+    bind "Mod4+Shift+h" "move-window-left"
+    bind "Mod4+Shift+j" "move-window-down"
+    bind "Mod4+Shift+k" "move-window-up"
+    bind "Mod4+Shift+l" "move-window-right"
+    bind "Mod4+1" "focus-workspace 1"
+    bind "Mod4+2" "focus-workspace 2"
+    bind "Mod4+3" "focus-workspace 3"
+    bind "Mod4+4" "focus-workspace 4"
+    pointer-bind "Mod4+left" "move"
+    pointer-bind "Mod4+right" "resize"
+    // axis-bind "Mod4+wheel-up" "focus-left"
+    // axis-bind "Mod4+wheel-down" "focus-right"
+}
+
+window-rule {
+    match app-id="qemu"
+    keyboard-shortcuts-inhibit #true
+}

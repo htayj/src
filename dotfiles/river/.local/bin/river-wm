@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Select the river window manager. Takes effect on next river start.
+#   river-wm            show current + available
+#   river-wm <name>     select
+set -eu
+F="${XDG_CONFIG_HOME:-$HOME/.config}/river/wm"
+KNOWN="kwm rhine canoe rill rrwm ashrwm triad"
+cur=$(sed 's/#.*//' "$F" 2>/dev/null | tr -d '[:space:]')
+
+if [ $# -eq 0 ]; then
+    printf 'current: %s\n\navailable:\n' "${cur:-<unset>}"
+    for w in $KNOWN; do
+        if command -v "$w" >/dev/null 2>&1; then
+            [ "$w" = "$cur" ] && printf '  * %-8s %s\n' "$w" "$(command -v "$w")" \
+                              || printf '    %-8s %s\n' "$w" "$(command -v "$w")"
+        else
+            printf '    %-8s (not on PATH)\n' "$w"
+        fi
+    done
+    exit 0
+fi
+
+command -v "$1" >/dev/null 2>&1 || { echo "river-wm: '$1' is not on PATH" >&2; exit 1; }
+printf '%s\n' "$1" > "$F"
+echo "river-wm: set to $1 (restart river to apply)"
