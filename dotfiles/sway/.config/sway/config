@@ -1,0 +1,18 @@
+# Sway config — entry point.
+#
+# See ~/src/dotfiles/sway-plan.md for the reasoning behind everything here.
+#
+# Load order matters:
+#   1. /etc/sway/config.d/*  — Arch ships 50-systemd-user.conf there, which does
+#      the systemctl/dbus environment import. WITHOUT IT the tray stays empty and
+#      xdg-desktop-portal-wlr never starts (its unit has
+#      ConditionEnvironment=WAYLAND_DISPLAY). Do not remove this line.
+#   2. config.d/*.conf       — this package's fragments, numbered.
+#   3. host.conf             — per-host fragment; a symlink to host-$(hostname).conf
+#      refreshed by ~/.local/bin/sway-session before exec.
+
+include /etc/sway/config.d/*
+
+include ~/.config/sway/config.d/*.conf
+
+include ~/.config/sway/host.conf

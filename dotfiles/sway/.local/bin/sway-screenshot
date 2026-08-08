@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Port of StumpWM's screenshot-selection-copy-path: select a region, save it to
+# ~/Pictures/Screenshots, and put the FILE PATH on the clipboard.
+#
+# grimshot is installed (via sway-contrib) and is the de-facto standard, but it
+# copies the IMAGE rather than the path — hence this wrapper.
+set -eu
+dir="${XDG_SCREENSHOTS_DIR:-$HOME/Pictures/Screenshots}"
+mkdir -p "$dir"
+file="$dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+
+region=$(slurp) || exit 0
+grim -g "$region" "$file"
+printf %s "$file" | wl-copy
+notify-send "Screenshot saved" "$file" 2>/dev/null || true

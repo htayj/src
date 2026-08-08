@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Port of StumpWM's select-keymap. Lists X11 layout codes and applies the pick
+# to every keyboard.
+#
+# IMPORTANT: choosing a stock layout REPLACES the Space Cadet keymap for the
+# session, so the first entry restores it.
+set -eu
+
+sc="spacecadet (restore Space Cadet)"
+layouts=$(localectl list-x11-keymap-layouts 2>/dev/null || printf 'us\ngb\nde\nfr\nes\n')
+pick=$(printf '%s\n%s\n' "$sc" "$layouts" | fuzzel --dmenu -l 20 -p 'Layout: ') || exit 0
+
+if [ "$pick" = "$sc" ]; then
+    swaymsg input type:keyboard xkb_file "$HOME/.config/xkb/keymap/spacecadet.xkb"
+    notify-send "Keyboard layout" "Space Cadet restored" 2>/dev/null || true
+else
+    swaymsg input type:keyboard xkb_layout "$pick"
+    notify-send "Keyboard layout" "set to $pick" 2>/dev/null || true
+fi

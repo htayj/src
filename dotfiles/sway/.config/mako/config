@@ -1,0 +1,39 @@
+# mako — port of ~/.config/dunst/dunstrc.
+# dunst -> mako because dunst is X11-native with Wayland bolted on: it silently
+# falls back to X11, has no global hotkeys, and cannot stack above the bar.
+#
+# dunstrc mapping:
+#   follow = keyboard  -> sort/output default (mako follows focus)
+#   origin = top-center -> anchor
+#   offset = (0, 20)   -> margin
+font=unscii 16px
+anchor=top-center
+margin=20
+padding=8
+border-size=1
+border-radius=0
+width=420
+height=140
+default-timeout=10000
+background-color=#000000
+text-color=#ffffff
+border-color=#000000
+progress-color=over #aa5500
+
+[urgency=low]
+background-color=#000000
+text-color=#aaaaaa
+border-color=#333333
+default-timeout=10000
+
+[urgency=normal]
+background-color=#000000
+text-color=#ffffff
+border-color=#000000
+default-timeout=10000
+
+[urgency=critical]
+background-color=#000000
+text-color=#ffffff
+border-color=#aa00aa
+default-timeout=0

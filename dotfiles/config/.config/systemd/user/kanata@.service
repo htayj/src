@@ -1,9 +1,9 @@
 [Unit]
 Description=kanata keyboard remapper (%I)
 Documentation=https://github.com/jtroo/kanata
-# Wait for a graphical session so uinput / X are ready when we attach.
-After=graphical-session.target
-PartOf=graphical-session.target
+# No graphical ordering: kanata talks to /dev/uinput and needs no display
+# server. Starting it independently of the session means the remapped keyboard
+# is already live at the display-manager password prompt.
 
 [Service]
 Type=simple
@@ -16,11 +16,13 @@ RestartSec=60s
 # survives an indefinitely-unplugged keyboard.
 StartLimitBurst=0
 # Re-apply the user XKB keymap after kanata's uinput device appears.
-# X auto-applies the default us layout to any newly-attached keyboard
-# device, which overrides our custom spacecadet map for the kanata
-# virtual keyboard. The leading '-' makes ExecStartPost non-fatal if
-# the helper can't reach the server (e.g. service starts before login).
-ExecStartPost=-/bin/bash -c 'sleep 2 && %h/reload-spacecadet-xkb.sh'
+#
+# X11 ONLY. X auto-applies the default us layout to any newly-attached keyboard
+# device, clobbering the spacecadet map on kanata's virtual keyboard. Sway needs
+# none of this: it applies `input' config to devices as they appear, including
+# recreated ones, so the guard below skips the helper under Wayland instead of
+# leaving it to fail noisily. The leading '-' keeps it non-fatal regardless.
+ExecStartPost=-/bin/bash -c '[ -n "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ] && sleep 2 && %h/reload-spacecadet-xkb.sh'
 
 [Install]
 WantedBy=default.target

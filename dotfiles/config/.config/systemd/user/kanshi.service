@@ -1,0 +1,21 @@
+[Unit]
+Description=kanshi dynamic display configuration
+Documentation=man:kanshi(1)
+# kanshi ships no unit upstream; this is the canonical hand-written one.
+# sway-session.target comes from the sway-contrib package.
+PartOf=graphical-session.target
+BindsTo=sway-session.target
+After=sway-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/kanshi
+ExecReload=/usr/bin/kanshictl reload
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+# Deliberately NOT enabled by default. kanshi and sway's own `output' directives
+# fight over output state — exactly one must own it, and right now that is
+# sway/host-basedserv.conf. See ~/.config/kanshi/config before enabling.
+WantedBy=sway-session.target

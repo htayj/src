@@ -1,0 +1,163 @@
+// waybar — port of the StumpWM modeline:
+//   "[date] [group] %w ^> [%D][%M][%m] [tay@%h] %T"
+//
+// Why waybar and not swaybar: swaybar loads tray icons through gdk-pixbuf, and
+// librsvg removed its gdk-pixbuf loader upstream — so gdk-pixbuf cannot decode
+// SVG here at all, and swaybar renders only PNG tray icons. Every current icon
+// theme is SVG-only, so udiskie's icon came out as a red frowny. waybar is GTK3
+// and renders them fine (verified with Gtk.IconTheme.load_icon).
+//
+// NO TRAY APPLETS. nm-applet, blueman-applet and udiskie are X11-era GTK
+// applets; their dbusmenu menus are what make a tray "feel X11". waybar talks to
+// NetworkManager, BlueZ and PipeWire over D-Bus directly, so those three
+// processes are gone (see 70-autostart.conf). The `tray' module stays for apps
+// that genuinely publish their own SNI — Slack, Discord, Signal, Steam.
+//
+// Labels are TEXT, not glyphs: unscii is a pixel font with no Nerd Font icon
+// coverage, so icon-based formats would render as tofu.
+{
+    "layer": "top",
+    "position": "top",
+    "height": 24,
+    "spacing": 0,
+
+    "modules-left":   ["sway/workspaces", "sway/mode"],
+    "modules-center": ["sway/window"],
+    "modules-right":  [
+        "mpd",
+        "privacy",
+        "idle_inhibitor",
+        "pulseaudio",
+        "bluetooth",
+        "network",
+        "disk",
+        "memory",
+        "custom/userhost",
+        "tray",
+        "clock"
+    ],
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "format": "{name}"
+    },
+
+    "sway/mode": {
+        "format": "[{}]"
+    },
+
+    "sway/window": {
+        "max-length": 70,
+        "separate-outputs": true
+    },
+
+    // --- replaces nm-applet ---------------------------------------------------
+    "network": {
+        "interval": 5,
+        "format-ethernet": "eth",
+        "format-wifi": "{essid} {signalStrength}%",
+        "format-linked": "eth (no ip)",
+        "format-disconnected": "no-net",
+        "tooltip-format-ethernet": "{ifname}\n{ipaddr}/{cidr}\n↓{bandwidthDownBits} ↑{bandwidthUpBits}",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ifname}  {ipaddr}/{cidr}",
+        "tooltip-format-disconnected": "disconnected",
+        // nmtui in a floating terminal; 50-rules.conf floats this app_id
+        "on-click": "ghostty --class=com.mitchellh.ghostty.nmtui -e nmtui",
+        "on-click-right": "nm-connection-editor"
+    },
+
+    // --- replaces blueman-applet ---------------------------------------------
+    "bluetooth": {
+        "format": "bt",
+        "format-disabled": "bt-x",
+        "format-off": "bt-off",
+        "format-connected": "bt {num_connections}",
+        "tooltip-format": "{controller_alias}\n{status}",
+        "tooltip-format-connected": "{controller_alias}\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}",
+        "on-click": "blueman-manager",
+        "on-click-right": "rfkill toggle bluetooth"
+    },
+
+    // --- replaces plasma-pa ---------------------------------------------------
+    "pulseaudio": {
+        "format": "vol {volume}%",
+        "format-muted": "vol mute",
+        "format-source": "mic {volume}%",
+        "format-source-muted": "mic mute",
+        "scroll-step": 5,
+        "on-click": "pavucontrol",
+        "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "tooltip-format": "{desc} — {volume}%"
+    },
+
+    // Shows only while something is capturing screen, mic, or camera.
+    "privacy": {
+        "icon-size": 14,
+        "icon-spacing": 6,
+        "modules": [
+            { "type": "screenshare" },
+            { "type": "audio-in" }
+        ]
+    },
+
+    // Click to stop swayidle blanking the screens during a film or a long
+    // build. The label names the THING and its STATE rather than describing a
+    // mood: "idle:on" means idling works normally (screens blank after 10 min),
+    // "idle:off" means blanking is suppressed. An earlier revision said
+    // "idle"/"awake", which read as a status rather than a toggle.
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": { "activated": "idle:off", "deactivated": "idle:on" },
+        "tooltip-format-activated": "Idle inhibited — screens will NOT blank.\nClick to allow blanking again.",
+        "tooltip-format-deactivated": "Idling normally — screens blank after 10 min.\nClick to keep them awake."
+    },
+
+    // StumpWM: *disk-usage-paths* = ("/" "/mnt/nas").
+    // /mnt/nas is not mounted; add a second disk module when it is.
+    "disk": {
+        "path": "/",
+        "interval": 60,
+        "format": "/ {free}",
+        "tooltip-format": "{used} used of {total} on {path}"
+    },
+
+    "memory": {
+        "interval": 10,
+        "format": "mem {used:0.0f}G/{total:0.0f}G",
+        "tooltip-format": "{percentage}% — swap {swapUsed:0.0f}G"
+    },
+
+    // waybar speaks to mpd directly, so this needs no mpc shell-out.
+    "mpd": {
+        "interval": 5,
+        "format": "{artist} - {title}",
+        "format-paused": "|| {artist} - {title}",
+        "format-stopped": "",
+        "format-disconnected": "",
+        "max-length": 50,
+        "on-click": "mpc toggle",
+        "on-click-right": "mpc next",
+        "on-scroll-up": "mpc volume +5",
+        "on-scroll-down": "mpc volume -5"
+    },
+
+    "custom/userhost": {
+        "exec": "echo \"$(whoami)@$(hostname)\"",
+        "interval": "once"
+    },
+
+    // Only for apps that publish their own StatusNotifierItem. With the three
+    // applets gone this is usually empty until you start Slack/Discord/Signal.
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8,
+        "show-passive-items": true
+    },
+
+    "clock": {
+        "interval": 30,
+        "format": "{:%Y-%m-%d %H:%M}",
+        "tooltip-format": "<tt>{calendar}</tt>"
+    }
+}

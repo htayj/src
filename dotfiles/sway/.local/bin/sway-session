@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Launch sway with the environment it needs.
+#
+# This is a wrapper rather than `exec' lines inside the sway config because the
+# GPU gate and renderer selection are read at startup, before any config runs.
+#
+# Deliberately NOT set here, because they are cargo cult or actively harmful:
+#   GBM_BACKEND=nvidia-drm            libgbm picks the backend from the DRM
+#                                     driver name already; forcing it breaks
+#                                     hybrid setups
+#   __GLX_VENDOR_LIBRARY_NAME=nvidia  GLX-only; glvnd resolves the vendor itself
+#   NVD_BACKEND=direct                already the default
+#   WLR_DRM_NO_ATOMIC=1               forces the legacy DRM interface, which
+#                                     SILENTLY DISABLES explicit sync and
+#                                     recreates the flicker it "fixes"
+#   WLR_RENDERER=vulkan               GLES2 is chosen first and is generally
+#                                     better here; Vulkan roughly doubles GPU
+#                                     use on video. Only needed for HDR.
+set -eu
+
+# Suppresses the informational NVIDIA banner. Since sway 1.12 this is cosmetic
+# only — sway starts fine without it.
+export SWAY_UNSUPPORTED_GPU=true
+
+export XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP=sway
+
+# VA-API. Valid only because libva-nvidia-driver is installed; not a compositor
+# variable and does nothing for sway itself.
+export LIBVA_DRIVER_NAME=nvidia
+
+# Toolkit backends. Qt still needs telling. The rest are belt-and-braces on
+# current versions: Firefox has defaulted to Wayland since ~130, Electron since
+# 38.2, and Chromium since 140 — none of them need flags files.
+export QT_QPA_PLATFORM='wayland;xcb'
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+export _JAVA_AWT_WM_NONREPARENTING=1
+export MOZ_ENABLE_WAYLAND=1
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+
+# Per-host fragment, matching the dotfiles hostname convention. sway's `include'
+# does expand shell syntax via wordexp(3), but a symlink is guaranteed to work
+# and keeps the config free of command substitution.
+host_conf="$HOME/.config/sway/host-$(hostname).conf"
+if [ -e "$host_conf" ]; then
+    ln -sfn "host-$(hostname).conf" "$HOME/.config/sway/host.conf"
+else
+    # No fragment for this host — point at /dev/null so the include succeeds.
+    ln -sfn /dev/null "$HOME/.config/sway/host.conf"
+    printf 'sway-session: no host fragment at %s\n' "$host_conf" >&2
+fi
+
+exec systemd-cat --identifier=sway sway "$@"

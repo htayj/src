@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Sway (tay)
+Comment=Sway via the per-user environment wrapper
+Exec=/home/tay/.local/bin/sway-session
+Type=Application
+DesktopNames=sway;wlroots

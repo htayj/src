@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=River: rill
+Comment=minimalist scrolling tiling
+Exec=/home/tay/.local/bin/river-session rill
+Type=Application
+DesktopNames=river;wlroots

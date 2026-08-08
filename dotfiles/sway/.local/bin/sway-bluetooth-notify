@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Emit a desktop notification when a Bluetooth device connects or disconnects.
+#
+# blueman-applet used to do this, but it is an X11-era tray applet and was
+# dropped in favour of waybar's native bluetooth module (which shows state but
+# says nothing when state *changes*). This watches BlueZ on the system bus and
+# fills that gap with real notifications — no tray, no applet.
+#
+# Started from 70-autostart.conf.
+set -u
+
+command -v gdbus >/dev/null || { echo "sway-bluetooth-notify: gdbus missing" >&2; exit 127; }
+
+# Resolve a device object path to a human name, falling back to the MAC.
+device_name() {
+    local path="$1" name
+    name=$(busctl --system get-property org.bluez "$path" org.bluez.Device1 Alias 2>/dev/null \
+           | sed 's/^s //; s/^"//; s/"$//')
+    if [ -z "$name" ]; then
+        name=$(busctl --system get-property org.bluez "$path" org.bluez.Device1 Name 2>/dev/null \
+               | sed 's/^s //; s/^"//; s/"$//')
+    fi
+    if [ -z "$name" ]; then
+        # /org/bluez/hci0/dev_AA_BB_CC_DD_EE_FF -> AA:BB:CC:DD:EE:FF
+        name=$(printf '%s' "${path##*/dev_}" | tr '_' ':')
+    fi
+    printf '%s' "$name"
+}
+
+# gdbus emits one line per signal, e.g.
+#   /org/bluez/hci0/dev_XX: org.freedesktop.DBus.Properties.PropertiesChanged
+#     ('org.bluez.Device1', {'Connected': <true>}, @as [])
+gdbus monitor --system --dest org.bluez 2>/dev/null | while read -r line; do
+    case "$line" in
+        */dev_*Connected*) ;;
+        *) continue ;;
+    esac
+
+    path=${line%%:*}
+    case "$path" in */dev_*) ;; *) continue ;; esac
+
+    if printf '%s' "$line" | grep -q "'Connected': <true>"; then
+        state=connected
+    elif printf '%s' "$line" | grep -q "'Connected': <false>"; then
+        state=disconnected
+    else
+        continue
+    fi
+
+    name=$(device_name "$path")
+    if [ "$state" = connected ]; then
+        notify-send -a Bluetooth -i bluetooth-active -u low "Bluetooth" "$name connected"
+    else
+        notify-send -a Bluetooth -i bluetooth-disabled -u low "Bluetooth" "$name disconnected"
+    fi
+done
