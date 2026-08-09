@@ -39,7 +39,7 @@ else
         case "$lay" in
             *"Space Cadet"*) ok "$id -> $lay" ;;
             *) bad "$id -> $lay   (expected 'Space Cadet')"
-               echo "      Mod4 is NOT RALT right now, so \$mod bindings will not fire."
+               echo "      Mod3 is NOT RALT right now, so \$mod bindings will not fire."
                echo "      Check: xkb_file in ~/.config/sway/config.d/10-input.conf" ;;
         esac
     done <<< "$layouts"

@@ -51,7 +51,7 @@ FILES=$(ls "$CONF_DIR"/config.d/*.conf 2>/dev/null; ls "$CONF_DIR"/host.conf 2>/
 
 # shellcheck disable=SC2086
 LIST=$(parse $FILES \
-    | sed "s/\$mod/Mod4(thumb)/g; s/\$left/h/g; s/\$down/j/g; s/\$up/k/g; s/\$right/l/g; s/\$term/ghostty/g; s/\$menu/fuzzel/g; s/\$lock/swaylock/g" \
+    | sed "s/\$mod/Mod3(thumb)/g; s/\$left/h/g; s/\$down/j/g; s/\$up/k/g; s/\$right/l/g; s/\$term/ghostty/g; s/\$menu/fuzzel/g; s/\$lock/swaylock/g" \
     | sort -u \
     | column -t -s "$(printf '\t')")
 
