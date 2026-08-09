@@ -2465,8 +2465,8 @@ xkb_symbols "inet(evdev)_spacecadet(base)" {
 	modifier_map Control { <LCTL> };
 	modifier_map Mod1 { <LALT> };
 	modifier_map Mod2 { <RWIN> };
-	modifier_map Mod3 { <LWIN> };
-	modifier_map Mod4 { <RALT> };
+	modifier_map Mod3 { <RALT> };
+	modifier_map Mod4 { <LWIN> };
 	modifier_map Mod5 { <ZEHA> };
 };
 
