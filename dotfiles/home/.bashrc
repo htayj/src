@@ -226,11 +226,7 @@ if [[ -t 1 ]]; then
 fi
 alias lispw=/usr/local/lib64/LispWorksPersonal/lispworks-personal-8-1-2-amd64-linux
 omo() {
-    local omo_bin
-    omo_bin="$(find "$HOME/.cache/opencode/packages" -path '*/node_modules/.bin/omo' \( -type f -o -type l \) 2>/dev/null | sort -V | tail -n 1)"
-    if [[ -z "$omo_bin" ]]; then
-        echo "omo: oh-my-openagent CLI not found in ~/.cache/opencode/packages" >&2
-        return 127
-    fi
-    OMO_SEND_ANONYMOUS_TELEMETRY=0 "$omo_bin" "$@"
+    XDG_CONFIG_HOME="$HOME/.config/omo" \
+        OMO_SEND_ANONYMOUS_TELEMETRY=0 \
+        command opencode "$@"
 }
