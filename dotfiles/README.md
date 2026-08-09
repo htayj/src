@@ -25,7 +25,7 @@ Managed packages:
   app configs it owns (`waybar`, `swaylock`, `mako`, `fuzzel`, `kanshi`,
   `xdg-desktop-portal-wlr`), and its helper scripts in `~/.local/bin`. Bindings
   are sway's shipped defaults (the i3 vocabulary) on top of the Space Cadet
-  keymap, where `$mod`/Mod4 is RALT — held on either Kinesis thumb key. Parallel
+  keymap, where `$mod`/Mod3 is RALT — held on either Kinesis thumb key. Parallel
   to `x11`+`stumpwm` rather than replacing them; both sessions coexist and SDDM
   offers each. Design notes and rationale live in `sway-plan.md`; the package
   list is in `sway-install.md`.
