@@ -57,7 +57,7 @@ it lands — its own release notes warn it stalls recording. Go to `0.8.4`+.
 ## 2. Required — desktop services replacing Plasma components
 
 ```sh
-sudo pacman -S --needed blueman network-manager-applet udiskie gnome-keyring
+sudo pacman -S --needed blueman network-manager-applet udiskie kwallet kwallet-pam
 ```
 
 You currently depend on Plasma applets for Bluetooth, network, and audio. Those
@@ -70,7 +70,7 @@ them, so they simply don't exist.
 | `plasma-nm` | **No** — plasmoid | `nm-applet --indicator`, or just `nmtui` (you're wired) |
 | `plasma-pa` | **No** — plasmoid | `pavucontrol` — already installed |
 | `polkit-kde-agent` | **Yes** — plain binary | Keep it. Costs nothing, known-good |
-| `kwallet` | Partially | `gnome-keyring`. KDE is itself migrating to Secret Service, so you'd be moving *with* the current. Export your wallets first |
+| `kwallet` | **Yes** | Keep it. KWallet 6 exposes the Secret Service API through `ksecretd`, and SDDM unlocks `kdewallet` through `kwallet-pam` |
 
 **Two flags that are not optional.** Both of these default to `Gtk.StatusIcon`,
 which is XEmbed, which does not exist on Wayland — so they start and are
@@ -191,9 +191,8 @@ Deleting that one file fully reverts the integration.
   `$WAYLAND_DISPLAY` rather than flipping the line.
 - `mimeapps.list` sets `feh` as the `image/png` handler in two places. `feh` is
   X11-only.
-- `.xinitrc` starts `gnome-keyring-daemon` with `--components=...,ssh`. That
-  branch is doubly dead: the package isn't installed, and since gnome-keyring
-  1:46 the ssh component is disabled by default anyway (it moved to
-  `gcr-ssh-agent` in `gcr-4`). Delete rather than port.
+- `.xinitrc` starts `gnome-keyring-daemon` with `--components=...,ssh`. Do not
+  port that branch: Sway uses KWallet through SDDM's PAM stack, and since
+  gnome-keyring 1:46 its SSH component moved to `gcr-ssh-agent` anyway.
 - No Chromium/Electron flags files exist yet, so Wayland-native Ozone hints for
   Chromium and Slack are greenfield.
