@@ -5,11 +5,11 @@
   },
   "yaml-ls": {
     "decision": "declined",
-    "decidedAt": "2026-08-02T20:30:41.769Z"
+    "decidedAt": "2026-08-09T05:49:27.412Z"
   },
   "bash": {
     "decision": "declined",
-    "decidedAt": "2026-08-02T20:30:41.992Z"
+    "decidedAt": "2026-08-09T05:49:27.482Z"
   },
   "basedpyright": {
     "decision": "declined",
@@ -17,6 +17,10 @@
   },
   "dockerfile": {
     "decision": "declined",
-    "decidedAt": "2026-08-06T05:34:58.366Z"
+    "decidedAt": "2026-08-09T05:49:27.489Z"
+  },
+  "typescript": {
+    "decision": "declined",
+    "decidedAt": "2026-08-11T02:59:02.465Z"
   }
 }

@@ -8,6 +8,10 @@
     "okf-models": {
       "path": "~/okf/models",
       "description": "Catalog of AI models accessible via OpenCode: providers, lineages, benchmark limitations, independent reputation, routing guidance, and capability gaps. Start with index.md."
+    },
+    "okf-genealogy": {
+      "path": "~/okf/genealogy",
+      "description": "Evidence-based genealogy research catalog: methodology, source types and search coverage, citations and transcription, privacy, Gramps workflow, research questions, family-line analysis, and update history. Start with index.md."
     }
   },
   "skills": {
@@ -58,6 +62,34 @@
           "name": "text-embedding-nomic-embed-text-v1.5"
         }
       }
+    },
+    "omniroute": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Omniroute (LAN gateway)",
+      "options": {
+        "baseURL": "http://192.168.7.116/v1",
+        "apiKey": "{env:OMNIROUTE_API_KEY}"
+      },
+      "models": {
+        "cgpt-web/gpt-5.5-pro": {
+          "name": "cgpt-web/gpt-5.5-pro"
+        },
+        "cgpt-web/gpt-5.5-pro-extended": {
+          "name": "cgpt-web/gpt-5.5-pro-extended"
+        },
+        "cgpt-web/gpt-5.5-thinking": {
+          "name": "cgpt-web/gpt-5.5-thinking"
+        },
+        "cgpt-web/gpt-5.6-pro": {
+          "name": "cgpt-web/gpt-5.6-pro"
+        },
+        "cgpt-web/gpt-5.6-thinking": {
+          "name": "cgpt-web/gpt-5.6-thinking"
+        },
+        "cgpt-web/o3": {
+          "name": "cgpt-web/o3"
+        }
+      }
     }
   },
   "mcp": {
@@ -76,6 +108,27 @@
         "False",
         "--project-from-cwd"
       ]
+    },
+    "omniroute": {
+      "type": "remote",
+      "enabled": true,
+      "timeout": 120000,
+      "url": "http://192.168.7.116/api/mcp/stream",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:OMNIROUTE_API_KEY}"
+      }
+    },
+    "gramps": {
+      "type": "local",
+      "enabled": true,
+      "timeout": 30000,
+      "command": [
+        "/home/tay/.local/share/mcp-servers/gramps-web-mcp/run-stdio.sh"
+      ],
+      "environment": {
+        "MCP_TRANSPORT": "stdio"
+      }
     }
   },
   "plugin": [

@@ -156,6 +156,9 @@ statusMessage = "remembering tmux session id"
 [hooks.state."/home/tay/.codex/config.toml:session_start:0:0"]
 trusted_hash = "sha256:5d62bf6f954301699832a7a341cf95fa9772d7ad84e931bf37ce77473a5b53a6"
 
+[hooks.state."/home/tay/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:656fbc8b2f4faa85389f339b649a03c6db4cf688f1bdb0898e6590f9138a628a"
+
 [agents]
 max_depth = 2
 

@@ -5,6 +5,7 @@
   "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
   "enabledModels": [
+    "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.3-codex",
     "openai-codex/gpt-5.4",
