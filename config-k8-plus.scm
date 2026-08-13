@@ -16,7 +16,7 @@
     (locale "en_US.utf8")
     (timezone "America/New_York")
     (keyboard-layout (keyboard-layout "us" "intl"))
-    (host-name "k8plus")
+    (host-name "basedbox")
 
     (groups (cons (user-group (system? #t) (name "uinput"))
                   %base-groups))
@@ -125,20 +125,18 @@
       (targets (list "/boot/efi"))
       (keyboard-layout keyboard-layout)))
     (swap-devices
-     (list (swap-space (target (file-system-label "k8-swap")))))
+     (list (swap-space
+            (target (uuid "d23519bc-ece4-4a0d-b4db-224d6e2c6f58")))))
     (file-systems
      (cons* (file-system
-             (mount-point "/home")
-             (device (file-system-label "k8-home"))
-             (type "ext4"))
-            (file-system
              (mount-point "/boot/efi")
-             (device (file-system-label "K8EFI"))
+             (device (uuid "521A-DCFF" 'fat32))
              (type "vfat"))
             (file-system
              (mount-point "/")
-             (device (file-system-label "k8-root"))
-             (type "ext4"))
+             (device
+              (uuid "b19ca7a2-0762-4d14-91fd-484dbd9d7ee9" 'btrfs))
+             (type "btrfs"))
             (file-system
              (mount-point "/mnt/sas-main")
              (device "truenas:/mnt/sas-main/main")
