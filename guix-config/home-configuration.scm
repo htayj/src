@@ -139,7 +139,6 @@
                                            "git"
                                            "xdot"
                                            "graphviz"
-                                           "ghc-graphviz"
                                            "vim"
                                            "dico"
 																					 "v4l2loopback-linux-module"
