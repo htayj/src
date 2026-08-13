@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# Rewrite tmux-resurrect's saved agent panes so restore opens the agent session
+# instead of a plain shell or a fresh prompt. Pi gets an exact session file from
+# the companion Pi extension's @pi-session-file pane option. Codex, Claude Code,
+# and opencode get exact session ids from hook/plugin-maintained pane options,
+# with cwd-scoped "continue last session" as a fallback.
+set -euo pipefail
+
+state_file="${1:-}"
+if [[ -z "$state_file" || ! -f "$state_file" ]]; then
+  exit 0
+fi
+
+tmp="$(mktemp "${state_file}.agents.XXXXXX")"
+cleanup() {
+  rm -f "$tmp"
+}
+trap cleanup EXIT
+
+shell_quote() {
+  printf '%q' "$1"
+}
+
+pane_option() {
+  local target="$1"
+  local option="$2"
+  tmux show-option -p -t "$target" -qv "$option" 2>/dev/null || true
+}
+
+command_matches() {
+  local name="$1"
+  [[ "$pane_command" == "$name" || "$pane_full_command" == *"$name"* ]]
+}
+
+pi_command_matches() {
+  [[ "$pane_command" == "pi" ||
+     "$pane_full_command" == ":pi" ||
+     "$pane_full_command" == :pi\ * ||
+     "$pane_full_command" == */pi ||
+     "$pane_full_command" == */pi\ * ]]
+}
+
+rewrite_agent_command() {
+  local target="${session_name}:${window_number}.${pane_index}"
+  local session_id session_file
+
+  if pi_command_matches; then
+    session_file="$(pane_option "$target" @pi-session-file)"
+
+    if [[ -n "$session_file" && -f "$session_file" ]]; then
+      pane_full_command=":pi --session $(shell_quote "$session_file")"
+    elif [[ "$pane_full_command" == ":pi" ]]; then
+      pane_full_command=":pi --continue"
+    fi
+  elif command_matches "codex"; then
+    session_id="$(pane_option "$target" @codex-session-id)"
+    if [[ -n "$session_id" ]]; then
+      pane_full_command=":codex resume $(shell_quote "$session_id")"
+    elif [[ "$pane_full_command" != :codex\ resume* ]]; then
+      pane_full_command=":codex resume --last"
+    fi
+  elif command_matches "claude" || command_matches "claude-code"; then
+    # Claude Code's executable is usually `claude`; match `claude-code` too for
+    # npm package paths/product-name references in process command lines.
+    session_id="$(pane_option "$target" @claude-session-id)"
+    if [[ -n "$session_id" ]]; then
+      pane_full_command=":claude --resume $(shell_quote "$session_id")"
+    elif [[ "$pane_full_command" != *" --resume"* && \
+            "$pane_full_command" != *" --resume "* && \
+            "$pane_full_command" != *" -r"* && \
+            "$pane_full_command" != *" -r "* && \
+            "$pane_full_command" != *" --continue"* && \
+            "$pane_full_command" != *" -c"* ]]; then
+      pane_full_command=":claude --continue"
+    fi
+  elif command_matches "opencode"; then
+    session_id="$(pane_option "$target" @opencode-session-id)"
+    if [[ -n "$session_id" ]]; then
+      pane_full_command=":opencode --session $(shell_quote "$session_id")"
+    elif [[ "$pane_full_command" != *" --session"* && \
+            "$pane_full_command" != *" --session "* && \
+            "$pane_full_command" != *" -s"* && \
+            "$pane_full_command" != *" -s "* && \
+            "$pane_full_command" != *" --continue"* && \
+            "$pane_full_command" != *" -c"* ]]; then
+      pane_full_command=":opencode --continue"
+    fi
+  fi
+}
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+  IFS=$'\t' read -r \
+    line_type \
+    session_name \
+    window_number \
+    window_active \
+    window_flags \
+    pane_index \
+    pane_title \
+    dir \
+    pane_active \
+    pane_command \
+    pane_full_command \
+    extra <<< "$line"
+
+  if [[ "$line_type" == "pane" && -z "${extra:-}" ]]; then
+    rewrite_agent_command
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      "$line_type" \
+      "$session_name" \
+      "$window_number" \
+      "$window_active" \
+      "$window_flags" \
+      "$pane_index" \
+      "$pane_title" \
+      "$dir" \
+      "$pane_active" \
+      "$pane_command" \
+      "$pane_full_command" >> "$tmp"
+  else
+    printf '%s\n' "$line" >> "$tmp"
+  fi
+done < "$state_file"
+
+mv "$tmp" "$state_file"
+trap - EXIT

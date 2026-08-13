@@ -1,0 +1,11 @@
+#%PAM-1.0
+
+auth       requisite    pam_nologin.so
+auth       include      system-local-login
+# Capture a successful console password login for gpg-agent session setup.
+-auth      optional     pam_gnupg.so          store-only
+account    include      system-local-login
+session    include      system-local-login
+# pam_systemd above has made the systemd-managed gpg-agent socket available.
+-session   optional     pam_gnupg.so          no-autostart
+password   include      system-local-login

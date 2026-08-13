@@ -1,0 +1,166 @@
+personality = "pragmatic"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
+plan_mode_reasoning_effort = "xhigh"
+approvals_reviewer = "guardian_subagent"
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+[projects."/home/tay/src"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/flag-hack-ink/flag-hack"]
+trust_level = "untrusted"
+
+[projects."/home/tay/projects/qbcl"]
+trust_level = "trusted"
+
+[projects."/home/tay/src/guix-config/dotfiles/.emacs.d"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/clawmacs"]
+trust_level = "trusted"
+
+[projects."/home/tay/.codex"]
+trust_level = "trusted"
+
+[projects."/home/tay/Documents/nethackguide"]
+trust_level = "trusted"
+
+[projects."/home/tay/reference/external_src/codex"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/clim-tutorial"]
+trust_level = "trusted"
+
+[projects."/home/tay/.emacs.d"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/genera-emu"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/lispmdoc"]
+trust_level = "trusted"
+
+[projects."/home/tay/.config"]
+trust_level = "trusted"
+
+[projects."/home/tay"]
+trust_level = "trusted"
+
+[projects."/home/tay/Games/World of Warcraft/_retail_/wim"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/General-Corpus"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/pegasus-theme"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/kube"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/xmppcord"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/cadr-fonts"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/DEC-Fonts"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/effector"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/ghostty-font-chooser"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/genera-fonts"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/ggn-mcp"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/bell-museum"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/xerox-museum"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/rtr"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/rplaca"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/jobsearch"]
+trust_level = "trusted"
+
+[projects."/home/tay/projects/price-comparison"]
+trust_level = "trusted"
+
+[mcp_servers.oracle]
+command = "npx"
+args = ["-y", "@steipete/oracle", "oracle-mcp"]
+
+[mcp_servers.oracle.tools.consult]
+approval_mode = "approve"
+
+[mcp_servers.oracle.tools.sessions]
+approval_mode = "approve"
+
+[mcp_servers.gitea]
+command = "bash"
+args = ["-lc", "source /home/tay/.local/share/private-env.d/gitea-mcp.sh 2>/dev/null || true; exec gitea-mcp -t stdio --host https://git.nogroup.group"]
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
+[model_providers.routebraid-zai]
+name = "RouteBraid Z.AI Coding Plan"
+base_url = "https://192.168.1.246/v1"
+wire_api = "responses"
+request_max_retries = 2
+stream_max_retries = 1
+stream_idle_timeout_ms = 300000
+
+[model_providers.routebraid-zai.auth]
+command = "/usr/bin/cat"
+args = ["/home/tay/.config/routebraid/stage1-token"]
+timeout_ms = 2000
+refresh_interval_ms = 0
+
+[features]
+memories = true
+terminal_resize_reflow = true
+hooks = true
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+"gpt-5.6-sol" = 4
+
+[hooks]
+
+[[hooks.SessionStart]]
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = "tmux-agent-session from-hook codex"
+timeout = 2
+statusMessage = "remembering tmux session id"
+
+[hooks.state]
+
+[hooks.state."/home/tay/.codex/config.toml:session_start:0:0"]
+trusted_hash = "sha256:5d62bf6f954301699832a7a341cf95fa9772d7ad84e931bf37ce77473a5b53a6"
+
+[hooks.state."/home/tay/.codex/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:656fbc8b2f4faa85389f339b649a03c6db4cf688f1bdb0898e6590f9138a628a"
+
+[agents]
+max_depth = 2
+
+[notice]
+hide_rate_limit_model_nudge = true

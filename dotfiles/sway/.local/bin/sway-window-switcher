@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Port of StumpWM's pull-global-window: pick any window on any workspace.
+#
+# Semantic difference worth knowing: StumpWM PULLED the window into the current
+# frame. This FOCUSES it where it lives, which is the sway-native behaviour. To
+# get the pull semantics instead, append the `move' command marked below.
+set -eu
+
+rows=$(swaymsg -t get_tree | jq -r '
+  [recurse(.nodes[]?, .floating_nodes[]?)
+   | select(.type=="con" or .type=="floating_con")
+   | select(.name != null and (.nodes|length)==0)]
+  | .[]
+  | "\(.id)\t[\(.app_id // .window_properties.class // "?")] \(.name)"')
+
+[ -n "$rows" ] || { notify-send "No windows" 2>/dev/null; exit 0; }
+
+pick=$(printf '%s\n' "$rows" | cut -f2- | fuzzel --dmenu -l 20 -p 'Window: ') || exit 0
+id=$(printf '%s\n' "$rows" | grep -F -m1 -- "$pick" | cut -f1)
+[ -n "$id" ] || exit 0
+
+swaymsg "[con_id=$id] focus"
+# For StumpWM pull semantics instead of focus-in-place, use:
+# swaymsg "[con_id=$id] move container to workspace current, focus"

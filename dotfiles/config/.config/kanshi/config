@@ -1,0 +1,88 @@
+# kanshi — declarative output profiles, reapplied on hotplug.
+#
+# This lives in the SHARED `config' package, not in `sway' or `river', because
+# monitor geometry is a property of the hardware rather than of a compositor.
+#
+# WHO ACTUALLY RUNS IT
+#
+#   river  — ALWAYS. river has no output configuration of its own; river(1)
+#            explicitly says "kanshi(1) could be started to manage output
+#            configuration". ~/.config/river/init starts it.
+#
+#   sway   — NO, by default. sway configures outputs itself in
+#            sway/host-basedserv.conf, and kanshi would fight it: whichever ran
+#            last wins, and they can ping-pong. Exactly one thing must own
+#            output state. To hand ownership to kanshi under sway instead,
+#            comment out the two `output' blocks in host-basedserv.conf and
+#            `systemctl --user enable --now kanshi.service'.
+#
+# GEOMETRY
+#
+# Reproduces x11/.screenlayout/g9andcrt.sh:
+#
+#   xrandr --output DP-0   --mode 5120x1440 -r 240 --dpi 100 --pos 0x0
+#          --output HDMI-0 --mode 800x600            --pos 4200x1440
+#
+# Note X11 and Wayland name these differently. X calls them DP-0 / HDMI-0; the
+# kernel connector names, which wlroots uses, are DP-1 / HDMI-A-1. Confirm with
+# `wlr-randr` inside a river session.
+#
+#   x=0                                              x=5120
+#    +----------------------------------------------+  y=0
+#    |          DP-1 — Samsung Odyssey G95SC         |
+#    |               5120 x 1440 @ 240               |
+#    +----------------------------------------------+  y=1440
+#                               +--------+
+#                               | HDMI   |  800x600 at x=4200
+#                               +--------+  y=2040
+#
+# The small panel sits BELOW the G9 and horizontally inset, not beside it.
+# Non-overlapping, so pointer transitions behave.
+#
+# REFRESH RATE — the one thing to check first if this looks wrong
+#
+# The refresh rate MUST be stated explicitly. From the G9's EDID, its
+# 5120x1440 modes are:
+#
+#   239.999110 Hz
+#   119.978835 Hz   <-- PREFERRED
+#    59.999500 Hz
+#
+# The panel's *preferred* mode is 120 Hz, so a bare `mode 5120x1440' would
+# silently give you half the refresh rate you asked for.
+#
+# `@240Hz' below is the rounded, human value. I could not verify on this
+# hardware whether kanshi matches refresh rates exactly or to the nearest
+# supported one — it reports them to six decimal places internally
+# ("doesn't support mode '1920x1080@0.000000Hz'"), which suggests it may be
+# strict. If the G9 comes up at 120 Hz, that is the cause; use the exact value:
+#
+#   output DP-1 mode 5120x1440@239.999110Hz position 0,0 scale 1
+#
+# Verify in a live session with:
+#
+#   sudo pacman -S --needed wlr-randr
+#   wlr-randr                 # lists every mode with its true refresh
+#   journalctl --user -t river -b | grep -i kanshi
+#
+# kanshi logs "doesn't support mode ..." when it rejects one, so this fails
+# loudly rather than silently.
+#
+# Profiles are matched in order and the first whose outputs all match wins, so
+# the most specific must come first.
+
+# Both displays — the normal desk setup.
+profile g9andcrt {
+    output DP-1 mode 5120x1440@240Hz position 0,0 scale 1
+    output HDMI-A-1 mode 800x600 position 4200,1440 scale 1
+}
+
+# G9 alone — mirrors .screenlayout/g9.sh.
+profile g9 {
+    output DP-1 mode 5120x1440@240Hz position 0,0 scale 1
+}
+
+# Small panel alone, e.g. if the G9 is off or on another input.
+profile crtonly {
+    output HDMI-A-1 mode 800x600 position 0,0 scale 1
+}

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Port of StumpWM's `colon1 exec ghostty -e ssh ' — pick a known host, or type
+# one. Completions come from ~/.ssh/config Host entries.
+set -eu
+hosts=$(awk '/^[Hh]ost / { for (i=2; i<=NF; i++) if ($i !~ /[*?]/) print $i }' \
+    "$HOME/.ssh/config" 2>/dev/null | sort -u)
+target=$(printf '%s\n' "$hosts" | fuzzel --dmenu -l 15 -p 'ssh: ') || exit 0
+[ -n "$target" ] || exit 0
+exec ghostty -e ssh "$target"

@@ -1,13 +1,17 @@
 (in-package :clawmacs)
 
 (setf *default-provider* :openai-codex
-      *default-model* "gpt-5.4"
-      *openai-codex-model* "gpt-5.4")
+      *default-model* "gpt-5.6-sol"
+      *openai-codex-model* "gpt-5.6-sol")
+
+;; Use the installed fixed-width Genera-style bitmap face for new CLIM panes.
+(setf clim:*default-text-style*
+      (clim:make-text-style "unscii-unscii" :roman 16))
 
 (register-agent-definition *default-agent-name*
 													 :provider :openai-codex
-													 :model "gpt-5.4"
-													 :think-level "xhigh")
+													 :model "gpt-5.6-sol"
+													 :think-level "medium")
 
 ;; (asdf:load-system :clawmacs/mcclim)
 ;; (setf *ui-backend* (make-instance 'mcclim-backend))

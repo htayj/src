@@ -1,0 +1,33 @@
+{
+  "model": "opus[1m]",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tmux-agent-session from-hook claude",
+            "timeout": 2
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/home/tay/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "clim-spec@kvc-claude-code-skills": true,
+    "croatoan@kvc-claude-code-skills": true,
+    "skill-creator@claude-plugins-official": true
+  },
+  "effortLevel": "xhigh",
+  "tui": "fullscreen"
+}

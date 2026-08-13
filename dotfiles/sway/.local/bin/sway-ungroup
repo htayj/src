@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""Dissolve the focused container, promoting its children one level up.
+
+Sway can only undo a split when the container has exactly one child
+(`split none'). There is no built-in command to dissolve a container that holds
+several windows — you are expected to move them out by hand, one at a time.
+
+This does that for you:
+
+  * focused node is a LEAF          -> `split none' (undo a stray n=1 wrapper)
+  * focused node is a CONTAINER     -> move every child out into the grandparent,
+                                       in order; sway destroys the container once
+                                       it is empty
+
+So the workflow is $mod+a to select the enclosing container, then $mod+g to
+dissolve it.
+
+Direction is chosen from the GRANDPARENT's layout, because a directional `move'
+is the only way sway offers to escape a container:
+
+    grandparent splith / tabbed / stacking -> move right
+    grandparent splitv                     -> move down
+
+Children are moved in reverse order so they land in their original order.
+"""
+import json
+import subprocess
+import sys
+
+
+def sway(*args):
+    r = subprocess.run(["swaymsg", "-r", *args], capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit(f"sway-ungroup: {r.stderr.strip() or 'swaymsg failed'}")
+    return json.loads(r.stdout) if r.stdout.strip() else None
+
+
+def find_focused_with_parent(node, parent=None, grandparent=None):
+    """Return (focused, parent, grandparent)."""
+    if node.get("focused"):
+        return node, parent, grandparent
+    for kid in node.get("nodes", []) + node.get("floating_nodes", []):
+        hit = find_focused_with_parent(kid, node, parent)
+        if hit:
+            return hit
+    return None
+
+
+def is_container(node):
+    return bool(node.get("nodes"))
+
+
+def main():
+    tree = sway("-t", "get_tree")
+    hit = find_focused_with_parent(tree)
+    if not hit:
+        sys.exit("sway-ungroup: nothing focused")
+    focused, parent, _ = hit
+
+    # A leaf: the only thing to undo is a single-child wrapper around it.
+    if not is_container(focused):
+        sway("split", "none")
+        return
+
+    # A workspace is a container too, but it has no grandparent to promote into
+    # — "dissolving" it would just scramble the workspace's own layout. Refuse.
+    if focused.get("type") in ("workspace", "output", "root"):
+        subprocess.run(["notify-send", "-a", "sway", "-u", "low", "Ungroup",
+                        "Nothing to dissolve — that is the workspace itself."],
+                       capture_output=True)
+        return
+
+    children = list(focused.get("nodes", []))
+    if not children:
+        return
+
+    # Where do the children need to go? Out of `focused', into `parent'.
+    layout = (parent or {}).get("layout", "splith")
+    direction = "down" if layout == "splitv" else "right"
+
+    # Reverse order: each move drops the child immediately after the container,
+    # so going backwards leaves them in their original sequence.
+    for child in reversed(children):
+        sway(f'[con_id={child["id"]}]', "move", direction)
+
+    # Focus something sensible afterwards — the first promoted child.
+    sway(f'[con_id={children[0]["id"]}]', "focus")
+
+
+if __name__ == "__main__":
+    main()

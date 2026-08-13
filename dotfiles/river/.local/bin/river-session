@@ -1,0 +1,49 @@
+#!/bin/sh
+# Launch river with the environment it must have BEFORE it starts.
+#
+# WHY THIS WRAPPER EXISTS
+#
+# river builds its xkb keymap during startup, before it runs
+# ~/.config/river/init. Exporting XKB_DEFAULT_* from inside init is therefore
+# too late and silently does nothing. Measured:
+#
+#   init exports XKB_DEFAULT_LAYOUT=zzznotreal  -> river runs fine, no error
+#   parent exports XKB_DEFAULT_LAYOUT=zzznotreal -> river exits 1, xkb error
+#
+# So anything river itself consumes has to be set here. Anything only its
+# CHILDREN consume (toolkit backends, $TERMINAL) belongs in init instead.
+#
+# USAGE
+#   river-session            use ~/.config/river/wm (the river-wm default)
+#   river-session <wm>       force a window manager for this session only
+#
+# The per-WM session entries in /usr/local/share/wayland-sessions pass the name,
+# so SDDM can offer each WM directly. river passes its environment through to
+# ~/.config/river/init, which prefers $RIVER_WM over the config file.
+set -eu
+
+if [ $# -gt 0 ]; then
+    RIVER_WM="$1"
+    export RIVER_WM
+    shift
+fi
+
+# The keymap. `spacecadet' resolves through ~/.config/xkb/rules/evdev to
+# inet(evdev)+spacecadet(base) — deliberately without the `pc' prefix, which
+# would silently empty modifier_map Mod4 and break every WM modifier binding.
+# Result: Mod4 = <RALT> = hold either big thumb key.
+XKB_DEFAULT_LAYOUT=spacecadet
+export XKB_DEFAULT_LAYOUT
+
+# Session identity, read by portals and dbus activation.
+XDG_SESSION_TYPE=wayland
+XDG_CURRENT_DESKTOP=river
+export XDG_SESSION_TYPE XDG_CURRENT_DESKTOP
+
+# No NVIDIA variables here on purpose. river has no --unsupported-gpu gate (that
+# is sway-specific), explicit sync is already active on wlroots 0.20 + driver
+# 610, and GBM_BACKEND / __GLX_VENDOR_LIBRARY_NAME / NVD_BACKEND are redundant.
+# WLR_DRM_NO_ATOMIC would be actively harmful — it forces the legacy DRM path
+# and silently disables explicit sync.
+
+exec systemd-cat --identifier=river river "$@"

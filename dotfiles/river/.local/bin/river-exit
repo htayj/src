@@ -1,0 +1,34 @@
+#!/bin/sh
+# End the river session cleanly, from any window manager.
+#
+# WHY THIS EXISTS
+#
+# Not every river window manager provides a way out. canoe and rrwm have no exit
+# binding at all, and river itself adds none — its only built-in bindings are
+# Ctrl+Alt+F1..F12 (VT switch), which window managers cannot override.
+#
+# Signalling river is the correct way to end the session: per river(1), "On exit,
+# river will send SIGTERM to this process group", so the init script and every
+# daemon it started are torn down with it.
+set -eu
+
+pid=$(pgrep -x river || true)
+
+if [ -z "$pid" ]; then
+    echo "river-exit: no river process found" >&2
+    exit 1
+fi
+
+# More than one river can exist if you are testing nested instances. Prefer the
+# one that owns this session's WAYLAND_DISPLAY rather than killing all of them.
+if [ "$(printf '%s\n' "$pid" | wc -l)" -gt 1 ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    sock="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/$WAYLAND_DISPLAY"
+    for p in $pid; do
+        if ls -l "/proc/$p/fd" 2>/dev/null | grep -q "$(basename "$sock")"; then
+            pid=$p
+            break
+        fi
+    done
+fi
+
+kill -TERM $pid

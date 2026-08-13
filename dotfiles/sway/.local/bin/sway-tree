@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""Render sway's container tree as ASCII — the grouping structure i3/sway hides.
+
+Sway shows you leaf windows but never the split containers holding them, so a
+workspace that is really `A | (B / (C,D))` looks identical to four tiled windows.
+This prints the actual hierarchy.
+
+  sway-tree              tree for the focused workspace
+  sway-tree --all        every workspace on every output
+  sway-tree --watch      redraw on every window/workspace event (live pane)
+  sway-tree --toggle     open the live pane, or close it if already open
+
+Container nodes are shown as [layout n=children]; the focused window is marked
+with '*'. Bound to $mod+t, which opens it in a floating terminal.
+"""
+import json
+import os
+import select
+import shutil
+import subprocess
+import sys
+
+# ASCII only — unscii is a pixel font and lacks the fancier box glyphs.
+GLYPH = {"splith": "H", "splitv": "V", "tabbed": "TAB", "stacking": "STK"}
+
+# app_id of the terminal the live pane runs in. Must be a valid GTK application
+# ID (reverse-DNS) because ghostty's `class' key sets the Wayland app_id and the
+# DBus bus name. 50-rules.conf floats and positions this app_id.
+PANE_APP_ID = "com.mitchellh.ghostty.tree"
+
+
+def swaymsg(*args):
+    out = subprocess.run(["swaymsg", *args], capture_output=True, text=True)
+    if out.returncode != 0:
+        sys.exit(f"sway-tree: swaymsg failed: {out.stderr.strip()}")
+    return json.loads(out.stdout)
+
+
+def label(node):
+    """Human label for one node.
+
+    The focus marker applies to CONTAINERS as well as leaves: $mod+a moves focus
+    to the enclosing container, and not marking that was the whole reason you
+    could not tell what $mod+g was about to dissolve.
+    """
+    # sway sets focused=true on whichever node holds focus, container or leaf.
+    mark = " *" if node.get("focused") else ""
+
+    if node.get("type") in ("con", "floating_con") and not node.get("nodes") \
+            and not node.get("floating_nodes"):
+        name = node.get("name") or "<untitled>"
+        app = node.get("app_id") or (node.get("window_properties") or {}).get("class") or "?"
+        floating = "~" if node.get("type") == "floating_con" else ""
+        return f"{floating}{app}: {name[:48]}{mark}"
+
+    layout = node.get("layout", "?")
+    kids = len(node.get("nodes", [])) + len(node.get("floating_nodes", []))
+    g = GLYPH.get(layout, "?")
+    return f"[{g} {layout} n={kids}]{mark}"
+
+
+def walk(node, prefix="", is_last=True, out=None):
+    out.append(prefix + ("└── " if is_last else "├── ") + label(node))
+    kids = list(node.get("nodes", [])) + list(node.get("floating_nodes", []))
+    child_prefix = prefix + ("    " if is_last else "│   ")
+    for i, kid in enumerate(kids):
+        walk(kid, child_prefix, i == len(kids) - 1, out)
+
+
+def workspaces(tree):
+    """Yield workspace nodes with their output name."""
+    for output in tree.get("nodes", []):
+        for ws in output.get("nodes", []):
+            if ws.get("type") == "workspace":
+                yield output.get("name", "?"), ws
+
+
+def focused_ws_name():
+    for ws in swaymsg("-t", "get_workspaces"):
+        if ws.get("focused"):
+            return ws.get("name")
+    return None
+
+
+def render(show_all):
+    tree = swaymsg("-t", "get_tree")
+    focus = focused_ws_name()
+    lines = []
+    for out_name, ws in workspaces(tree):
+        if not show_all and ws.get("name") != focus:
+            continue
+        kids = list(ws.get("nodes", [])) + list(ws.get("floating_nodes", []))
+        wsmark = " *" if ws.get("focused") else ""
+        head = f"workspace {ws.get('name')}  ({out_name}, {ws.get('layout')}){wsmark}"
+        lines.append(head)
+        if not kids:
+            lines.append("    (empty)")
+        for i, kid in enumerate(kids):
+            walk(kid, "", i == len(kids) - 1, lines)
+        lines.append("")
+    return "\n".join(lines) if lines else "(no workspaces)"
+
+
+def pane_is_open():
+    """True if the live pane's terminal already has a window."""
+    def find(node):
+        if node.get("app_id") == PANE_APP_ID:
+            return True
+        return any(find(k) for k in
+                   node.get("nodes", []) + node.get("floating_nodes", []))
+    return find(swaymsg("-t", "get_tree"))
+
+
+def toggle(show_all):
+    """Close the pane if open, otherwise spawn it. Idempotent per keypress."""
+    if pane_is_open():
+        subprocess.run(["swaymsg", f'[app_id="{PANE_APP_ID}"]', "kill"],
+                       capture_output=True)
+        return
+    # confirm-close-surface defaults to TRUE in ghostty, so `swaymsg kill'
+    # returns success but the surface just shows a confirmation prompt and
+    # stays open. Disable it for this throwaway pane or the toggle never closes.
+    args = ["ghostty", f"--class={PANE_APP_ID}",
+            "--confirm-close-surface=false", "-e",
+            os.path.abspath(__file__), "--watch"]
+    if show_all:
+        args.append("--all")
+    subprocess.Popen(args, start_new_session=True,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def main():
+    show_all = "--all" in sys.argv
+    watch = "--watch" in sys.argv
+
+    if "--toggle" in sys.argv:
+        toggle(show_all)
+        return
+
+    if not watch:
+        print(render(show_all))
+        return
+
+    def draw():
+        # clear without wiping scrollback so a resize doesn't lose the frame
+        sys.stdout.write("\033[H\033[2J")
+        cols = shutil.get_terminal_size((80, 24)).columns
+        sys.stdout.write(render(show_all) + "\n")
+        sys.stdout.write("─" * min(cols, 60) + "\n$mod+a focuses the parent container\n")
+        sys.stdout.flush()
+
+    draw()
+
+    # Events alone are NOT enough. Measured: three `focus parent'/`focus child'
+    # calls produced a single window event between them — sway does not reliably
+    # signal focus moving to a *container*, only to a window. Relying on the
+    # subscription meant $mod+a appeared to do nothing because the pane was
+    # showing a stale tree.
+    #
+    # So: react to events for instant feedback, and additionally repaint on a
+    # short timer as a safety net. `binding' is subscribed too, which covers any
+    # focus change made via a keybinding.
+    proc = subprocess.Popen(
+        ["swaymsg", "-t", "subscribe", "-m", '["window","workspace","binding"]'],
+        stdout=subprocess.PIPE, text=True,
+    )
+    poll_seconds = 0.4
+    try:
+        while proc.poll() is None:
+            ready, _, _ = select.select([proc.stdout], [], [], poll_seconds)
+            if ready:
+                if not proc.stdout.readline():
+                    break
+                # drain any burst so one keypress is not N repaints
+                while select.select([proc.stdout], [], [], 0)[0]:
+                    if not proc.stdout.readline():
+                        break
+            draw()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        proc.terminate()
+
+
+if __name__ == "__main__":
+    main()

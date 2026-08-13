@@ -1,0 +1,12 @@
+# xdg-desktop-portal-wlr.
+#
+# chooser_type MUST NOT be left at the default here. xdpw auto-SKIPS
+# "simple"-type choosers (slurp) whenever a request includes windows, and
+# Chrome, Firefox and OBS all request MONITOR|WINDOW. With slurp as the only
+# chooser those requests fail outright.
+#
+# Per-window capture requires xdpw >= 0.8.0 AND sway >= 1.12. Both are met.
+[screencast]
+chooser_type=dmenu
+chooser_cmd=fuzzel --dmenu -l 10 -p 'Share: '
+max_fps=60

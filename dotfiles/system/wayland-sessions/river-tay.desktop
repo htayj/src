@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=River (tay)
+Comment=river; window manager from ~/.config/river/wm (set with river-wm)
+Exec=/home/tay/.local/bin/river-session
+Type=Application
+DesktopNames=river;wlroots

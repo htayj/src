@@ -11,6 +11,16 @@ sshkey=~/.ssh/id_ed25519
 useSshConfig=true
 username=git
 
+[SSH Config][aur.archlinux.org]
+hostname=aur.archlinux.org
+identifier=aur.archlinux.org
+importedFromSshConfig=true
+port=
+profileName=
+sshkey=~/.ssh/aur
+useSshConfig=true
+username=aur
+
 [SSH Config][git.nogroup.group]
 hostname=git.nogroup.group
 identifier=git.nogroup.group

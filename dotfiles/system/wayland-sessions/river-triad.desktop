@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=River: triad
+Comment=multi-paradigm tiling with a hotkey overlay
+Exec=/home/tay/.local/bin/river-session triad
+Type=Application
+DesktopNames=river;wlroots

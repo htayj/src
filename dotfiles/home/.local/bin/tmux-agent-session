@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Store agent CLI session ids on the current tmux pane so tmux-resurrect can
+# restore the exact session instead of the most recent session for a cwd.
+set -euo pipefail
+
+usage() {
+  cat >&2 <<'EOF'
+usage:
+  tmux-agent-session set <codex|claude|opencode> <session-id>
+  tmux-agent-session from-hook <codex|claude|opencode>
+EOF
+}
+
+agent_option() {
+  case "$1" in
+    codex|claude|opencode) printf '@%s-session-id' "$1" ;;
+    *) return 1 ;;
+  esac
+}
+
+valid_session_id() {
+  local value="$1"
+  [[ -n "$value" && ${#value} -le 512 && "$value" != *$'\n'* && "$value" != *$'\r'* ]]
+}
+
+set_session_id() {
+  local agent="$1"
+  local session_id="$2"
+  local option
+
+  option="$(agent_option "$agent")" || return 0
+  valid_session_id "$session_id" || return 0
+  [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]] || return 0
+
+  tmux set-option -p -t "$TMUX_PANE" "$option" "$session_id" >/dev/null 2>&1 || true
+}
+
+from_hook() {
+  local agent="$1"
+  local payload session_id
+
+  payload="$(cat)"
+  session_id="$(jq -r '
+    .session_id //
+    .sessionID //
+    .properties.sessionID //
+    .properties.info.id //
+    empty
+  ' <<< "$payload" 2>/dev/null || true)"
+
+  set_session_id "$agent" "$session_id"
+}
+
+main() {
+  local command="${1:-}"
+  case "$command" in
+    set)
+      [[ $# -eq 3 ]] || { usage; exit 2; }
+      set_session_id "$2" "$3"
+      ;;
+    from-hook)
+      [[ $# -eq 2 ]] || { usage; exit 2; }
+      from_hook "$2"
+      ;;
+    *)
+      usage
+      exit 2
+      ;;
+  esac
+}
+
+main "$@"

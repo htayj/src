@@ -1,0 +1,16 @@
+#%PAM-1.0
+
+auth        include     system-login
+-auth       optional    pam_kwallet5.so
+# Capture the successful password login for gpg-agent session setup.
+-auth       optional    pam_gnupg.so          store-only
+
+account     include     system-login
+
+password    include     system-login
+
+session     optional    pam_keyinit.so          force revoke
+session     include     system-login
+-session    optional    pam_kwallet5.so         auto_start kwalletd=/usr/bin/ksecretd
+# pam_systemd above has made the systemd-managed gpg-agent socket available.
+-session    optional    pam_gnupg.so             no-autostart

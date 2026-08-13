@@ -1,0 +1,94 @@
+# i3status-rust — drives swaybar via the i3bar JSON protocol.
+#
+# This is the port of the StumpWM modeline:
+#   "[date] [group] %w ^> [%D][%M][%m] [tay@%h] %T"
+# swaybar renders the left side (workspaces, focused window title, binding mode)
+# itself, so everything below is the right-hand status.
+#
+# Icons are "none" because the bar font is unscii, a bitmap font without Nerd
+# Font glyph coverage. Labels are plain text instead.
+#
+# NOTE: the config schema broke hard at 0.30 — examples found online for 0.2x
+# will not parse. This targets 0.36.
+
+icons_format = "{icon}"
+
+[theme]
+theme = "plain"
+[theme.overrides]
+idle_bg = "#000000"
+idle_fg = "#aaaaaa"
+info_bg = "#000000"
+info_fg = "#aaaaaa"
+good_bg = "#000000"
+good_fg = "#00aa00"
+warning_bg = "#000000"
+warning_fg = "#aa5500"
+critical_bg = "#000000"
+critical_fg = "#aa00aa"
+separator = " | "
+separator_bg = "#000000"
+separator_fg = "#aa5500"
+
+[icons]
+icons = "none"
+
+# --- disk ---------------------------------------------------------------------
+# StumpWM: *disk-usage-paths* = ("/" "/mnt/nas")
+[[block]]
+block = "disk_space"
+path = "/"
+info_type = "available"
+alert_unit = "GB"
+interval = 60
+warning = 20.0
+alert = 10.0
+format = " / $available.eng(w:3) "
+
+# /mnt/nas is not currently mounted. Uncomment when it is, or the block reports
+# an error rather than simply hiding.
+# [[block]]
+# block = "disk_space"
+# path = "/mnt/nas"
+# info_type = "available"
+# alert_unit = "GB"
+# interval = 120
+# format = " nas $available.eng(w:3) "
+
+# --- memory -------------------------------------------------------------------
+[[block]]
+block = "memory"
+interval = 10
+format = " mem $mem_used.eng(w:3)/$mem_total.eng(w:3) "
+format_alt = " swap $swap_used.eng(w:3) "
+
+# --- mpd ----------------------------------------------------------------------
+# A custom block over mpc rather than the `music' block: the latter is
+# MPRIS-based, and mpd is spoken to directly here — matching how the StumpWM
+# mpd module worked.
+[[block]]
+block = "custom"
+command = "mpc current --format '%artist% - %title%' 2>/dev/null | head -c 60"
+interval = 5
+[[block.click]]
+button = "left"
+cmd = "mpc toggle"
+[[block.click]]
+button = "right"
+cmd = "mpc next"
+
+# --- user@host ----------------------------------------------------------------
+# StumpWM: "[tay@%h]"
+[[block]]
+block = "custom"
+command = "echo \"$(whoami)@$(hostname)\""
+interval = "once"
+
+# --- clock --------------------------------------------------------------------
+# StumpWM: (RUN-SHELL-COMMAND "date '+%F %H:%M'")
+[[block]]
+block = "time"
+interval = 30
+[block.format]
+full = " $timestamp.datetime(f:'%F %H:%M') "
+short = " $timestamp.datetime(f:'%H:%M') "

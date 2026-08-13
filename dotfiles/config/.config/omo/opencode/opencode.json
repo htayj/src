@@ -1,0 +1,141 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "references": {
+    "okf-network": {
+      "path": "~/okf/network",
+      "description": "Source of truth for the home network: hosts, Tailscale topology, domains, services, storage, runbooks. Start with index.md."
+    },
+    "okf-models": {
+      "path": "~/okf/models",
+      "description": "Catalog of AI models accessible via OpenCode: providers, lineages, benchmark limitations, independent reputation, routing guidance, and capability gaps. Start with index.md."
+    },
+    "okf-genealogy": {
+      "path": "~/okf/genealogy",
+      "description": "Evidence-based genealogy research catalog: methodology, source types and search coverage, citations and transcription, privacy, Gramps workflow, research questions, family-line analysis, and update history. Start with index.md."
+    }
+  },
+  "skills": {
+    "paths": [
+      "/home/tay/.codex/skills",
+      "/home/tay/.codex/skills/.system"
+    ]
+  },
+  "provider": {
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (local)",
+      "options": {
+        "baseURL": "http://192.168.1.189:1234/v1"
+      },
+      "models": {
+        "qwen/qwen3.5-9b": {
+          "name": "qwen/qwen3.5-9b"
+        },
+        "qwen3-coder-next": {
+          "name": "qwen3-coder-next"
+        },
+        "openai/gpt-oss-20b": {
+          "name": "openai/gpt-oss-20b"
+        },
+        "google/gemma-3-12b": {
+          "name": "google/gemma-3-12b"
+        },
+        "qwen/qwen3-vl-8b": {
+          "name": "qwen/qwen3-vl-8b"
+        },
+        "deepseek/deepseek-r1-0528-qwen3-8b": {
+          "name": "deepseek/deepseek-r1-0528-qwen3-8b"
+        },
+        "zai-org/glm-4.6v-flash": {
+          "name": "zai-org/glm-4.6v-flash"
+        },
+        "mistralai/ministral-3-14b-reasoning": {
+          "name": "mistralai/ministral-3-14b-reasoning"
+        },
+        "zai-org/glm-4.7-flash": {
+          "name": "zai-org/glm-4.7-flash"
+        },
+        "google/gemma-3-4b": {
+          "name": "google/gemma-3-4b"
+        },
+        "text-embedding-nomic-embed-text-v1.5": {
+          "name": "text-embedding-nomic-embed-text-v1.5"
+        }
+      }
+    },
+    "omniroute": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Omniroute (LAN gateway)",
+      "options": {
+        "baseURL": "http://192.168.7.116/v1",
+        "apiKey": "{env:OMNIROUTE_API_KEY}"
+      },
+      "models": {
+        "cgpt-web/gpt-5.5-pro": {
+          "name": "cgpt-web/gpt-5.5-pro"
+        },
+        "cgpt-web/gpt-5.5-pro-extended": {
+          "name": "cgpt-web/gpt-5.5-pro-extended"
+        },
+        "cgpt-web/gpt-5.5-thinking": {
+          "name": "cgpt-web/gpt-5.5-thinking"
+        },
+        "cgpt-web/gpt-5.6-pro": {
+          "name": "cgpt-web/gpt-5.6-pro"
+        },
+        "cgpt-web/gpt-5.6-thinking": {
+          "name": "cgpt-web/gpt-5.6-thinking"
+        },
+        "cgpt-web/o3": {
+          "name": "cgpt-web/o3"
+        }
+      }
+    }
+  },
+  "mcp": {
+    "serena": {
+      "type": "local",
+      "enabled": true,
+      "command": [
+        "uvx",
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "ide",
+        "--open-web-dashboard",
+        "False",
+        "--project-from-cwd"
+      ]
+    },
+    "omniroute": {
+      "type": "remote",
+      "enabled": true,
+      "timeout": 120000,
+      "url": "http://192.168.7.116/api/mcp/stream",
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:OMNIROUTE_API_KEY}"
+      }
+    },
+    "gramps": {
+      "type": "local",
+      "enabled": true,
+      "timeout": 30000,
+      "command": [
+        "node",
+        "/home/tay/projects/gramps-effect-mcp/dist/main.js"
+      ],
+      "environment": {
+        "GRAMPS_API_URL": "http://192.168.7.118",
+        "GRAMPS_USERNAME": "{env:GRAMPS_USERNAME}",
+        "GRAMPS_PASSWORD": "{env:GRAMPS_PASSWORD}"
+      }
+    }
+  },
+  "plugin": [
+    "oh-my-openagent@4.19.4",
+    "@ex-machina/opencode-anthropic-auth@1.8.1"
+  ]
+}

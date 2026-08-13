@@ -13,6 +13,7 @@ claudeoauth.txt
 
 # Local agent/editor state.
 .claude/
+/.omo/
 !dotfiles/claude/.claude/
 !dotfiles/claude/.claude/**
 .pi/
@@ -82,8 +83,16 @@ dotfiles/config/.config/systemd/user/xgame-keep-going-reminder.timer
 /setup-services.sh
 /manna-cadet/
 /pi-dynamic-workflows/
-/pi-task-graph/
 /ComfyUI/
 /DorXNG/
 /SenseNova-U1/
 /aur/
+/.tmux
+
+# Abandoned river-WM evaluation: an 866 MB build tree of vendored zig packages
+# and test fixtures. gitleaks flags 8 "secrets" in its WebDAV test data.
+/river-wms/
+
+# Pi subagent run artifacts. These are session transcripts, and they contain
+# API keys echoed back in tool output — never commit them to a public repo.
+/.pi-subagents/

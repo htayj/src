@@ -1,0 +1,21 @@
+/* Minimal, matching the StumpWM palette used across these dotfiles:
+   black background, #aaa text, #aa5500 accent. Deliberately plain — the point
+   of trying these WMs is their own look, so the bar stays out of the way. */
+* {
+  font-family: unscii, monospace;
+  font-size: 12px;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+}
+window#waybar {
+  background: #000000;
+  color: #aaaaaa;
+  border-bottom: 1px solid #aa5500;
+}
+#disk, #memory, #cpu, #pulseaudio, #network, #clock, #tray {
+  padding: 0 8px;
+}
+#clock { color: #ffffff; }
+#cpu.warning, #memory.warning { color: #aa5500; }
+#cpu.critical, #memory.critical, #network.disconnected { color: #aa00aa; }

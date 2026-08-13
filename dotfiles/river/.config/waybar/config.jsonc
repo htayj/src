@@ -1,0 +1,62 @@
+// waybar for the river session.
+//
+// WHY THIS EXISTS
+//
+// Without it waybar falls back to /etc/xdg/waybar/config.jsonc, whose modules
+// are sway-specific. On river that produces:
+//   module sway/workspaces: Disabling module "sway/workspaces", Socket path is empty
+// leaving a mostly-empty bar.
+//
+// Deliberately universal modules only. waybar does ship river/tags, river/mode,
+// river/window and river/layout, but those speak river 0.3's status protocol,
+// which 0.4 removed when window management moved out of the compositor — so
+// they cannot work here. Workspace/tag display has to come from the window
+// manager's own bar (kwm has one) rather than from waybar.
+//
+// This is deliberately plain: it fills the gap that no river WM provides
+// (clock, tray, system readouts) without imposing a theme on WMs that have
+// their own look.
+{
+  "layer": "top",
+  "position": "top",
+  "height": 22,
+  "spacing": 6,
+
+  "modules-left": [],
+  "modules-center": [],
+  "modules-right": ["disk", "memory", "cpu", "pulseaudio", "network", "tray", "clock"],
+
+  "disk": {
+    "interval": 60,
+    "path": "/",
+    "format": "/ {free}"
+  },
+  "memory": {
+    "interval": 10,
+    "format": "mem {used:0.1f}G/{total:0.1f}G"
+  },
+  "cpu": {
+    "interval": 5,
+    "format": "cpu {usage}%"
+  },
+  "pulseaudio": {
+    "format": "vol {volume}%",
+    "format-muted": "vol mute",
+    "on-click": "pavucontrol"
+  },
+  "network": {
+    "format-ethernet": "eth",
+    "format-wifi": "{essid} {signalStrength}%",
+    "format-disconnected": "offline",
+    "tooltip-format": "{ifname}: {ipaddr}"
+  },
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+  "clock": {
+    "interval": 30,
+    "format": "{:%F %H:%M}",
+    "tooltip-format": "<tt>{calendar}</tt>"
+  }
+}

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=River: kwm
+Comment=dwm-style dynamic tiling with a built-in tag bar
+Exec=/home/tay/.local/bin/river-session kwm
+Type=Application
+DesktopNames=river;wlroots

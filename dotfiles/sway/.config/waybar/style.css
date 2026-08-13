@@ -1,0 +1,148 @@
+/* waybar — StumpWM modeline palette.
+ *
+ *   *mode-line-background-color*  #000
+ *   *mode-line-foreground-color*  #aaa
+ *   *mode-line-border-color*      #aa5500
+ *   focus / accent                #00aa00
+ *   urgent                        #aa00aa
+ *
+ * Font is unscii to match the terminals, the launcher, and the old modeline.
+ * Note waybar reads a FONT FAMILY here, not a file path.
+ */
+
+* {
+    /* unscii is designed on a 16-pixel grid (the only installed face is
+     * unscii-16-full.otf). Any other size scales the outlines and the glyphs go
+     * soft — which defeats the point of a pixel font. Keep this at 16px and
+     * size the bar around it, not the other way round. */
+    font-family: "unscii", monospace;
+    font-size: 16px;
+    /* kill GTK's default rounded/padded look so this reads as a text modeline */
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+}
+
+window#waybar {
+    background: #000000;
+    color: #aaaaaa;
+    border-bottom: 1px solid #aa5500;
+}
+
+/* --- left ---------------------------------------------------------------- */
+
+#workspaces button {
+    background: #000000;
+    color: #888888;
+    padding: 0 6px;
+    border-bottom: 1px solid transparent;
+}
+
+#workspaces button.focused,
+#workspaces button.visible {
+    color: #ffffff;
+    border-bottom: 1px solid #aa5500;
+}
+
+#workspaces button.urgent {
+    color: #ffffff;
+    background: #aa00aa;
+}
+
+#workspaces button:hover {
+    background: #333333;
+    color: #ffffff;
+}
+
+/* binding-mode indicator, e.g. [resize] */
+#mode {
+    color: #00aa00;
+    padding: 0 8px;
+}
+
+/* --- center -------------------------------------------------------------- */
+
+#window {
+    color: #aaaaaa;
+    padding: 0 8px;
+}
+
+window#waybar.empty #window {
+    background: transparent;
+}
+
+/* --- right --------------------------------------------------------------- */
+
+#disk,
+#memory,
+#mpd,
+#privacy,
+#idle_inhibitor,
+#pulseaudio,
+#bluetooth,
+#network,
+#custom-userhost,
+#clock,
+#tray {
+    padding: 0 8px;
+    color: #aaaaaa;
+}
+
+/* the amber pipe separators the StumpWM modeline had */
+#disk,
+#memory,
+#mpd,
+#privacy,
+#idle_inhibitor,
+#pulseaudio,
+#bluetooth,
+#network,
+#custom-userhost,
+#clock {
+    border-left: 1px solid #aa5500;
+}
+
+/* --- state colours for the modules that replaced the tray applets -------- */
+
+#network.disconnected,
+#network.linked      { color: #aa00aa; }
+#network.ethernet,
+#network.wifi        { color: #aaaaaa; }
+
+#bluetooth.off,
+#bluetooth.disabled  { color: #555555; }
+#bluetooth.connected { color: #00aa00; }
+
+#pulseaudio.muted,
+#pulseaudio.source-muted { color: #555555; }
+
+/* idle inhibitor: obvious when it is holding the screen awake */
+#idle_inhibitor.activated   { color: #00aa00; }
+#idle_inhibitor.deactivated { color: #555555; }
+
+/* privacy only appears while something is capturing — make it shout */
+#privacy { color: #aa00aa; }
+
+#memory.warning  { color: #aa5500; }
+#memory.critical { color: #aa00aa; }
+#disk.warning    { color: #aa5500; }
+#disk.critical   { color: #aa00aa; }
+
+#mpd.disconnected,
+#mpd.stopped { color: #555555; }
+#mpd.playing { color: #00aa00; }
+
+#tray {
+    border-left: 1px solid #aa5500;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background: #aa00aa;
+}

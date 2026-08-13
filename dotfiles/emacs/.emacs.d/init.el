@@ -139,22 +139,17 @@
 (setq erc-track-exclude
 			'("##latinitas" "##latin" "#EsperantoAmeriko#1" "#kulupupitokipona#1"))
 (setq erc-interpret-mirc-color t)
-;; (erc :server "irc.gazellegames.net" :port 6667 :user "wx0069" :nick "wx0069" :password "noirc7979")
+;; Keep ERC credentials in auth-source or a private environment variable.
 
 (use-package znc
   :config
-  (let ((username "tay")
-        (password "umdroms1"))
-    (setq znc-servers
-          '(("192.168.1.242" 6667 t
-             ((GGn username password)
-              (aither username password)))))))
+  (let ((password (getenv "ZNC_PASSWORD")))
+    (when (and password (not (string= password "")))
+      (setq znc-servers
+            `(("192.168.1.242" 6667 t
+               ((GGn "tay" ,password)
+                (aither "tay" ,password))))))))
 ;; circe for znc
-
-(defun znc-password (server)
-  (with-temp-buffer
-    (insert-file-contents-literally my-credentials-file)
-    (plist-get (read (buffer-string)) :password)))
 ;; =============================================================================
 ;; emacs 29 included treesit and eglot
 ;; =============================================================================

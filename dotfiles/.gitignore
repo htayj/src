@@ -2,3 +2,15 @@
 *~
 \#*\#
 .DS_Store
+
+# Sway per-host fragment selector. sway-session refreshes this symlink to point
+# at host-$(hostname).conf on every launch, so its target is machine-specific
+# runtime state, not something to track.
+sway/.config/sway/host.conf
+
+# Timestamped ghostty config backups the font chooser leaves behind.
+config/.config/ghostty/*.bak-*
+
+# npm dependencies for the omo opencode wrapper — 62 MB, reinstallable from
+# the committed package.json / package-lock.json.
+config/.config/omo/opencode/node_modules/

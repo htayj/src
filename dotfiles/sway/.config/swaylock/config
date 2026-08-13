@@ -1,0 +1,21 @@
+# swaylock — matches the StumpWM palette.
+# Plain swaylock, NOT swaylock-effects: that project is dead upstream, still
+# built against the removed wlr-input-inhibitor protocol, and the fork distros
+# package carries an inherited PAM bug where auth FAILURE reported success.
+color=000000
+inside-color=000000
+ring-color=aa5500
+key-hl-color=00aa00
+bs-hl-color=aa00aa
+line-color=000000
+separator-color=000000
+text-color=aaaaaa
+inside-ver-color=000000
+ring-ver-color=00aa00
+inside-wrong-color=000000
+ring-wrong-color=aa00aa
+indicator-radius=90
+indicator-thickness=6
+show-failed-attempts
+ignore-empty-password
+daemonize

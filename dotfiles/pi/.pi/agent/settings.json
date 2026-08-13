@@ -1,10 +1,11 @@
 {
-  "lastChangelogVersion": "0.74.1",
+  "lastChangelogVersion": "0.82.1",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "xhigh",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
   "enabledModels": [
+    "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.3-codex",
     "openai-codex/gpt-5.4",
@@ -13,8 +14,8 @@
     "openrouter/google/gemma-4-31b-it"
   ],
   "packages": [
-    "git:git@github.com:htayj/pi-task-graph",
     "/home/tay/.pi/agent/packages/general-dev-suite",
+    "/home/tay/.pi/agent/packages/okf-knowledge",
     "npm:pi-intercom",
     "npm:pi-subagents",
     "npm:pi-web-access",
@@ -50,14 +51,8 @@
         "position": "right",
         "prefix": "usage",
         "color": "accent"
-      },
-      {
-        "id": "task-graph",
-        "statusKey": "task-graph",
-        "position": "right",
-        "prefix": "tasks",
-        "color": "accent"
       }
     ]
-  }
+  },
+  "theme": "dark"
 }

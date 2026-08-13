@@ -1,2 +1,5 @@
+[org.freedesktop.secrets]
+apiEnabled=true
+
 [Wallet]
 First Use=false

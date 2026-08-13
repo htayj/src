@@ -1,0 +1,185 @@
+layout {
+    0 bsp
+    1 bsp
+    2 bsp
+    * bsp
+}
+
+layout_config {
+    bsp {
+        # split_override 1, 1
+        gaps 5
+    }
+}
+
+env {
+    SDL_VIDEODRIVER wayland,x11
+    QT_QPA_PLATFORM wayland
+    ELECTRON_OZONE_PLATFORM_HINT wayland
+}
+
+animations {
+    move {
+        duration 250_000
+        easing expOut
+    }
+    resize {
+        duration 250_000
+        easing expOut
+    }
+    workspace {
+        duration 500_000
+        easing elasticOut, amplitude=0.005, period=0.5
+        # easing sinOut
+    }
+}
+
+# alt, s, tiler, bsp, togglesplit
+keybinds [
+    mod4, q, close, Focus
+    mod4, m, exit
+    mod4, Escape, pointerOp, xkill
+    mod4, Return, launch, ghostty
+    mod4, d, launch, fuzzel
+    mod4, f, fullscreen, toggle, Focus
+    mod4, Tab, focusWorkspace, PrevActive
+    mod4, v, floating, toggle, Focus
+    mod4, s, layoutCommand, bsp, changeSplit
+    mod4+shift, s, layoutCommand, bsp, swapAllSplits
+    none, F12, overlay, toggle, -1
+    mod4, F12, sendToWorkspace, -1
+
+    mod4, h, moveFocus, Left
+    mod4, l, moveFocus, Right
+    mod4, j, moveFocus, Down
+    mod4, k, moveFocus, Up
+
+    mod4, Left, moveFocus, Left
+    mod4, Right, moveFocus, Right
+    mod4, Down, moveFocus, Down
+    mod4, Up, moveFocus, Up
+
+    ctrl+mod4, Left, focusWorkspace, Previous
+    ctrl+mod4, Right, focusWorkspace, Next
+
+    mod4+shift, h, moveWindow, Left
+    mod4+shift, l, moveWindow, Right
+    mod4+shift, j, moveWindow, Down
+    mod4+shift, k, moveWindow, Up
+
+    mod4+shift, Left, moveWindow, Left
+    mod4+shift, Right, moveWindow, Right
+    mod4+shift, Down, moveWindow, Down
+    mod4+shift, Up, moveWindow, Up
+
+    mod4, 1, focusWorkspace, 0
+    mod4, 2, focusWorkspace, 1
+    mod4, 3, focusWorkspace, 2
+    mod4, 4, focusWorkspace, 3
+    mod4, 5, focusWorkspace, 4
+    mod4, 6, focusWorkspace, 5
+    mod4, 7, focusWorkspace, 6
+    mod4, 8, focusWorkspace, 7
+    mod4, 9, focusWorkspace, 8
+    mod4, 0, focusWorkspace, 9
+
+    mod4+shift, 1, moveToWorkspace, 0
+    mod4+shift, 2, moveToWorkspace, 1
+    mod4+shift, 3, moveToWorkspace, 2
+    mod4+shift, 4, moveToWorkspace, 3
+    mod4+shift, 5, moveToWorkspace, 4
+    mod4+shift, 6, moveToWorkspace, 5
+    mod4+shift, 7, moveToWorkspace, 6
+    mod4+shift, 8, moveToWorkspace, 7
+    mod4+shift, 9, moveToWorkspace, 8
+    mod4+shift, 0, moveToWorkspace, 9
+
+    mod4+ctrl, 1, sendToWorkspace, 0
+    mod4+ctrl, 2, sendToWorkspace, 1
+    mod4+ctrl, 3, sendToWorkspace, 2
+    mod4+ctrl, 4, sendToWorkspace, 3
+    mod4+ctrl, 5, sendToWorkspace, 4
+    mod4+ctrl, 6, sendToWorkspace, 5
+    mod4+ctrl, 7, sendToWorkspace, 6
+    mod4+ctrl, 8, sendToWorkspace, 7
+    mod4+ctrl, 9, sendToWorkspace, 8
+    mod4+ctrl, 0, sendToWorkspace, 9
+]
+
+window_management {
+    follow_cursor true
+    float_move 0.1
+    border {
+        width 3
+        colours {
+            focus rgba8, 0, 0xA0, 0, 0xAA
+            inactive hsla, 6.5, 0.3, 0.5, 0.5
+        }
+    }
+}
+
+windowrules [
+    com.mitchellh.ghostty, workspace, 1
+    zenity, float, true
+]
+
+pointer_binds [
+    mod4      , Left, pointerOp, move
+    mod4+shift, Left, pointerOp, resize
+]
+
+
+startup [
+    dbus-update-activation-environment --all --systemd
+    kanshi
+    awww-daemon
+    swayidle
+]
+
+xcursor {
+    theme Breeze_Hacked
+    size 24
+}
+
+
+
+# requires https://codeberg.org/Sivecano/channel
+input {
+    profiles {
+        keyboard {
+            keyboard {
+                layout us, ch
+                variant , de
+                # layout
+                # rules
+                options grp:ctrl_space_toggle,apple:alupckeys,compose:rctrl
+                repeat {
+                    rate 25
+                    delay 550
+                }
+            }
+        }
+
+        touchpad {
+            pointer {
+                scroll_factor 1
+                # map_to rect, 0, 0, 200, 200
+            }
+
+            libinput {
+                natural_scroll true
+                # this could be two_finger, edge, no_scroll or on_button_down
+                scroll_method two_finger
+                tap_to_click true
+                click_method clickfinger
+                disable_while_typing true
+                accel_profile flat
+            }
+        }
+    }
+
+    rules [
+        type, keyboard, keyboard
+        name, *ouchpad, touchpad
+    ]
+}

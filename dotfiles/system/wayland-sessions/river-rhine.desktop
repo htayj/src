@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=River: rhine
+Comment=BSP tiling with animations and gaps
+Exec=/home/tay/.local/bin/river-session rhine
+Type=Application
+DesktopNames=river;wlroots

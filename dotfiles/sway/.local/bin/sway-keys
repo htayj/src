@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Searchable keybinding cheatsheet, generated from the live sway config.
+#
+# Sway has no built-in which-key. The two honest options are a hand-maintained
+# popup menu (wlr-which-key, AUR) or deriving the list from the config. This is
+# the second: it parses every `bindsym' out of ~/.config/sway/config.d/ and the
+# host fragment, so it CANNOT drift from what is actually bound — which is the
+# failure mode a hand-written cheatsheet always eventually hits.
+#
+# Bindings inside a `mode' block are prefixed with [mode].
+#
+# Bind it with something like:
+#     bindsym --to-code $mod+slash exec sway-keys
+set -eu
+
+CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sway"
+
+parse() {
+    awk '
+        # track which mode block we are inside
+        /^[[:space:]]*mode[[:space:]]+"/ {
+            match($0, /"[^"]+"/)
+            mode = substr($0, RSTART+1, RLENGTH-2)
+            next
+        }
+        /^[[:space:]]*}/ { mode = ""; next }
+
+        /^[[:space:]]*bindsym/ {
+            line = $0
+            sub(/^[[:space:]]*bindsym[[:space:]]+/, "", line)
+            # drop flags
+            while (line ~ /^--[a-z-]+([=][^ ]+)?[[:space:]]+/)
+                sub(/^--[a-z-]+([=][^ ]+)?[[:space:]]+/, "", line)
+            # split key from action
+            idx = index(line, " ")
+            if (idx == 0) next
+            key = substr(line, 1, idx-1)
+            act = substr(line, idx+1)
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", act)
+            # collapse the long swaynag exit command to something readable
+            if (act ~ /swaynag/) act = "exit sway (with confirmation)"
+            if (mode != "") key = "[" mode "] " key
+            printf "%s\t%s\n", key, act
+        }
+    ' "$@"
+}
+
+# shellcheck disable=SC2086
+FILES=$(ls "$CONF_DIR"/config.d/*.conf 2>/dev/null; ls "$CONF_DIR"/host.conf 2>/dev/null)
+[ -n "$FILES" ] || { echo "sway-keys: no config found in $CONF_DIR" >&2; exit 1; }
+
+# shellcheck disable=SC2086
+LIST=$(parse $FILES \
+    | sed "s/\$mod/Mod3(thumb)/g; s/\$left/h/g; s/\$down/j/g; s/\$up/k/g; s/\$right/l/g; s/\$term/ghostty/g; s/\$menu/fuzzel/g; s/\$lock/swaylock/g" \
+    | sort -u \
+    | column -t -s "$(printf '\t')")
+
+if [ "${1:-}" = "--stdout" ]; then
+    printf '%s\n' "$LIST"
+    exit 0
+fi
+
+# fuzzel as a searchable pager; selecting a line does nothing but dismiss.
+printf '%s\n' "$LIST" | fuzzel --dmenu -l 25 -w 90 -p 'keys: ' >/dev/null 2>&1 || true

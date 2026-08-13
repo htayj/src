@@ -54,6 +54,15 @@
       "idleTimeout": 10,
       "directTools": true
     },
+    "gitea": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "source /home/tay/.local/share/private-env.d/gitea-mcp.sh 2>/dev/null || true; exec gitea-mcp -t stdio --host https://git.nogroup.group"
+      ],
+      "lifecycle": "lazy",
+      "idleTimeout": 10
+    },
     "effect-docs": {
       "command": "npx",
       "args": [

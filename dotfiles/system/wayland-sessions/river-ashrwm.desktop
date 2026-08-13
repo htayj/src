@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=River: ashrwm
+Comment=master-stack dynamic tiling, Janet-configurable
+Exec=/home/tay/.local/bin/river-session ashrwm
+Type=Application
+DesktopNames=river;wlroots

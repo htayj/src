@@ -6,7 +6,9 @@ application/x-extension-xht=firefox.desktop;
 application/x-extension-xhtml=firefox.desktop;
 application/xhtml+xml=firefox.desktop;
 audio/vnd.wave=mpv-3.desktop;mpv-2.desktop;vlc-2.desktop;
-image/png=feh-2.desktop;gimp.desktop;org.gnome.Loupe.desktop;
+# swayimg is Wayland-only; feh stays the default until the StumpWM/X11 session
+# is retired. Swap the [Default Applications] entry to swayimg.desktop then.
+image/png=swayimg.desktop;feh-2.desktop;gimp.desktop;
 text/html=firefox.desktop;
 x-scheme-handler/chrome=firefox.desktop;
 x-scheme-handler/http=firefox.desktop;

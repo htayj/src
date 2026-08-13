@@ -2,4 +2,4 @@
 ShowLeftPanel=false
 
 [PageView]
-MouseMode=RectSelect
+MouseMode=TextSelect

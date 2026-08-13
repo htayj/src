@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Port of StumpWM's `colon1 exec firefox http://www.' — prompt for a URL.
+set -eu
+url=$(printf '' | fuzzel --dmenu -p 'URL: https://') || exit 0
+[ -n "$url" ] || exit 0
+case "$url" in
+    http://*|https://*) exec firefox "$url" ;;
+    *)                  exec firefox "https://$url" ;;
+esac

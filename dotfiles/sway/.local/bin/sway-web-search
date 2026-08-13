@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Port of StumpWM's make-web-jump macro. Usage: sway-web-search <engine>
+set -eu
+engine="${1:?usage: sway-web-search <duckduckgo|imdb>}"
+case "$engine" in
+    duckduckgo) prefix='https://duckduckgo.com/?q=' ;;
+    imdb)       prefix='https://www.imdb.com/find?q=' ;;
+    *) printf 'sway-web-search: unknown engine %s\n' "$engine" >&2; exit 2 ;;
+esac
+q=$(printf '' | fuzzel --dmenu -p "$engine: ") || exit 0
+[ -n "$q" ] || exit 0
+exec firefox "${prefix}$(printf %s "$q" | sed 's/ /+/g')"

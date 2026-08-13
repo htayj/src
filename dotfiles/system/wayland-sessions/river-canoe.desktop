@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=River: canoe
+Comment=Motif/CDE-style stacking with title bars
+Exec=/home/tay/.local/bin/river-session canoe
+Type=Application
+DesktopNames=river;wlroots
