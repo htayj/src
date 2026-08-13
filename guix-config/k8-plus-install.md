@@ -70,10 +70,23 @@ Both commands must evaluate successfully before activation.
 
 ## Activate Guix Home
 
-Apply the shared Home configuration as `tay`:
+Authorize Nonguix substitutes before applying Home. This imperative command replaces the managed `/etc/guix/acl` symlink temporarily; the subsequent System reconfiguration restores it declaratively with the same key plus `%default-authorized-guix-keys`:
 
 ```sh
-guix home reconfigure ~/src/guix-config/home-configuration.scm
+sudo ~/.config/guix/current/bin/guix archive --authorize <<'EOF'
+(public-key
+ (ecc
+  (curve Ed25519)
+  (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))
+EOF
+```
+
+Apply the shared Home configuration as `tay`, explicitly including Nonguix until the System configuration has activated its daemon settings:
+
+```sh
+guix home reconfigure \
+  --substitute-urls="https://substitutes.nonguix.org https://bordeaux.guix.gnu.org https://ci.guix.gnu.org" \
+  ~/src/guix-config/home-configuration.scm
 ```
 
 The Home configuration builds the local `codex-latest` package and a large package set, so this can take considerably longer than its dry-run.
@@ -86,17 +99,6 @@ Install the same channels for root. These commands require an interactive `sudo`
 sudo mkdir -p /root/.config/guix
 sudo cp ~/.config/guix/channels.scm /root/.config/guix/channels.scm
 sudo -i guix pull -C /root/.config/guix/channels.scm
-```
-
-Authorize Nonguix substitutes before building the system generation:
-
-```sh
-sudo /root/.config/guix/current/bin/guix archive --authorize <<'EOF'
-(public-key
- (ecc
-  (curve Ed25519)
-  (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)))
-EOF
 ```
 
 Re-evaluate with root's Guix, activate the generation, and reboot:
