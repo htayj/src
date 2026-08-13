@@ -124,10 +124,13 @@
       "enabled": true,
       "timeout": 30000,
       "command": [
-        "/home/tay/.local/share/mcp-servers/gramps-web-mcp/run-stdio.sh"
+        "node",
+        "/home/tay/projects/gramps-effect-mcp/dist/main.js"
       ],
       "environment": {
-        "MCP_TRANSPORT": "stdio"
+        "GRAMPS_API_URL": "http://192.168.7.118",
+        "GRAMPS_USERNAME": "{env:GRAMPS_USERNAME}",
+        "GRAMPS_PASSWORD": "{env:GRAMPS_PASSWORD}"
       }
     }
   },
