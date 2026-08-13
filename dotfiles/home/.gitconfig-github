@@ -1,0 +1,9 @@
+[user]
+	name = htayj
+	email = htayj@users.noreply.github.com
+	signingkey = DA5BC400CB669F4AC4493732F308A838566BA817 # gitleaks:allow (public PGP fingerprint)
+
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
