@@ -231,8 +231,9 @@
     (build-system cargo-build-system)
     (arguments
      (list
-      #:install-source? #f
-      #:cargo-install-paths %codex-install-paths-sexp
+       #:install-source? #f
+       #:parallel-build? #f
+       #:cargo-install-paths %codex-install-paths-sexp
       #:cargo-test-flags %codex-cargo-test-flags-sexp
       #:cargo-package-crates %codex-cargo-package-crates-sexp
       #:phases

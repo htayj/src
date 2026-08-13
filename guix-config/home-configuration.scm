@@ -90,7 +90,6 @@
                                            "python-gyp"
                                            "filezilla"
 																					 "libnotify"
-                                           "purescript"
                                            "node"
                                            "calibre"
                                            "recutils"
