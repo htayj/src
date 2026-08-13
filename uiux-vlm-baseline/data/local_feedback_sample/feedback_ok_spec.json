@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "id": "feedback_ok",
+  "components": [
+    {
+      "id": "primary",
+      "role": "button",
+      "box": [
+        120,
+        176,
+        300,
+        238
+      ]
+    },
+    {
+      "id": "secondary",
+      "role": "button",
+      "box": [
+        340,
+        176,
+        520,
+        238
+      ]
+    },
+    {
+      "id": "card1",
+      "role": "card",
+      "box": [
+        120,
+        288,
+        320,
+        468
+      ]
+    },
+    {
+      "id": "card2",
+      "role": "card",
+      "box": [
+        364,
+        288,
+        564,
+        468
+      ]
+    },
+    {
+      "id": "card3",
+      "role": "card",
+      "box": [
+        608,
+        288,
+        808,
+        468
+      ]
+    },
+    {
+      "id": "panel",
+      "role": "panel",
+      "box": [
+        760,
+        172,
+        1010,
+        378
+      ]
+    },
+    {
+      "id": "panel_content",
+      "role": "content",
+      "box": [
+        798,
+        206,
+        972,
+        344
+      ]
+    },
+    {
+      "id": "icon_button",
+      "role": "button",
+      "box": [
+        805,
+        430,
+        925,
+        550
+      ]
+    },
+    {
+      "id": "texture",
+      "role": "texture",
+      "box": [
+        120,
+        520,
+        520,
+        626
+      ]
+    },
+    {
+      "id": "contrast_button",
+      "role": "button",
+      "box": [
+        570,
+        520,
+        730,
+        582
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "buttons-top",
+      "type": "alignment",
+      "targets": [
+        "primary",
+        "secondary"
+      ],
+      "edge": "top",
+      "tolerance_px": 3
+    },
+    {
+      "id": "buttons-size",
+      "type": "size_consistency",
+      "targets": [
+        "primary",
+        "secondary"
+      ],
+      "dimensions": [
+        "width",
+        "height"
+      ],
+      "tolerance_px": 6
+    },
+    {
+      "id": "cards-spacing",
+      "type": "spacing_consistency",
+      "targets": [
+        "card1",
+        "card2",
+        "card3"
+      ],
+      "axis": "x",
+      "tolerance_px": 8
+    },
+    {
+      "id": "panel-padding",
+      "type": "padding_balance",
+      "target": "panel",
+      "content": "panel_content",
+      "tolerance_px": 8
+    },
+    {
+      "id": "icon-center",
+      "type": "content_centering",
+      "target": "icon_button",
+      "content": "auto",
+      "tolerance_px": 6
+    },
+    {
+      "id": "texture-seam",
+      "type": "texture_continuity",
+      "target": "texture",
+      "threshold": 8.0
+    },
+    {
+      "id": "contrast",
+      "type": "contrast",
+      "target": "contrast_button",
+      "min_ratio": 4.5
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

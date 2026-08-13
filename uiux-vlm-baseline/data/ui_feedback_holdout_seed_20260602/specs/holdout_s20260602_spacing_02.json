@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "id": "holdout_s20260602_spacing_02",
+  "components": [
+    {
+      "id": "c1",
+      "role": "card",
+      "box": [
+        135,
+        241,
+        294,
+        386
+      ]
+    },
+    {
+      "id": "c2",
+      "role": "card",
+      "box": [
+        344,
+        241,
+        503,
+        386
+      ]
+    },
+    {
+      "id": "c3",
+      "role": "card",
+      "box": [
+        553,
+        241,
+        712,
+        386
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "spacing",
+      "type": "spacing_consistency",
+      "targets": [
+        "c1",
+        "c2",
+        "c3"
+      ],
+      "axis": "x",
+      "tolerance_px": 8
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

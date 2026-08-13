@@ -1,13 +1,9 @@
 [user]
-	name = Taylor Hardy
-	email = taylor.hardy@codemettle.com
+	name = htayj
+	email = htayj@users.noreply.github.com
 
 [maintenance]
 	repo = /home/tay/.emacs.d
 
-# Per-directory identity override: anything under ~/src uses the personal
-# GitHub identity (htayj) instead of the default CodeMettle identity.
-[includeIf "gitdir:/home/tay/src/"]
-	path = /home/tay/.gitconfig-github
 [spice "forge.gitlab"]
 	url = https://git.codemettle.com

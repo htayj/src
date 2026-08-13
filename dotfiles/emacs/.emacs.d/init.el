@@ -59,8 +59,8 @@
 ;; call functions from compat-31 such as `set-local'; require that layer from
 ;; straight explicitly so find-file/completion does not fail with
 ;; "void-function set-local".
-;;(straight-use-package 'compat)
-;;(require 'compat-31)
+(straight-use-package 'compat)
+(require 'compat-31)
 
 ;; have to install org early for some reason
 (straight-use-package 'org)

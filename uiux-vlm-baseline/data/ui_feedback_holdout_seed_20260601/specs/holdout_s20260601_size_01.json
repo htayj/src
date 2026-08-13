@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "id": "holdout_s20260601_size_01",
+  "components": [
+    {
+      "id": "a",
+      "role": "button",
+      "box": [
+        168,
+        250,
+        327,
+        317
+      ]
+    },
+    {
+      "id": "b",
+      "role": "button",
+      "box": [
+        490,
+        250,
+        673,
+        307
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "id": "size",
+      "type": "size_consistency",
+      "targets": [
+        "a",
+        "b"
+      ],
+      "dimensions": [
+        "width",
+        "height"
+      ],
+      "tolerance_px": 6
+    }
+  ],
+  "auto_checks": {
+    "enabled": false
+  }
+}

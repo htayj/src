@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "image": "data/local_feedback_sample/feedback_ok.png",
+  "spec_id": "feedback_ok",
+  "components": [
+    {
+      "id": "primary",
+      "role": "button",
+      "box": [
+        120,
+        176,
+        300,
+        238
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "secondary",
+      "role": "button",
+      "box": [
+        340,
+        176,
+        520,
+        238
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "card1",
+      "role": "card",
+      "box": [
+        120,
+        288,
+        320,
+        468
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "card2",
+      "role": "card",
+      "box": [
+        364,
+        288,
+        564,
+        468
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "card3",
+      "role": "card",
+      "box": [
+        608,
+        288,
+        808,
+        468
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "panel",
+      "role": "panel",
+      "box": [
+        760,
+        172,
+        1010,
+        378
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "panel_content",
+      "role": "content",
+      "box": [
+        798,
+        206,
+        972,
+        344
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "icon_button",
+      "role": "button",
+      "box": [
+        805,
+        430,
+        925,
+        550
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "texture",
+      "role": "texture",
+      "box": [
+        120,
+        520,
+        520,
+        626
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "contrast_button",
+      "role": "button",
+      "box": [
+        570,
+        520,
+        730,
+        582
+      ],
+      "source": "spec",
+      "label": null,
+      "score": 1.0,
+      "meta": {}
+    },
+    {
+      "id": "auto_1",
+      "role": "panel",
+      "box": [
+        56,
+        48,
+        1065,
+        671
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 6428
+      }
+    },
+    {
+      "id": "auto_2",
+      "role": "card",
+      "box": [
+        608,
+        172,
+        1011,
+        469
+      ],
+      "source": "detector",
+      "label": null,
+      "score": 1.0,
+      "meta": {
+        "area": 60424
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "buttons-top",
+      "type": "alignment",
+      "status": "pass",
+      "severity": "info",
+      "message": "top alignment spread is 0.0px",
+      "targets": [
+        "primary",
+        "secondary"
+      ],
+      "metrics": {
+        "edge": "top",
+        "values_px": [
+          176.0,
+          176.0
+        ],
+        "delta_px": 0.0,
+        "tolerance_px": 3.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": null
+    },
+    {
+      "id": "buttons-size",
+      "type": "size_consistency",
+      "status": "pass",
+      "severity": "info",
+      "message": "size spread width=0.0px height=0.0px",
+      "targets": [
+        "primary",
+        "secondary"
+      ],
+      "metrics": {
+        "widths_px": [
+          180,
+          180
+        ],
+        "heights_px": [
+          62,
+          62
+        ],
+        "width_delta_px": 0,
+        "height_delta_px": 0,
+        "tolerance_px": 6.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": null
+    },
+    {
+      "id": "cards-spacing",
+      "type": "spacing_consistency",
+      "status": "pass",
+      "severity": "info",
+      "message": "x-axis gap spread is 0.0px",
+      "targets": [
+        "card1",
+        "card2",
+        "card3"
+      ],
+      "metrics": {
+        "axis": "x",
+        "gaps_px": [
+          44.0,
+          44.0
+        ],
+        "delta_px": 0.0,
+        "tolerance_px": 8.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": null
+    },
+    {
+      "id": "panel-padding",
+      "type": "padding_balance",
+      "status": "pass",
+      "severity": "info",
+      "message": "padding deltas horizontal=0.0px vertical=0.0px",
+      "targets": [
+        "panel"
+      ],
+      "metrics": {
+        "content_box": [
+          798,
+          206,
+          972,
+          344
+        ],
+        "left_px": 38,
+        "right_px": 38,
+        "top_px": 34,
+        "bottom_px": 34,
+        "horizontal_delta_px": 0,
+        "vertical_delta_px": 0,
+        "tolerance_px": 8.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": null
+    },
+    {
+      "id": "icon-center",
+      "type": "content_centering",
+      "status": "pass",
+      "severity": "info",
+      "message": "content center offset is (0.5, 0.5)px",
+      "targets": [
+        "icon_button"
+      ],
+      "metrics": {
+        "content_box": [
+          831,
+          456,
+          900,
+          525
+        ],
+        "offset_x_px": 0.5,
+        "offset_y_px": 0.5,
+        "offset_px": 0.7071067811865476,
+        "tolerance_px": 6.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": null
+    },
+    {
+      "id": "texture-seam",
+      "type": "texture_continuity",
+      "status": "pass",
+      "severity": "info",
+      "message": "texture continuity score 0.00",
+      "targets": [
+        "texture"
+      ],
+      "metrics": {
+        "continuity_score": 0.0,
+        "axis": "vertical",
+        "position_px": 175,
+        "estimated_period_x_px": 42,
+        "estimated_period_y_px": 42,
+        "threshold": 8.0
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": null
+    },
+    {
+      "id": "contrast",
+      "type": "contrast",
+      "status": "pass",
+      "severity": "info",
+      "message": "contrast ratio is 4.64:1",
+      "targets": [
+        "contrast_button"
+      ],
+      "metrics": {
+        "foreground_box": [
+          623,
+          540,
+          679,
+          548
+        ],
+        "foreground_rgb": [
+          206.0,
+          209.0,
+          214.0
+        ],
+        "background_rgb": [
+          80.0,
+          88.0,
+          108.0
+        ],
+        "contrast_ratio": 4.643790434557316,
+        "min_ratio": 4.5
+      },
+      "used_fields": [
+        "components",
+        "image_pixels",
+        "check"
+      ],
+      "suggestion": null
+    }
+  ],
+  "issues": [],
+  "summary": {
+    "pass": 7,
+    "fail": 0,
+    "warning": 0,
+    "needs_review": 0,
+    "error": 0
+  },
+  "diagnostics": {
+    "used_fields": [
+      "image_pixels",
+      "spec.components"
+    ],
+    "warnings": [],
+    "detected_count": 9
+  },
+  "artifacts": {
+    "annotation": "results/local-feedback-ok-annotated.png",
+    "markdown": "results/local-feedback-ok.md"
+  }
+}
