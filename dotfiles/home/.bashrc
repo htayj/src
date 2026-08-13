@@ -131,6 +131,7 @@ export PATH="/home/tay/.local/bin:$PATH"
 
 alias gtime=/usr/bin/time
 alias gs=git-spice
+alias chero='claude-profile aihero'
 
 
 errcho(){ >&2 echo $@; }

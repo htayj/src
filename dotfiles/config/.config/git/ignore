@@ -11,3 +11,5 @@
 
 # direnv layout dir — nix-direnv's cached env + nix GC roots
 .direnv/
+
+**/.claude/.cc-writes/

@@ -1,0 +1,18 @@
+[Unit]
+Description=Pi A2A Bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PI_A2A_HOST=0.0.0.0
+Environment=PI_A2A_PORT=9124
+Environment=PI_A2A_PUBLIC_HOST=192.168.1.190
+Environment=PI_A2A_CWD=/home/tay
+Environment=PI_A2A_TOKEN_FILE=/home/tay/.config/pi-a2a-bridge/token
+ExecStart=/home/tay/.local/bin/pi-a2a-bridge
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

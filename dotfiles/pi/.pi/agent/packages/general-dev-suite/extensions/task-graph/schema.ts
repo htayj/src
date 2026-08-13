@@ -22,6 +22,8 @@ export const TASK_KINDS = [
   "PLANNED",
   "GO",
   "IMPLEMENT",
+  "GOAL_TEST",
+  "EVALUATE",
   "COMPILE",
   "UNIT_TEST",
   "PERF_TEST",
@@ -48,6 +50,7 @@ export const RUN_MODES = [
   "todo",
   "todo-strict",
   "ticketdo",
+  "autoimprove",
   "follow-pipeline",
   "fixup-pipelines",
   "fulcrum",
@@ -75,6 +78,106 @@ export interface TaskGraphOptions {
   decompose?: boolean;
   /** Optional non-secret context paths to include in Oracle instructions. */
   oracleContextPaths?: string[];
+  /** Ignore project-local task graph settings for this run. */
+  ignoreProjectSettings?: boolean;
+  /** Optional project-local settings path, relative to cwd unless absolute. */
+  settingsPath?: string;
+  /** Named custom graph to instantiate, including packaged presets and settings-defined graphs. */
+  customGraph?: string;
+}
+
+export interface TaskNodeDescriptorInput {
+  stableKey?: string;
+  purpose?: string;
+  inputs?: readonly string[];
+  outputs?: readonly string[];
+  artifacts?: readonly string[];
+  acceptanceChecks?: readonly string[];
+  writeScope?: readonly string[];
+  isolationBoundary?: readonly string[];
+  order?: number;
+}
+
+export interface TaskNodeDescriptor {
+  version: 1;
+  stableKey: string;
+  purpose: string;
+  inputs: string[];
+  outputs: string[];
+  artifacts: string[];
+  acceptanceChecks: string[];
+  writeScope: string[];
+  isolationBoundary: string[];
+  order: number;
+}
+
+export interface CustomGraphStageSettings {
+  id: string;
+  kind: TaskKind;
+  title?: string;
+  description?: string;
+  priority?: Priority;
+  dependsOn?: string[];
+  runnerKind?: RunnerKind;
+  runnerName?: string;
+  sideEffects?: SideEffects;
+  subagentType?: string;
+  skills?: string[];
+  context?: "fresh" | "fork";
+  conflictGroup?: string;
+  expectedWritePaths?: string[];
+  promptInstructions?: string[];
+  descriptor?: TaskNodeDescriptorInput;
+  stableKey?: string;
+  purpose?: string;
+  inputs?: string[];
+  outputs?: string[];
+  artifacts?: string[];
+  acceptanceChecks?: string[];
+  writeScope?: string[];
+  isolationBoundary?: string[];
+  order?: number;
+}
+
+export interface CustomGraphSettings {
+  description?: string;
+  stages: CustomGraphStageSettings[];
+}
+
+export type CustomGraphSource = "packaged" | "global" | "project";
+
+export interface ProjectTaskGraphSettings {
+  agentInstructions?: Record<string, string[]>;
+  routing?: {
+    maxParallel?: number;
+    defaultSubagentContext?: "fresh" | "fork";
+    failureRoutes?: Partial<Record<TaskKind, Partial<RouteMetadata>>>;
+    lockConflictGroups?: Partial<Record<TaskKind, string>>;
+  };
+  graphs?: Record<string, CustomGraphSettings>;
+  /** Default custom graph name used when mode=custom and options.customGraph is omitted. */
+  defaultGraph?: string;
+  /** Disable built-in modes or custom graph templates by name. Supports "*", "builtin:<mode>", "custom", and "custom:<name>". */
+  disabledGraphs?: string[];
+  /** Remove packaged custom graph presets before global/project graph overrides are applied. */
+  disabledPackagedGraphs?: string[];
+}
+
+export interface ProjectTaskGraphSettingsInfo {
+  loaded: boolean;
+  path?: string;
+  globalPath?: string;
+  projectPath?: string;
+  /** Backward-compatible alias for enabled/effective custom graph names. */
+  graphNames?: string[];
+  packagedGraphNames?: string[];
+  globalGraphNames?: string[];
+  projectGraphNames?: string[];
+  effectiveGraphNames?: string[];
+  graphSourceMap?: Record<string, CustomGraphSource>;
+  disabledGraphNames?: string[];
+  disabledPackagedGraphNames?: string[];
+  settings?: ProjectTaskGraphSettings;
 }
 
 export interface WritePolicy {
@@ -99,6 +202,7 @@ export interface FormulaRef {
     | "formula.todo"
     | "formula.todoStrict"
     | "formula.ticketdo"
+    | "formula.autoimprove"
     | "formula.fulcrum"
     | "formula.followPipeline"
     | "formula.fixupPipelines"
@@ -163,8 +267,213 @@ export interface DecompositionMetadata {
   expandedTaskIds?: string[];
 }
 
+export interface AutoImproveObjectiveMetadata {
+  checklist: string[];
+  validationHints: string[];
+  expectedArtifactRoots: string[];
+  requiresTmuxPuppetedPi: boolean;
+  requiresTaskGraphDogfood: boolean;
+  requiresReusableSkill: boolean;
+}
+
+export interface ValidationEvidence {
+  command: string;
+  cwd?: string;
+  exitCode: number;
+  stdoutTail?: string;
+  stderrTail?: string;
+  durationMs?: number;
+}
+
+export interface WorkerEvidence {
+  kind: "tmux-pi" | "subagent" | "direct";
+  workerId?: string;
+  tmuxSession?: string;
+  paneId?: string;
+  transcriptPath?: string;
+}
+
+export interface ChildRunEvidence {
+  cwd: string;
+  runId: string;
+  runFile?: string;
+}
+
+export type AutoImproveLineageSource =
+  | "metadata"
+  | "metadata-confirmed-by-explicit-lineage"
+  | "explicit-legacy-adoption"
+  | "explicit-lineage-overrode-existing-metadata"
+  | "legacy-default";
+
+export const ROOT_WORK_KINDS = [
+  "autoimprove-loop",
+  "task",
+  "custom-graph",
+  "research",
+  "deep-research",
+  "manual",
+] as const;
+
+export type RootWorkKind = (typeof ROOT_WORK_KINDS)[number];
+export type RootWorkState = "queued" | "active";
+export type RootWorkHistoryState = "created" | "completed" | "skipped" | "cancelled";
+export type RootWorkRequestedBy = "user" | "oracle" | "agent" | "system";
+
+export type RootWorkPrimitive = string | number | boolean | null;
+
+export type RootWorkInput =
+  | {
+      kind: "autoimprove-loop";
+      objective: string;
+      oracleRequired: true;
+      oracleQuestion?: string;
+      evidencePaths?: string[];
+      writeScope?: string[];
+    }
+  | {
+      kind: "task";
+      objective: string;
+      writeScope?: string[];
+    }
+  | {
+      kind: "custom-graph";
+      presetName: string;
+      args?: Record<string, RootWorkPrimitive>;
+    }
+  | {
+      kind: "research";
+      question: string;
+      expectedOutput?: string;
+    }
+  | {
+      kind: "deep-research";
+      question: string;
+      expectedOutput?: string;
+      sourcePolicy?: string;
+    }
+  | {
+      kind: "manual";
+      description: string;
+      owner?: string;
+      completionCriteria?: string;
+    };
+
+export interface RootWorkSeed {
+  key?: string;
+  kind: RootWorkKind;
+  title?: string;
+  purpose?: string;
+  successCriteria?: string;
+  input?: Partial<RootWorkInput> | Record<string, unknown>;
+  requestedBy?: RootWorkRequestedBy;
+  priority?: number;
+  dependsOnRootWorkKeys?: string[];
+  objective?: string;
+  oracleQuestion?: string;
+  evidencePaths?: string[];
+  writeScope?: string[];
+  question?: string;
+  expectedOutput?: string;
+  presetName?: string;
+  args?: Record<string, RootWorkPrimitive>;
+  description?: string;
+  owner?: string;
+  completionCriteria?: string;
+  sourcePolicy?: string;
+  [key: string]: unknown;
+}
+
+export interface RootWorkItem {
+  key: string;
+  kind: RootWorkKind;
+  state: RootWorkState;
+  title: string;
+  purpose?: string;
+  successCriteria?: string;
+  input: RootWorkInput;
+  requestedBy: RootWorkRequestedBy;
+  originRunId: string;
+  activeRunId?: string;
+  priority?: number;
+  dependsOnRootWorkKeys?: string[];
+  privacy: { sanitized: true };
+}
+
+export interface RootWorkHistoryItem {
+  key: string;
+  kind: RootWorkKind;
+  state: RootWorkHistoryState;
+  title: string;
+  runId?: string;
+  at?: string;
+  materialization?: {
+    fromRunId: string;
+    toRunId: string;
+    tool: "task_graph_continue_autoimprove";
+  };
+  completedByRunId?: string;
+  privacy: { sanitized: true };
+}
+
+export interface RootWorkQueue {
+  version: 1;
+  items: RootWorkItem[];
+  history?: RootWorkHistoryItem[];
+}
+
+export type RootWorkSelection =
+  | { mode: "none" }
+  | { mode: "first-executable" }
+  | { mode: "item-key"; key: string };
+
+export interface AutoImproveLoopMetadata {
+  loopId: string;
+  rootRunId?: string;
+  iteration: number;
+  objective: string;
+  previousRunId?: string;
+  nextRunId?: string;
+  nextRunIds?: string[];
+  createdBy?: "task_graph_continue_autoimprove" | "task_graph_create";
+  continuedAt?: string;
+  oracleRequired: boolean;
+  oracleQuestion?: string;
+  continuationContextArtifact?: string;
+  evidenceContextArtifactPath?: string;
+  evidenceContextPaths?: string[];
+  maxIterations?: number;
+  lineageSource?: AutoImproveLineageSource;
+  lineageWarnings?: string[];
+  adoptedLineage?: {
+    rootRunId: string;
+    previousRunIteration: number;
+    loopId?: string;
+    reason?: string;
+  };
+  previousRunMetadata?: {
+    present: boolean;
+    loopId?: string;
+    rootRunId?: string;
+    iteration?: number;
+  };
+  git?: {
+    dirtyAtContinueStart?: string[];
+    branch?: string;
+    head?: string;
+    allowDirtyWorktree?: boolean;
+  };
+}
+
+export interface RunMetadata {
+  autoimproveLoop?: AutoImproveLoopMetadata;
+  rootWorkQueue?: RootWorkQueue;
+  [key: string]: unknown;
+}
+
 export interface TaskMetadata {
   source: string;
+  nodeDescriptor?: TaskNodeDescriptor;
   todoTitle?: string;
   ticketKey?: string;
   ticketUrl?: string;
@@ -183,6 +492,16 @@ export interface TaskMetadata {
   complexity?: ComplexityMetadata;
   oracle?: OracleMetadata;
   decomposition?: DecompositionMetadata;
+  autoimproveObjective?: AutoImproveObjectiveMetadata;
+  validationEvidence?: ValidationEvidence[];
+  worker?: WorkerEvidence;
+  childRun?: ChildRunEvidence;
+  childRunIds?: string[];
+  parentRunId?: string;
+  parentTaskId?: string;
+  previousRunId?: string;
+  rootRunId?: string;
+  autoimproveLoop?: AutoImproveLoopMetadata;
   deferred?: boolean;
   [key: string]: unknown;
 }
@@ -264,6 +583,11 @@ export interface SchedulerConfig {
   strict: boolean;
   continuous: boolean;
   mutateOrg: boolean;
+  projectSettings?: ProjectTaskGraphSettings;
+  projectSettingsInfo?: Omit<ProjectTaskGraphSettingsInfo, "settings">;
+  customGraphName?: string;
+  customGraphSource?: CustomGraphSource;
+  autoimproveLoop?: AutoImproveLoopMetadata;
 }
 
 export interface DeferredCommit {
@@ -303,6 +627,7 @@ export interface TaskGraphRun {
   deferredCommits: DeferredCommit[];
   orgState?: OrgState;
   gitBaseline: GitBaseline;
+  metadata?: RunMetadata;
 }
 
 export interface ReadyTask {
@@ -316,6 +641,7 @@ export interface ReadyTask {
   blockedBy: string[];
   lockKeys: string[];
   statusLine: string;
+  nodeDescriptor?: TaskNodeDescriptor;
 }
 
 export const terminalSuccess = (status: TaskStatus) => status === "succeeded" || status === "skipped" || status === "deleted";

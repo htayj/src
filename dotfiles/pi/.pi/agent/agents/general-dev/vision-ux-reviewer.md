@@ -1,7 +1,7 @@
 ---
 name: vision-ux-reviewer
-description: "Lean visual UX review subagent for screenshots, recordings, or visual UI states. Uses local LM Studio Gemma 4 31B."
-model: lmstudio/google/gemma-4-31b
+description: "Lean visual UX review subagent for screenshots, recordings, or visual UI states. Uses OpenRouter Gemma 4 31B."
+model: openrouter/google/gemma-4-31b-it
 tools: read, ls
 inheritSkills: false
 inheritProjectContext: false

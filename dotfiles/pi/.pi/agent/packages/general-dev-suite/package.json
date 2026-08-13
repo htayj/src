@@ -13,7 +13,9 @@
   },
   "pi": {
     "extensions": [
-      "./extensions"
+      "./extensions/dev-suite.ts",
+      "./extensions/comfyui.ts",
+      "./extensions/image-ai.ts"
     ],
     "skills": [
       "./skills"

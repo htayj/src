@@ -1,0 +1,291 @@
+#!/usr/bin/env python3
+"""Print or refresh selected fields from the local Codex ChatGPT OAuth login.
+
+This helper is intentionally narrow for use from Crush config command expansion.
+It never prints refresh tokens or the full auth.json file.
+"""
+from __future__ import annotations
+
+import argparse
+import base64
+import contextlib
+import datetime as dt
+import fcntl
+import json
+import os
+import pathlib
+import stat
+import sys
+import tempfile
+import urllib.error
+import urllib.request
+from typing import Any
+
+CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
+REFRESH_URL = "https://auth.openai.com/oauth/token"
+JWT_AUTH_CLAIM = "https://api.openai.com/auth"
+REFRESH_SKEW_SECONDS = 5 * 60
+
+
+class AuthError(RuntimeError):
+    pass
+
+
+def codex_home() -> pathlib.Path:
+    return pathlib.Path(os.environ.get("CODEX_HOME", "~/.codex")).expanduser()
+
+
+def auth_path() -> pathlib.Path:
+    return codex_home() / "auth.json"
+
+
+def lock_path() -> pathlib.Path:
+    return codex_home() / ".crush-openai-codex-auth.lock"
+
+
+@contextlib.contextmanager
+def locked_auth():
+    home = codex_home()
+    home.mkdir(mode=0o700, parents=True, exist_ok=True)
+    lock = lock_path()
+    with lock.open("a+") as fh:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+
+
+def load_auth() -> dict[str, Any]:
+    path = auth_path()
+    if not path.exists():
+        raise AuthError(f"Codex auth file not found: {path}; run `codex login` first")
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError as exc:
+        raise AuthError(f"Codex auth file is not valid JSON: {path}") from exc
+    if not isinstance(data, dict):
+        raise AuthError(f"Codex auth file has unexpected shape: {path}")
+    return data
+
+
+def save_auth(data: dict[str, Any]) -> None:
+    path = auth_path()
+    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    rendered = json.dumps(data, indent=2, sort_keys=True) + "\n"
+    fd, tmp_name = tempfile.mkstemp(prefix="auth.", suffix=".json.tmp", dir=str(path.parent), text=True)
+    try:
+        with os.fdopen(fd, "w") as fh:
+            fh.write(rendered)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.chmod(tmp_name, 0o600)
+        os.replace(tmp_name, path)
+    finally:
+        with contextlib.suppress(FileNotFoundError):
+            os.unlink(tmp_name)
+    os.chmod(path, 0o600)
+
+
+def tokens(data: dict[str, Any]) -> dict[str, Any]:
+    got = data.get("tokens")
+    if not isinstance(got, dict):
+        raise AuthError("Codex auth has no ChatGPT OAuth tokens; run `codex login`")
+    return got
+
+
+def b64url_decode(segment: str) -> bytes:
+    padded = segment + "=" * ((4 - len(segment) % 4) % 4)
+    return base64.urlsafe_b64decode(padded.encode("ascii"))
+
+
+def jwt_payload(token: str) -> dict[str, Any]:
+    parts = token.split(".")
+    if len(parts) != 3 or not parts[1]:
+        raise AuthError("Expected a JWT access/id token in Codex auth")
+    try:
+        payload = json.loads(b64url_decode(parts[1]))
+    except Exception as exc:  # noqa: BLE001 - collapse decoding details for CLI output
+        raise AuthError("Could not decode JWT payload from Codex auth") from exc
+    if not isinstance(payload, dict):
+        raise AuthError("JWT payload has unexpected shape")
+    return payload
+
+
+def token_expiry(token: str) -> int | None:
+    exp = jwt_payload(token).get("exp")
+    if isinstance(exp, (int, float)):
+        return int(exp)
+    return None
+
+
+def access_token(data: dict[str, Any]) -> str:
+    token = tokens(data).get("access_token")
+    if not isinstance(token, str) or not token:
+        raise AuthError("Codex auth has no access_token; run `codex login`")
+    return token
+
+
+def refresh_token(data: dict[str, Any]) -> str:
+    token = tokens(data).get("refresh_token")
+    if not isinstance(token, str) or not token:
+        raise AuthError("Codex auth has no refresh_token; run `codex login`")
+    return token
+
+
+def account_id(data: dict[str, Any]) -> str:
+    toks = tokens(data)
+    for key in ("account_id", "chatgpt_account_id"):
+        value = toks.get(key)
+        if isinstance(value, str) and value:
+            return value
+
+    id_token = toks.get("id_token")
+    if isinstance(id_token, str) and id_token:
+        auth_claim = jwt_payload(id_token).get(JWT_AUTH_CLAIM)
+        if isinstance(auth_claim, dict):
+            value = auth_claim.get("chatgpt_account_id")
+            if isinstance(value, str) and value:
+                return value
+
+    auth_claim = jwt_payload(access_token(data)).get(JWT_AUTH_CLAIM)
+    if isinstance(auth_claim, dict):
+        value = auth_claim.get("chatgpt_account_id")
+        if isinstance(value, str) and value:
+            return value
+
+    raise AuthError("Could not find chatgpt_account_id in Codex auth")
+
+
+def plan_type(data: dict[str, Any]) -> str | None:
+    toks = tokens(data)
+    id_token = toks.get("id_token")
+    candidates: list[dict[str, Any]] = []
+    if isinstance(id_token, str) and id_token:
+        candidates.append(jwt_payload(id_token))
+    with contextlib.suppress(AuthError):
+        candidates.append(jwt_payload(access_token(data)))
+    for payload in candidates:
+        auth_claim = payload.get(JWT_AUTH_CLAIM)
+        if isinstance(auth_claim, dict):
+            value = auth_claim.get("chatgpt_plan_type")
+            if isinstance(value, str) and value:
+                return value
+    return None
+
+
+def is_access_token_stale(data: dict[str, Any]) -> bool:
+    exp = token_expiry(access_token(data))
+    if exp is None:
+        return True
+    return exp <= int(dt.datetime.now(dt.UTC).timestamp()) + REFRESH_SKEW_SECONDS
+
+
+def refresh(data: dict[str, Any]) -> dict[str, Any]:
+    body = json.dumps(
+        {
+            "client_id": CLIENT_ID,
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token(data),
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        REFRESH_URL,
+        data=body,
+        headers={"Content-Type": "application/json", "Accept": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        raw = exc.read().decode("utf-8", errors="replace")
+        code = None
+        message = None
+        with contextlib.suppress(Exception):
+            err_payload = json.loads(raw)
+            if isinstance(err_payload, dict):
+                err = err_payload.get("error")
+                if isinstance(err, dict):
+                    code = err.get("code") or err.get("message")
+                    message = err.get("message")
+                elif isinstance(err, str):
+                    code = err
+                message = message or err_payload.get("message") or err_payload.get("error_description")
+        detail = f": {code or message}" if (code or message) else ""
+        raise AuthError(f"Codex token refresh failed with HTTP {exc.code}{detail}") from exc
+    except Exception as exc:  # noqa: BLE001
+        raise AuthError(f"Codex token refresh failed: {exc}") from exc
+
+    if not isinstance(payload, dict):
+        raise AuthError("Codex token refresh returned unexpected payload")
+
+    toks = tokens(data)
+    for key in ("id_token", "access_token", "refresh_token"):
+        value = payload.get(key)
+        if isinstance(value, str) and value:
+            toks[key] = value
+
+    if not isinstance(toks.get("access_token"), str) or not toks["access_token"]:
+        raise AuthError("Codex token refresh did not return an access token")
+
+    # Keep account_id current when the refreshed token exposes it.
+    with contextlib.suppress(AuthError):
+        toks["account_id"] = account_id(data)
+
+    data["last_refresh"] = dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    save_auth(data)
+    return data
+
+
+def ensure_fresh(data: dict[str, Any]) -> dict[str, Any]:
+    if is_access_token_stale(data):
+        return refresh(data)
+    return data
+
+
+def mask(value: str) -> str:
+    if len(value) <= 8:
+        return "***"
+    return f"{value[:4]}…{value[-4:]}"
+
+
+def print_status(data: dict[str, Any]) -> None:
+    tok = access_token(data)
+    exp = token_expiry(tok)
+    now = int(dt.datetime.now(dt.UTC).timestamp())
+    expires_in = "unknown" if exp is None else f"{max(0, exp - now)}s"
+    mode = data.get("auth_mode") if isinstance(data.get("auth_mode"), str) else "unknown"
+    account = account_id(data)
+    plan = plan_type(data) or "unknown"
+    print(f"auth_mode={mode}")
+    print(f"account_id={mask(account)}")
+    print(f"plan={plan}")
+    print(f"access_token_expires_in={expires_in}")
+    print(f"auth_file={auth_path()}")
+
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("command", choices=("access-token", "account-id", "status"))
+    args = parser.parse_args(argv)
+
+    try:
+        with locked_auth():
+            data = ensure_fresh(load_auth())
+            if args.command == "access-token":
+                print(access_token(data))
+            elif args.command == "account-id":
+                print(account_id(data))
+            elif args.command == "status":
+                print_status(data)
+            else:  # pragma: no cover
+                raise AssertionError(args.command)
+        return 0
+    except AuthError as exc:
+        print(f"crush-openai-codex-auth: {exc}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

@@ -4,9 +4,9 @@ A generalized Pi package converted from `~/claude-plugin-marketplace.work`.
 
 It keeps the useful development workflows and removes repo-specific assumptions:
 
-- slash-command prompt templates for implementation, verification, tests, E2E, branch readiness, review-request/pipeline work, TODO pipelines, and TypeScript references
+- slash-command prompt templates for implementation, verification, tests, E2E, branch readiness, review-request/pipeline work, TODO pipelines, iterative autoimprove runs, and TypeScript references
 - Agent Skill style skills for TDD, generic build/test procedures, REST endpoint work, frontend design, Git workflows, device simulators, and Pi skill authoring
-- Pi extension helpers for safe bash nudges, changed-file tracking, notes tools, generic HTTP API calls, and a durable dependency-aware task graph replacing the external todo pipeline plugin
+- Pi extension helpers for safe bash nudges, changed-file tracking, notes tools, generic HTTP API calls, and ComfyUI/Civitai workflow tooling; the durable dependency-aware task graph now lives in the standalone `pi-task-graph` package
 - Pi subagent definitions in `~/.pi/agent/agents/general-dev/` for implementation, verification, unit/API/E2E/perf testing, code review, and UX review
 - Pi subagent chains in `~/.pi/agent/chains/general-dev/` such as `general-dev-do`, `general-dev-plan`, `general-dev-verify`, and test/review chains
 
@@ -14,13 +14,18 @@ Loaded globally from `~/.pi/agent/settings.json` as a local Pi package. Subagent
 
 ## Task graph workflow
 
-The local task graph extension provides:
+The task graph extension now lives in its own package/repository:
 
-- `task_graph_create` for `do`, `pdo`/`fulcrum`, `todo`, `todo-strict`, `ticketdo`, and CI follow/fixup runs. Complex inputs are annotated with planning complexity and can schedule `ORACLE_CONSULT` and `DECOMPOSE` gates before implementation.
-- `task_graph_next` for dependency-ready, parallel-safe work with subagent/chain runner prompts.
-- `task_graph_update` for recording status, artifacts, changed files, failure routing, and dependency edits.
-- `task_graph_expand_decomposition` for turning a completed `DECOMPOSE` task's `decomposition.json` artifact into multiple dependent implementation/check chains; `task_graph_update` also auto-expands when a succeeded `DECOMPOSE` task includes that artifact.
-- `task_graph_approve` for explicit commit, push, TODO.org mutation, and other safety gates.
-- `todo` compatibility backed by the same durable graph store.
+- Local development checkout: `/home/tay/src/pi-task-graph`
+- GitHub remote: `git@github.com:htayj/pi-task-graph.git`
+- Pi package source: `git:git@github.com:htayj/pi-task-graph`
 
-State is stored under `.pi/dev-suite/task-graph/` in the active project. Commit/push and TODO.org/DONE.org mutations are disabled unless approved. Oracle consult tasks are manual/read-only gates: the parent agent should call `oracle_consult` in browser mode with GPT-5.5 Pro Extended, attach ample non-secret context, then record the result as an artifact before continuing. Ready subagent tasks default to `context: "fresh"`; use forked context only when a task explicitly says conversation history is required. Requests that apply the same action to an enumerated list of things are split into per-item subtask chains.
+This package intentionally excludes `extensions/task-graph/` from its active Pi extension manifest to avoid duplicate `task_graph_*` and `todo` tools. The old source tree is still preserved here for reference while the standalone package is the canonical active source.
+
+See the standalone repo README for task graph tools, settings paths, validation commands, and extraction provenance.
+
+## ComfyUI and Civitai tools
+
+The `comfyui.ts` extension targets a local ComfyUI server, defaulting to `http://127.0.0.1:8188` (`PI_COMFYUI_URL`/`COMFYUI_URL` override). It is not limited to image generation: `comfyui_api` can call arbitrary ComfyUI HTTP endpoints for queue/history/settings/jobs/userdata/custom-node APIs, while specialized tools cover status, node schemas, model files, workflow files, workflow queueing, history, image upload/download, and Civitai metadata/downloads.
+
+Local workflow JSON files are stored in `~/.pi/comfyui/workflows` by default (`PI_COMFYUI_WORKFLOW_DIR` override). Civitai downloads use public metadata/download endpoints unless `CIVITAI_API_TOKEN` is already present in the environment; tokens must not be stored in dotfiles or prompts. Download filenames are sanitized and direct download URLs are restricted to `https://*.civitai.com`; image uploads refuse non-local ComfyUI URLs unless explicitly overridden.

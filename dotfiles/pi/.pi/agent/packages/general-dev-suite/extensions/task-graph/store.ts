@@ -25,12 +25,30 @@ export function ensureStore(cwd: string) {
   fs.mkdirSync(path.join(taskGraphRoot(cwd), "artifacts"), { recursive: true });
 }
 
+export function isSafeRunId(runId: string | undefined): runId is string {
+  return typeof runId === "string"
+    && runId.length > 0
+    && !runId.includes("..")
+    && !/[\\/]/.test(runId)
+    && !path.isAbsolute(runId)
+    && !path.win32.isAbsolute(runId);
+}
+
+function safeRunFilePath(cwd: string, runId: string, suffix: string) {
+  if (!isSafeRunId(runId)) throw new Error(`Invalid task graph run id: ${runId}`);
+  const dir = runsDir(cwd);
+  const file = path.join(dir, `${runId}${suffix}`);
+  const relative = path.relative(path.resolve(dir), path.resolve(file));
+  if (relative === "" || relative.startsWith("..") || path.isAbsolute(relative)) throw new Error(`Invalid task graph run id: ${runId}`);
+  return file;
+}
+
 export function runPath(cwd: string, runId: string) {
-  return path.join(runsDir(cwd), `${runId}.json`);
+  return safeRunFilePath(cwd, runId, ".json");
 }
 
 export function eventsPath(cwd: string, runId: string) {
-  return path.join(runsDir(cwd), `${runId}.events.jsonl`);
+  return safeRunFilePath(cwd, runId, ".events.jsonl");
 }
 
 export function saveRun(run: TaskGraphRun) {
@@ -45,16 +63,22 @@ export function saveRun(run: TaskGraphRun) {
 
 export function loadRun(cwd: string, runId?: string): TaskGraphRun | undefined {
   ensureStore(cwd);
+  return loadRunNoCreate(cwd, runId);
+}
+
+export function loadRunNoCreate(cwd: string, runId?: string): TaskGraphRun | undefined {
   let id = runId;
   if (!id) {
+    const file = currentFile(cwd);
+    if (!fs.existsSync(file)) return undefined;
     try {
-      const current = JSON.parse(fs.readFileSync(currentFile(cwd), "utf8")) as { runId?: string };
+      const current = JSON.parse(fs.readFileSync(file, "utf8")) as { runId?: string };
       id = current.runId;
     } catch {
       id = undefined;
     }
   }
-  if (!id) return undefined;
+  if (!isSafeRunId(id)) return undefined;
   const file = runPath(cwd, id);
   if (!fs.existsSync(file)) return undefined;
   return JSON.parse(fs.readFileSync(file, "utf8")) as TaskGraphRun;

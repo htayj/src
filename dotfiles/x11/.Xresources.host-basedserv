@@ -3,3 +3,32 @@
 !
 ! Empty: both hosts now use the shared font set. Add basedserv-only
 ! tweaks here if any future override is needed.
+
+! basedserv DEC-Fonts test setup.
+! Use DEC VT220 BDF/PCF through X core fonts so xterm can use the generated
+! 75/150-xres bitmap masters and VT102 double-width/double-height lines.
+*fontMenu*fontdefault*Label: DEC VT220 80col 10x20
+XTerm*renderFont: false
+XTerm*fontDoublesize: true
+XTerm*cacheDoublesize: 8
+XTerm*forceBoxChars: false
+XTerm.vt100.wideChars: true
+! Honor DECCOLM (CSI ? 3 h/l), which resizes xterm between 80 and 132 columns.
+XTerm.vt100.c132: true
+*VT100.font: -digital-vt220-medium-r-normal-80col-20-200-75-75-c-100-iso10646-1
+*VT100.boldFont: -digital-vt220-bold-r-normal-80col-20-200-75-75-c-100-iso10646-1
+*VT100.wideFont: -digital-vt220-medium-r-normal-80col-20-200-150-75-c-200-iso10646-1
+*VT100.wideBoldFont: -digital-vt220-bold-r-normal-80col-20-200-150-75-c-200-iso10646-1
+
+*fontMenu*font1*Label: DEC VT220 80col 10x20
+*VT100.font1: -digital-vt220-medium-r-normal-80col-20-200-75-75-c-100-iso10646-1
+*fontMenu*font2*Label: DEC VT220 80col 20x40
+*VT100.font2: -digital-vt220-medium-r-normal-80col-40-400-75-75-c-200-iso10646-1
+*fontMenu*font3*Label: DEC VT220 80col 20x20 150xres
+*VT100.font3: -digital-vt220-medium-r-normal-80col-20-200-150-75-c-200-iso10646-1
+*fontMenu*font4*Label: DEC VT220 132col 9x20
+*VT100.font4: -digital-vt220-medium-r-normal-132col-20-200-75-75-c-90-iso10646-1
+*fontMenu*font5*Label: DEC VT220 132col 18x40
+*VT100.font5: -digital-vt220-medium-r-normal-132col-40-400-75-75-c-180-iso10646-1
+*fontMenu*font6*Label: DEC VT220 132col 17x20 150xres
+*VT100.font6: -digital-vt220-medium-r-normal-132col-20-200-150-75-c-170-iso10646-1

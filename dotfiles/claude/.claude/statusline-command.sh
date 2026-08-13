@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 input=$(cat)
+printf '%s' "$input" | "$HOME/.claude/abtop-statusline.sh" >/dev/null 2>&1 &
 
 host=$(hostname -s)
 

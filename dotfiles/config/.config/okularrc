@@ -19,4 +19,8 @@ eDP-1=eDP-1
 
 [Recent Files]
 File1[$e]=$HOME/Downloads/flagazine.pdf
+File2[$e]=$HOME/demo/it-was-teal-demo-2026-08-06 (2)/notes/demo-checklist.md
+File3[$e]=$HOME/demo/it-was-teal-demo-2026-08-06 (2)/README.md
 Name1[$e]=flagazine.pdf
+Name2[$e]=demo-checklist.md
+Name3[$e]=README.md

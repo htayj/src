@@ -1,16 +1,19 @@
 {
-  "lastChangelogVersion": "0.73.1",
+  "lastChangelogVersion": "0.74.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "xhigh",
   "hideThinkingBlock": true,
   "enabledModels": [
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.3-codex",
     "openai-codex/gpt-5.4",
-    "openai-codex/gpt-5.3-codex-spark"
+    "openai-codex/gpt-5.3-codex-spark",
+    "lmstudio/google/gemma-4-31b",
+    "openrouter/google/gemma-4-31b-it"
   ],
   "packages": [
+    "git:git@github.com:htayj/pi-task-graph",
     "/home/tay/.pi/agent/packages/general-dev-suite",
     "npm:pi-intercom",
     "npm:pi-subagents",
@@ -18,7 +21,11 @@
     "npm:pi-powerline-footer",
     "npm:pi-smart-fetch",
     "/home/tay/.pi/agent/packages/machine-profile",
-    "/home/tay/.pi/agent/packages/codex-profile"
+    "/home/tay/.pi/agent/packages/codex-profile",
+    "npm:pi-mcp-adapter",
+    "npm:pi-docparser",
+    "npm:pi-schedule-prompt",
+    "git:github.com/mattleong/pi-better-openai"
   ],
   "skills": [
     "~/.codex/skills/cl-charms/SKILL.md",
@@ -33,7 +40,7 @@
     "~/.codex/skills/oracle/SKILL.md",
     "~/.codex/skills/presentation-based-interfaces/SKILL.md"
   ],
-  "workingVibe": "lisp machine",
+  "workingVibe": "lisp hacker jargon file",
   "powerline": {
     "preset": "default",
     "customItems": [

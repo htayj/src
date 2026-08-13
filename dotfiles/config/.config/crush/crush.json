@@ -1,0 +1,219 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "models": {
+    "large": {
+      "provider": "openai-codex",
+      "model": "gpt-5.5",
+      "reasoning_effort": "medium"
+    },
+    "small": {
+      "provider": "openai-codex",
+      "model": "gpt-5.4-mini",
+      "reasoning_effort": "medium"
+    }
+  },
+  "providers": {
+    "openai-codex": {
+      "id": "openai-codex",
+      "name": "OpenAI Codex (ChatGPT OAuth)",
+      "type": "openai",
+      "base_url": "https://chatgpt.com/backend-api/codex",
+      "api_key": "$(/home/tay/.local/bin/crush-openai-codex-auth access-token)",
+      "flat_rate": true,
+      "extra_headers": {
+        "chatgpt-account-id": "$(/home/tay/.local/bin/crush-openai-codex-auth account-id)",
+        "originator": "codex_cli_rs",
+        "OpenAI-Beta": "responses=experimental",
+        "User-Agent": "crush-openai-codex"
+      },
+      "provider_options": {
+        "store": false,
+        "parallel_tool_calls": true,
+        "reasoning_summary": "auto",
+        "include": [
+          "reasoning.encrypted_content"
+        ],
+        "instructions": "Follow the provided system and developer instructions. You are a helpful coding assistant."
+      },
+      "models": [
+        {
+          "id": "gpt-5.5",
+          "name": "GPT-5.5",
+          "cost_per_1m_in": 5,
+          "cost_per_1m_out": 30,
+          "cost_per_1m_in_cached": 0.5,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.4",
+          "name": "GPT-5.4",
+          "cost_per_1m_in": 2.5,
+          "cost_per_1m_out": 15,
+          "cost_per_1m_in_cached": 0.25,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.4-mini",
+          "name": "GPT-5.4 Mini",
+          "cost_per_1m_in": 0.75,
+          "cost_per_1m_out": 4.5,
+          "cost_per_1m_in_cached": 0.075,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.3-codex",
+          "name": "GPT-5.3 Codex",
+          "cost_per_1m_in": 1.75,
+          "cost_per_1m_out": 14,
+          "cost_per_1m_in_cached": 0.175,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.3-codex-spark",
+          "name": "GPT-5.3 Codex Spark",
+          "cost_per_1m_in": 0,
+          "cost_per_1m_out": 0,
+          "cost_per_1m_in_cached": 0,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 128000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium"
+        },
+        {
+          "id": "gpt-5.2",
+          "name": "GPT-5.2",
+          "cost_per_1m_in": 1.75,
+          "cost_per_1m_out": 14,
+          "cost_per_1m_in_cached": 0.175,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.2-codex",
+          "name": "GPT-5.2 Codex",
+          "cost_per_1m_in": 1.75,
+          "cost_per_1m_out": 14,
+          "cost_per_1m_in_cached": 0.175,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.1",
+          "name": "GPT-5.1",
+          "cost_per_1m_in": 1.25,
+          "cost_per_1m_out": 10,
+          "cost_per_1m_in_cached": 0.125,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.1-codex-max",
+          "name": "GPT-5.1 Codex Max",
+          "cost_per_1m_in": 1.25,
+          "cost_per_1m_out": 10,
+          "cost_per_1m_in_cached": 0.125,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        },
+        {
+          "id": "gpt-5.1-codex-mini",
+          "name": "GPT-5.1 Codex Mini",
+          "cost_per_1m_in": 0.25,
+          "cost_per_1m_out": 2,
+          "cost_per_1m_in_cached": 0.025,
+          "cost_per_1m_out_cached": 0,
+          "context_window": 272000,
+          "can_reason": true,
+          "reasoning_levels": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "default_reasoning_effort": "medium",
+          "supports_attachments": true
+        }
+      ]
+    }
+  }
+}

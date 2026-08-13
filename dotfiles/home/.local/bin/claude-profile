@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Launch Claude Code against an alternate config dir ("profile") while reusing
+# the primary ~/.claude login.
+#
+#   claude-profile <name> [claude args...]
+#   claude-profile --list
+#
+# Each profile gets its own plugins, skills, settings, hooks, MCP servers and
+# session history under ~/.claude-profiles/<name>.
+#
+# CLAUDE_SECURESTORAGE_CONFIG_DIR is set to the empty string deliberately: the
+# empty value means "resolve credentials from ~/.claude" rather than from
+# CLAUDE_CONFIG_DIR, so every profile reads and refreshes the same
+# ~/.claude/.credentials.json. Unsetting it instead would send each profile
+# looking for its own credentials file and force a fresh login per profile.
+
+set -euo pipefail
+
+profiles_dir=${CLAUDE_PROFILES_DIR:-$HOME/.claude-profiles}
+
+if [[ ${1-} == --list || ${1-} == -l ]]; then
+	if [[ -d $profiles_dir ]]; then
+		find "$profiles_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
+	fi
+	exit 0
+fi
+
+if [[ $# -eq 0 || ${1-} == -h || ${1-} == --help ]]; then
+	printf 'usage: %s <profile> [claude args...]\n       %s --list\n' \
+		"${0##*/}" "${0##*/}" >&2
+	exit 2
+fi
+
+name=$1
+shift
+
+case $name in
+-* | */* | . | ..)
+	printf '%s: invalid profile name: %s\n' "${0##*/}" "$name" >&2
+	exit 2
+	;;
+esac
+
+dir=$profiles_dir/$name
+if [[ ! -d $dir ]]; then
+	printf '%s: no such profile: %s (have: %s)\n' "${0##*/}" "$name" \
+		"$("$0" --list | paste -sd, -)" >&2
+	exit 2
+fi
+
+export CLAUDE_CONFIG_DIR=$dir
+export CLAUDE_SECURESTORAGE_CONFIG_DIR=
+
+exec claude "$@"
