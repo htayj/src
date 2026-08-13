@@ -1,0 +1,40 @@
+onboarding = false
+
+[keys]
+prefix = "ctrl+a"
+detach = "prefix+d"
+cycle_pane_next = "prefix+o"
+open_notification_target = "prefix+shift+o"
+rename_tab = "prefix+comma"
+close_tab = "prefix+ampersand"
+switch_tab = "alt+1..9"
+previous_tab = ["prefix+p", "super+h"]
+next_tab = ["prefix+n", "super+l"]
+previous_workspace = "super+k"
+next_workspace = "super+j"
+previous_agent = "super+p"
+next_agent = "super+n"
+
+[terminal]
+new_cwd = "follow"
+
+[ui]
+mouse_capture = true
+copy_on_select = true
+accent = "cyan"
+
+[ui.sound]
+enabled = false
+
+[session]
+resume_agents_on_restore = true
+
+[advanced]
+scrollback_limit_bytes = 10000000
+
+[ui.toast]
+delivery = "herdr"
+
+[theme]
+name = "one-dark"
+auto_switch = false
