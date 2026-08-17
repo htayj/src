@@ -1,10 +1,11 @@
 {
   "lastChangelogVersion": "0.82.1",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
+  "defaultProvider": "omniroute",
+  "defaultModel": "normal-interaction",
   "defaultThinkingLevel": "medium",
   "hideThinkingBlock": true,
   "enabledModels": [
+    "omniroute/normal-interaction",
     "openai-codex/gpt-5.6-sol",
     "openai-codex/gpt-5.5",
     "openai-codex/gpt-5.3-codex",
