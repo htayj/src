@@ -9,37 +9,34 @@
              (tay home-common))
 
 (define %workstation-home-packages
-  (append
-   (specifications->packages
-    '("calibre"
-      "curl"
-      "dunst"
-      "emacs"
-      "firefox"
-      "git"
-      "github-cli"
-      "imagemagick"
-      "kitty"
-      "libnotify"
-      "mpd-mpc"
-      "mpd"
-      "pavucontrol"
-      "remmina"
-      "ripgrep"
-      "rofi"
-      "rsync"
-      "scrot"
-      "signal-desktop"
-      "syncthing"
-      "syncthing-gtk"
-      "telegram-desktop"
-      "tmux"
-      "weechat"
-      "xterm"
-      "yt-dlp"))
-   ;; Kitty rejects the bitmap PCF files in font-unscii's default output.
-   ;; Install the scalable outline build so Kitty can actually select Unscii.
-   (list (list (specification->package "font-unscii") "otf"))))
+  (specifications->packages
+   '("calibre"
+     "curl"
+     "dunst"
+     "emacs"
+     "firefox"
+     "font-unscii"
+     "git"
+     "github-cli"
+     "imagemagick"
+     "kitty-bitmap"
+     "libnotify"
+     "mpd-mpc"
+     "mpd"
+     "pavucontrol"
+     "remmina"
+     "ripgrep"
+     "rofi"
+     "rsync"
+     "scrot"
+     "signal-desktop"
+     "syncthing"
+     "syncthing-gtk"
+     "telegram-desktop"
+     "tmux"
+     "weechat"
+     "xterm"
+     "yt-dlp")))
 
 (define %mpd-service
   (shepherd-service
