@@ -146,6 +146,31 @@
       (edit (@ (mode "assign") (name "antialias"))
         (bool "false"))
       (edit (@ (mode "assign") (name "hinting"))
+        (bool "false")))
+    ;; Same treatment for the CADR, Genera, and DEC bitmap families. These
+    ;; ship many families each ("MIT CADR Gacha", "Symbolics Genera Math",
+    ;; ...), so match on the shared prefix with `contains' rather than
+    ;; enumerating every face. The DEC VT220 fonts use the family "vt220".
+    (match (@ (target "font"))
+      (test (@ (compare "contains") (name "family"))
+        (string "MIT CADR"))
+      (edit (@ (mode "assign") (name "antialias"))
+        (bool "false"))
+      (edit (@ (mode "assign") (name "hinting"))
+        (bool "false")))
+    (match (@ (target "font"))
+      (test (@ (compare "contains") (name "family"))
+        (string "Symbolics Genera"))
+      (edit (@ (mode "assign") (name "antialias"))
+        (bool "false"))
+      (edit (@ (mode "assign") (name "hinting"))
+        (bool "false")))
+    (match (@ (target "font"))
+      (test (@ (compare "eq") (name "family"))
+        (string "vt220"))
+      (edit (@ (mode "assign") (name "antialias"))
+        (bool "false"))
+      (edit (@ (mode "assign") (name "hinting"))
         (bool "false")))))
 
 (define %core-home-packages
