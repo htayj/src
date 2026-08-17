@@ -131,6 +131,7 @@ export PATH="/home/tay/.local/bin:$PATH"
 
 alias gtime=/usr/bin/time
 alias gs=git-spice
+alias chero='CLAUDE_CONFIG_DIR="$HOME/.claude-aihero" claude'
 
 
 errcho(){ >&2 echo $@; }
@@ -195,18 +196,12 @@ fi
 
 export EDITOR='emacsclient -nw'
 
-# opencode
-[ -d /home/tay/.opencode/bin ] && export PATH="/home/tay/.opencode/bin:$PATH"
-
 # Added by LM Studio CLI (lms)
 [ -d /home/tay/.lmstudio/bin ] && export PATH="$PATH:/home/tay/.lmstudio/bin"
 # End of LM Studio CLI section
 export PATH="$HOME/.local/bin/:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# opencode
-export PATH=/home/tay/.opencode/bin:$PATH
 
 # Keep GnuPG pinentry out of interactive application panes. A dedicated tmux
 # pane advertises its terminal through the global GPG_PINENTRY_TTY variable.
