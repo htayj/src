@@ -177,6 +177,14 @@
     'sops-age-key
     home-environment-variables-service-type
     `(("SOPS_AGE_KEY_FILE" . "$HOME/.config/sops/age/keys.txt")))
+   ;; Point Pi's okf-knowledge extension at the real OKF bundle container in
+   ;; ~/okf instead of its ~/.pi/agent/knowledge default, matching the
+   ;; OpenCode/omo `references` entries. Set here rather than in a bashrc
+   ;; fragment so non-interactive shells and GUI-launched processes see it.
+   (simple-service
+    'okf-knowledge-root
+    home-environment-variables-service-type
+    `(("PI_OKF_GLOBAL_ROOT" . "$HOME/okf")))
    ;; Extend Guix Home's essential Fontconfig service rather than replacing
    ;; the fonts.conf it owns.
    (simple-service
