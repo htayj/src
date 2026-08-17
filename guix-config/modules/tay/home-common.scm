@@ -211,6 +211,15 @@
     'okf-knowledge-root
     home-environment-variables-service-type
     `(("PI_OKF_GLOBAL_ROOT" . "$HOME/okf")))
+   ;; Xt looks for app-defaults under the compiled-in system prefix, which on
+   ;; Guix never contains the home profile. Without this, xfontsel, xfd, and
+   ;; xterm warn "app-defaults file not properly installed" and fall back to
+   ;; built-in defaults, losing widget labels, layout constraints, and sizing.
+   (simple-service
+    'xt-app-defaults
+    home-environment-variables-service-type
+    `(("XFILESEARCHPATH"
+       . "$HOME/.guix-home/profile/lib/X11/app-defaults/%N")))
    ;; Extend Guix Home's essential Fontconfig service rather than replacing
    ;; the fonts.conf it owns.
    (simple-service
