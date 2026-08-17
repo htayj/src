@@ -23,6 +23,7 @@
      "genera-fonts-symbols"
      "git"
      "github-cli"
+     "gucharmap"
      "imagemagick"
      "kitty-bitmap"
      "libnotify"
@@ -40,6 +41,9 @@
      "telegram-desktop"
      "tmux"
      "weechat"
+     "xfd"
+     "xfontsel"
+     "xlsfonts"
      "xterm"
      "yt-dlp")))
 

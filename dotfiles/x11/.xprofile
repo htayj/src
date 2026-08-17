@@ -14,9 +14,26 @@ for font_dir in "$font_root/digital/bdf" "$font_root/digital/pcf" "$font_root/un
     xset -fp "$font_dir" >/dev/null 2>&1 || true
     xset +fp "$font_dir"
 done
+
+# Bitmap fonts from the Guix home profile (CADR, Genera, DEC). The profile
+# exposes each font as a symlink, and the intermediate fonts-dir union is
+# symlinked too, so Xorg rejects both. Resolve each fonts.dir to the real
+# package output, which holds regular files, and add the deduplicated set.
+profile_fonts="$HOME/.guix-home/profile/share/fonts"
+if [ -d "$profile_fonts" ]; then
+    find -L "$profile_fonts" -name fonts.dir -print 2>/dev/null \
+        | while read -r index; do readlink -f "$(dirname "$index")/$(head -2 "$index" | tail -1 | cut -d' ' -f1)"; done \
+        | xargs -r -n1 dirname 2>/dev/null | sort -u \
+        | while read -r font_dir; do
+            [ -d "$font_dir" ] || continue
+            xset -fp "$font_dir" >/dev/null 2>&1 || true
+            xset +fp "$font_dir" >/dev/null 2>&1 || true
+        done
+fi
+
 xset fp rehash >/dev/null 2>&1 || true
 xsetroot -cursor_name left_ptr
-unset font_dir font_root
+unset font_dir font_root profile_fonts
 
 # User-level XKB layout converted from ~/.Xmodmap. This keeps the Space Cadet
 # Greek/APL layer on the old Mode_switch key and the top/math layer on the old
