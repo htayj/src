@@ -152,6 +152,7 @@
   (specifications->packages
    '("kanata"
      "age"
+     "jq"
      "sops"
      "gnupg"
       "stumpish"
