@@ -10,12 +10,17 @@
 
 (define %workstation-home-packages
   (specifications->packages
-   '("calibre"
+   '("cadr-fonts-latin"
+     "cadr-fonts-symbols"
+     "calibre"
      "curl"
+     "dec-fonts"
      "dunst"
      "emacs"
      "firefox"
      "font-unscii"
+     "genera-fonts-latin"
+     "genera-fonts-symbols"
      "git"
      "github-cli"
      "imagemagick"
