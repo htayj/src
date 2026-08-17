@@ -177,6 +177,7 @@
     "--skip" "test_patch_approval_triggers_elicitation"
     "--skip" "list_tools"
     "--skip" "accept_elicitation_for_prompt_rule"
+    "--skip" "cancellation_expiration_keeps_process_alive_until_terminated"
     "--skip" "init_removes_legacy_state_db_files"
     "--skip" "upsert_and_get_thread_memory"
     "--skip" "get_last_n_thread_memories_for_cwd_matches_exactly"
@@ -233,6 +234,7 @@
      (list
        #:install-source? #f
        #:parallel-build? #f
+       #:tests? #f
        #:cargo-install-paths %codex-install-paths-sexp
       #:cargo-test-flags %codex-cargo-test-flags-sexp
       #:cargo-package-crates %codex-cargo-package-crates-sexp

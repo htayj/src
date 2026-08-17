@@ -37,6 +37,20 @@ test -d /sys/firmware/efi && echo "UEFI boot confirmed"
 
 Do not continue if these UUIDs differ from `config-k8-plus.scm`.
 
+## Deferred privileged completion
+
+Run the bounded administrative script after reviewing its `--check` output:
+
+```sh
+~/src/guix-config/deferred-basedbox-admin.sh --check
+~/src/guix-config/deferred-basedbox-admin.sh
+```
+
+It reconfigures the pending `input` group membership, archives and disables
+the Microsoft EFI loader, removes only the matching Windows NVRAM entry, and
+records before/after evidence under `~/basedbox-admin-<timestamp>/`. Log out
+and back in, or reboot, afterward so Kanata inherits the new group.
+
 ## Stage and validate
 
 Copy `config-k8-plus.scm` and the complete `guix-config` directory to `/home/tay/src` on `basedbox`. Install the shared channel configuration for `tay`:
@@ -63,7 +77,7 @@ Evaluate both configurations before activating either one:
 
 ```sh
 guix system build --dry-run ~/src/config-k8-plus.scm
-guix home build --dry-run ~/src/guix-config/home-configuration.scm
+guix home build --dry-run ~/src/guix-config/home-workstation-configuration.scm
 ```
 
 Both commands must evaluate successfully before activation.
@@ -86,10 +100,11 @@ Apply the shared Home configuration as `tay`, explicitly including Nonguix until
 ```sh
 guix home reconfigure \
   --substitute-urls="https://substitutes.nonguix.org https://bordeaux.guix.gnu.org https://ci.guix.gnu.org" \
-  ~/src/guix-config/home-configuration.scm
+  ~/src/guix-config/home-workstation-configuration.scm
 ```
 
-The Home configuration builds the local `codex-latest` package and a large package set, so this can take considerably longer than its dry-run.
+The workstation Home configuration extends the tested core profile. Codex is
+installed separately with npm and is not built from source by Guix Home.
 
 ## Activate the system
 

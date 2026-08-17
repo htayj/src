@@ -22,6 +22,8 @@ for stumpish in \
     "$HOME/.stumpwm.d/modules/util/stumpish/stumpish" \
     "$HOME/.stumpwm.d.immutable/modules/util/stumpish/stumpish" \
     "$HOME/.emacs.d/straight/repos/stumpwm-contrib/util/stumpish/stumpish" \
+    "$HOME/.guix-home/profile/bin/stumpish" \
+    /run/current-system/profile/bin/stumpish \
     /usr/share/stumpwm/contrib/util/stumpish/stumpish
  do
     if [ -x "$stumpish" ]; then

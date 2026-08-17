@@ -15,6 +15,29 @@ Install one package:
 stow -d ~/src/dotfiles -t ~ emacs
 ```
 
+On a new Guix host, the small core Home configuration provisions the shared
+files without building the full application profile:
+
+```sh
+guix home reconfigure -L ~/src/guix-config/modules \
+  ~/src/guix-config/home-core-configuration.scm
+```
+
+Once bootstrap is complete, apply the full workstation profile:
+
+```sh
+guix time-machine -C ~/src/guix-config/channels.scm -- home reconfigure \
+  -L ~/src/guix-config/modules \
+  ~/src/guix-config/home-workstation-configuration.scm
+```
+
+`guix-config/modules/tay/home-common.scm` owns shared Guile values such as
+`%primary-font`, generates `~/.stumpwmrc`, and replaces the Fedora systemd
+Kanata units with user Shepherd services. The full Home configuration extends
+the same packages and services with the workstation application profile. The
+older `home-configuration.scm` remains available as a legacy reference but is
+not the active configuration target.
+
 Managed packages:
 
 - `home`: shell and top-level user config files.

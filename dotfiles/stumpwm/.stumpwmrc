@@ -4,12 +4,25 @@
 
 (in-package :stumpwm)
 
+(defvar *tay-primary-font-family* "unscii"
+  "Primary font family injected by Guix Home when available.")
+
 ;; Ensure Quicklisp is available before any ql:quickload forms below.
 (unless (find-package :ql)
   (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp"
                                          (user-homedir-pathname))))
     (when (probe-file quicklisp-init)
       (load quicklisp-init))))
+
+(require :asdf)
+(let ((guix-sbcl-directory
+        (merge-pathnames ".guix-home/profile/share/common-lisp/sbcl/"
+                         (user-homedir-pathname))))
+  (when (probe-file guix-sbcl-directory)
+    (asdf:initialize-source-registry
+     `(:source-registry (:tree ,(namestring guix-sbcl-directory))
+                         :inherit-configuration))
+    (init-load-path guix-sbcl-directory)))
 
 ;; Per-host fragment — sourced early so it can set *module-dir* and other
 ;; load-path tweaks before the rest of this file calls (load-module ...).
@@ -91,6 +104,10 @@
                     (tay-completion-object-string object)))
             objects)))
 
+(unless (fboundp 'tay-original-completing-read)
+  (setf (symbol-function 'tay-original-completing-read)
+        (symbol-function 'completing-read)))
+
 (defun tay-menu-completing-read (screen prompt completions
                                  &key (initial-input "") require-match command-labels)
   "Read a completion using StumpWM's vertical filtering menu.
@@ -112,10 +129,6 @@ TAB-style dynamic expansion keeps working."
       (tay-original-completing-read screen prompt completions
                                     :initial-input initial-input
                                     :require-match require-match)))
-
-(unless (fboundp 'tay-original-completing-read)
-  (setf (symbol-function 'tay-original-completing-read)
-        (symbol-function 'completing-read)))
 
 (defun completing-read (screen prompt completions &key (initial-input "") require-match)
   "Use vertical completion menus for static completion prompts."
@@ -420,12 +433,6 @@ hidden behind the previously displayed window."
 (define-key *top-map* (kbd "A-(") "gmove nine")
 (define-key *top-map* (kbd "A-)") "gmove Default")
 
-;;; application launcher — native fuzzy menu over .desktop entries.
-;;; The app-launcher command is defined further down, after the
-;;; desktop-entry module is loaded (the command body references that
-;;; package, so it must be read after the package exists).
-(define-key *top-map* (kbd "A-SPC") "app-launcher")
-
 ;;; mouseover focus
 (setf *mouse-focus-policy* :click)
 
@@ -438,10 +445,13 @@ hidden behind the previously displayed window."
 
 ;; modules
 (list-modules)
-(ql:quickload "cl-diskspace")
+(asdf:load-system "cl-diskspace")
 ;; on GNU/linux only
-(ql:quickload "cl-mount-info")
-(load-module "mpd")
+(asdf:load-system "cl-mount-info")
+(defparameter *tay-mpd-enabled-p*
+  (when (find-module "mpd")
+    (load-module "mpd")
+    t))
 (load-module "hostname")
 (load-module "disk")
 (load-module "mem")
@@ -450,83 +460,27 @@ hidden behind the previously displayed window."
 ;; before the module itself.  add-mode-line-hooks installs the
 ;; new-mode-line-hook so a tray is attached automatically whenever a
 ;; mode-line is created (including the one toggled on a few lines below).
-(ql:quickload "xembed")
+(asdf:load-system "xembed")
 (load-module "stumptray")
 (stumptray:add-mode-line-hooks)
 
-;; Application launcher data source.  The desktop-entry module parses
-;; freedesktop .desktop files (py-configparser + cl-ppcre are its deps);
-;; quickload those first so load-module can resolve the system, then prime
-;; the entry list once at startup so the first A-SPC opens instantly.
-(ql:quickload '("py-configparser" "cl-ppcre"))
-(load-module "desktop-entry")
-;; init-entry-list parses every .desktop file with no per-file guard, so a
-;; single malformed entry would abort the whole rc load.  Swallow that here
-;; (the launcher re-scans lazily if the list ends up empty).
-(ignore-errors (desktop-entry:init-entry-list))
-
-(defvar *app-launcher-history* nil
-  "Application names launched via app-launcher, most-recent first.")
-(defparameter *app-launcher-history-length* 10
-  "How many recent launches app-launcher pins at the top of its menu.")
-
-(defcommand app-launcher () ()
-  "Fuzzy-pick a desktop application from the native menu and launch it.
-Recently launched apps are pinned to the top in most-recent-first order,
-with the most recent pre-selected as the default; start typing to filter
-the full list.  Replaces the old `rofi -show drun' binding on A-SPC.
-Re-scans the .desktop entry list only if it is empty; reinit StumpWM to
-pick up newly installed applications."
-  (when (null desktop-entry:*entry-list*)
-    (desktop-entry:init-entry-list))
-  (let* ((*menu-maximum-height* *tay-completion-menu-height*)
-         (sorted
-          (sort
-           (loop for entry in desktop-entry:*entry-list*
-                 for name = (desktop-entry::name entry)
-                 when (and name
-                           (equal "Application" (desktop-entry::entry-type entry))
-                           (not (desktop-entry::no-display entry))
-                           (not (desktop-entry::only-show-in entry)))
-                   collect (list name entry))
-           #'string-lessp :key #'first))
-         ;; Pin recently launched apps to the top, most-recent first; the
-         ;; remainder stays alphabetical.  A history name whose entry has
-         ;; since vanished (app uninstalled) is simply skipped.
-         (recent (loop for name in *app-launcher-history*
-                       for hit = (find name sorted :key #'first :test #'string=)
-                       when hit collect hit))
-         (entries (append recent
-                          (remove-if (lambda (e)
-                                       (member (first e) *app-launcher-history*
-                                               :test #'string=))
-                                     sorted)))
-         ;; Index 0 is the most-recent launch (or, with no history, the
-         ;; alphabetical head) — pre-select it as the default.
-         (selection (and entries
-                         (select-from-menu (current-screen) entries "Launch:" 0))))
-    (cond
-      ((null entries) (message "No applications found."))
-      (selection
-       (let ((name (first selection))
-             (entry (second selection)))
-         (setf *app-launcher-history*
-               (cons name (remove name *app-launcher-history* :test #'string=)))
-         (when (> (length *app-launcher-history*) *app-launcher-history-length*)
-           (setf *app-launcher-history*
-                 (subseq *app-launcher-history* 0 *app-launcher-history-length*)))
-         (if (desktop-entry::terminal entry)
-             (run-shell-command (format nil "~A -e ~A"
-                                        *terminal-program*
-                                        (desktop-entry::command-line entry)))
-             (run-shell-command (desktop-entry::command-line entry)))))
-      (t (throw 'error :abort)))))
+(defparameter *tay-desktop-entry-enabled-p*
+  (when (find-module "desktop-entry")
+    (asdf:load-system "py-configparser")
+    (asdf:load-system "cl-ppcre")
+    (load-module "desktop-entry")
+    (load (merge-pathnames ".stumpwm.d/desktop-entry-launcher.lisp"
+                           (user-homedir-pathname)))
+    t))
+(unless *tay-desktop-entry-enabled-p*
+  (define-key *top-map* (kbd "A-SPC") "exec"))
 ;; (install-modules)
 ;; (load-path)
 ;;; connect to mpd
                                         ;(stumpwm:run-commands "mpd-connect")
 
-(define-key *top-map* (kbd "A-M") '*mpd-map*)
+(when *tay-mpd-enabled-p*
+  (define-key *top-map* (kbd "A-M") '*mpd-map*))
 
 
 (setf *disk-usage-paths* (list "/" "/mnt/nas"))
@@ -538,7 +492,12 @@ pick up newly installed applications."
       *mode-line-border-width* 1
       *mode-line-pad-x* 1
       *mode-line-pad-y* 1)
-(setf *screen-mode-line-format* (list "[" '(:eval (RUN-SHELL-COMMAND "date '+%F %H:%M'|tr -d [:cntrl:]" T)) "] [%n]  %w ^> [%D][%M][%m] [tay@%h] %T"))
+(setf *screen-mode-line-format*
+      (list "["
+            '(:eval (RUN-SHELL-COMMAND "date '+%F %H:%M'|tr -d [:cntrl:]" T))
+            "] [%n]  %w ^> "
+            (if *tay-mpd-enabled-p* "[%D][%M][%m]" "[%D]")
+            " [tay@%h] %T"))
 
 ;; Turn on the mode-line for every head so the %T tray placeholder above
 ;; actually has a window to attach to.  new-mode-line-hook (registered
@@ -578,9 +537,11 @@ pick up newly installed applications."
 (defparameter *tay-digital-font-dir*
   (namestring (merge-pathnames ".local/share/fonts/digital/pcf/"
                                (user-homedir-pathname))))
-(defparameter *tay-unscii-core-fonts*
-  '("-unscii-unscii-medium-r-normal-full-16-160-75-75-c-80-iso10646-1"
-    "-*-unscii-medium-r-*-full-16-*-*-*-*-*-iso10646-*"))
+(defparameter *tay-primary-core-fonts*
+  (list (format nil "-~A-~A-medium-r-normal-full-16-160-75-75-c-80-iso10646-1"
+                *tay-primary-font-family* *tay-primary-font-family*)
+        (format nil "-*-~A-medium-r-*-full-16-*-*-*-*-*-iso10646-*"
+                *tay-primary-font-family*)))
 (defparameter *tay-fallback-core-font*
   "-digital-vt220-medium-r-normal-80col-20-200-75-75-*-100-iso10646-1")
 
@@ -602,7 +563,7 @@ pick up newly installed applications."
 
 (tay-add-core-font-dir *tay-digital-font-dir*)
 (tay-add-core-font-dir *tay-unscii-font-dir*)
-(unless (some #'tay-try-set-font *tay-unscii-core-fonts*)
+(unless (some #'tay-try-set-font *tay-primary-core-fonts*)
   (tay-try-set-font *tay-fallback-core-font*))
 
 

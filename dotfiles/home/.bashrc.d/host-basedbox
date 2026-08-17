@@ -1,0 +1,5 @@
+# Host-specific bash fragment for basedbox.
+# Sourced by ~/.bashrc only when $HOSTNAME == basedbox.
+
+alias rbs='sudo timeout 2h guix system reconfigure ~/src/config-k8-plus.scm'
+alias rbh='timeout 4h guix time-machine -C ~/src/guix-config/channels.scm -- home reconfigure -L ~/src/guix-config/modules ~/src/guix-config/home-workstation-configuration.scm'

@@ -1,5 +1,5 @@
 # Runtime/generated Sunshine files. Do not commit credentials or logs.
-credentials/
+credentials/cakey.pem
 sunshine.log
 sunshine_state.json
 *.log

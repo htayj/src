@@ -1,0 +1,7 @@
+# basedbox uses the system StumpWM package and the shared X session setup.
+
+if command -v dunst >/dev/null 2>&1; then
+    dunst &
+fi
+
+exec stumpwm

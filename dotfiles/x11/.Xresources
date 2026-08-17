@@ -7,7 +7,7 @@
 ! xterm*wideChars: true
 
 ! ========= alternative fonts =========
-*fontMenu*fontdefault*Label: unscii-full
+*fontMenu*fontdefault*Label: UNSCII 16
 ! Prefer Xft/fontconfig so package-manager-installed OTF/TTF fonts are usable
 ! without manually adding legacy core-X font paths with `xset fp`.
 XTerm*renderFont: true
@@ -22,11 +22,11 @@ XTerm*faceName: unscii:style=16-full:pixelsize=16:antialias=false
 *fontMenu*font1*Label: vt220_40pt
 *VT100.font1: -digital-vt220-medium-r-normal-80col-40-*-*-*-*-*-iso10646-1
 
-*fontMenu*font2*Label: unifont
-*VT100.font2: -gnu-unifont-medium-r-*-*-16-*-*-*-*-*-iso10646-*
+*fontMenu*font2*Label: DEC VT220 80col 10x20
+*VT100.font2: -digital-vt220-medium-r-normal-80col-20-200-75-75-c-100-iso10646-1
 
-*fontMenu*font3*Label: vt220_20pt
-*VT100.font3: -digital-vt220-medium-r-normal-80col-20-200-75-75-*-100-iso10646-1
+*fontMenu*font3*Label: unifont
+*VT100.font3: -gnu-unifont-medium-r-*-*-16-*-*-*-*-*-iso10646-*
 *fontMenu*font4*Label: unscii-tall
 *VT100.font4: -*-unscii-medium-r-normal-tall-16-*-*-*-*-*-iso10646-*
 *fontMenu*font5*Label: unscii-square

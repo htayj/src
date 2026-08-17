@@ -16,15 +16,13 @@
              (gnu services)
              (guix gexp)
              (gnu home services shells)
-             (ice-9 ftw))
-
-(load (string-append (dirname (current-filename))
-                     "/packages/codex-latest.scm"))
+             (ice-9 ftw)
+             (tay home-common))
 
 (home-environment
   ;; Below is the list of packages that will show up in your
   ;; Home profile, under ~/.guix-home/profile.
- (packages (append (list codex-latest)
+ (packages (append %core-home-packages
                    (specifications->packages (list "steam"
 																					 "tmux"
 																					 "bind:utils"
@@ -37,7 +35,6 @@
                                            "htop"
                                            "yt-dlp"
 																					 "kmonad"
-																					 "kanata"
 																					 "xev"
 																					 "setxkbmap"
 																					 "weechat"
@@ -148,31 +145,11 @@
 																					 "texlive-texinfo"
 																					 "autorandr"
 																					 "dvdbackup"
-                                           "acl"))))
+																			 "acl"))))
 
   ;; Below is the list of Home services.  To search for available
   ;; services, run 'guix home search KEYWORD' in a terminal.
   (services
-   (append (list
-            (service home-bash-service-type
-                     (home-bash-configuration
-                      (guix-defaults? #t)
-                      (aliases '(("grep" . "grep --color=auto")
-                                 ("ll" . "ls -l")
-																 ("rbh" . "guix home reconfigure ~/src/guix-config/home-configuration.scm")
-																 ("rbs" . "sudo guix system reconfigure ~/src/config.scm")
-																 ("ns" . "nix search nixpkgs --extra-experimental-features flakes --extra-experimental-features nix-command")
-																 ("npi" . "NIXPKGS_ALLOW_UNFREE=1 nix profile install  --extra-experimental-features flakes --extra-experimental-features nix-command --impure ; echo nixpkgs#pkg")
-                                 ("ls" . "ls -p --color=auto")))
-                      (bashrc (list (local-file
-                                     "/home/tay/src/guix-config/.bashrc"
-                                     "bashrc")))
-                      (bash-profile (list (local-file
-                                           "/home/tay/src/guix-config/.bash_profile"
-                                           "bash_profile")))))
-						(service home-syncthing-service-type)
-            (service home-dotfiles-service-type
-                     (home-dotfiles-configuration
-                      (directories '("./dotfiles")))))
-           
-           %base-home-services)))
+   (append %core-home-services
+            (list (service home-syncthing-service-type))
+            %base-home-services)))
