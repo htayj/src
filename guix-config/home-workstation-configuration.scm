@@ -17,6 +17,7 @@
      "claude-code"
      "curl"
      "dec-fonts"
+     "direnv"
      "dunst"
      "emacs"
      "firefox"
