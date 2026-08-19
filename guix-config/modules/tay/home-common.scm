@@ -259,6 +259,13 @@
                 "/home/\\.bashrc$"
                  "/home/\\.bash_profile$"
                  "/stumpwm/\\.stumpwmrc$"
+                 ;; Codex rewrites this file in place when you trust a
+                 ;; project or change a setting, and it deliberately follows
+                 ;; symlinks to their final target before writing. A store
+                 ;; symlink therefore makes it try to write into /gnu/store
+                 ;; and fail. Leave it as a real file under ~/.codex; the
+                 ;; tracked copy in dotfiles is the seed/backup.
+                 "/home/\\.codex/config\\.toml$"
                  ;; These paths are owned by native Guix Home services.
                  "/config/\\.config/fontconfig/fonts\\.conf$"
                  "/config/\\.config/kitty/kitty\\.conf$"
