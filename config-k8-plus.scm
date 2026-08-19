@@ -11,7 +11,7 @@
               ((guix licenses) #:prefix license:)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-(use-service-modules containers cups dbus desktop networking nfs nix shepherd ssh xorg)
+(use-service-modules containers cups dbus desktop linux networking nfs nix shepherd ssh xorg)
 
 (use-package-modules package-management)
 
@@ -173,6 +173,63 @@ installs Tailscale's official static Linux client and daemon binaries.")
                                       "/sbin/ethtool")
                         "--change" "enp3s0" "wol" "g"))))))
 
+;; earlyoom kills a chosen process while memory is merely low, instead of
+;; letting the kernel OOM killer freeze the machine first and then pick a
+;; victim by its own heuristics.
+;;
+;; earlyoom matches on the `comm' name only: /proc/PID/comm, which the kernel
+;; truncates to 15 bytes. That is why several patterns below are cut short
+;; ("Isolated Web Co", "Privileged Cont") and why full command lines cannot
+;; be matched. --prefer adds 300 to a process's oom_score and --avoid
+;; subtracts 300; neither is absolute, so a protected process can still be
+;; killed if it is the only thing left worth killing.
+;;
+;; Preferred: Firefox (parent and its content/utility children) and the heavy,
+;; restartable parts of a dev loop -- node/npm, bundlers, test runners,
+;; compilers, and language servers.
+;;
+;; Avoided: anything whose death loses session state or locks you out of the
+;; machine -- X, the window manager, GDM, tmux, the Shepherd/D-Bus/elogind
+;; plumbing, kanata (keyboard!), sshd, and the agentic coding tools.
+;;
+;; The agentic tools are protected but the processes they spawn are not: `pi',
+;; `claude', and `codex' are avoided, while the node/npm processes they launch
+;; fall under --prefer. `MainThread' is avoided because that is the comm name
+;; of codex itself, not of a child it spawned.
+(define %earlyoom-prefer-regexp
+  (string-append
+   "^(\\.firefox-real|firefox|Web Content|Isolated Web Co|Isolated Servic"
+   "|Isolated Conten|WebExtensions|Privileged Cont|RDD Process|Utility Process"
+   "|Socket Process|GPU Process|chrome_crashpad|chrome|chromium"
+   "|\\.chromium-real|electron"
+   "|node|npm|npm exec .*|esbuild|vite|webpack|rollup|tsserver|typescript-lan"
+   "|eslint|cargo|rustc|cc1|cc1plus|gcc|g\\+\\+|clang|clang\\+\\+|lld|make"
+   "|ninja|cmake|java|gradle|python3?|pytest|jest|vitest|playwright)$"))
+
+(define %earlyoom-avoid-regexp
+  (string-append
+   "^(X|Xorg|stumpwm|sway|river|Hyprland|wayfire|labwc|kwin_wayland"
+   "|gnome-shell|weston)$"
+   "|^\\.gdm"
+   "|^tmux: (server|client)$"
+   "|^(shepherd|dbus-daemon|kanata|elogind|sshd|pipewire|wireplumber"
+   "|pulseaudio|ksecretd|kwalletd6)$"
+   "|^(pi|claude|codex|opencode|aider|codex-code-mode|MainThread)$"
+   "|^\\.emacs"))
+
+(define %earlyoom-configuration
+  (earlyoom-configuration
+   ;; Act while 8% of RAM and 5% of swap remain. This box has ~25G of RAM and
+   ;; a small 3.7G swap, so 8% is roughly 2G: enough headroom to kill
+   ;; something large before the machine starts thrashing.
+   (minimum-available-memory 8)
+   (minimum-free-swap 5)
+   (prefer-regexp %earlyoom-prefer-regexp)
+   (avoid-regexp %earlyoom-avoid-regexp)
+   ;; Log a memory report every 10 minutes to /var/log/earlyoom.log, so there
+   ;; is some history to look at after a surprise kill.
+   (memory-report-interval 600)))
+
 (define %my-os
   (operating-system
     (kernel linux)
@@ -298,6 +355,7 @@ installs Tailscale's official static Linux client and daemon binaries.")
              shepherd-root-service-type
              (list %wake-on-lan-service))
             (simple-service 'blueman dbus-root-service-type (list blueman))
+            (service earlyoom-service-type %earlyoom-configuration)
             (udev-rules-service
              'uinput
              (udev-rule
