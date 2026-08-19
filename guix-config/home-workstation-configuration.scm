@@ -49,10 +49,19 @@
      "tmux"
      "vim"
      "weechat"
+     "xdotool"
+     "xdpyinfo"
      "xfd"
      "xfontsel"
+     "xlsclients"
      "xlsfonts"
+     "xprop"
      "xterm"
+     ;; Provides the xvfb-run wrapper; it hardcodes the store path to the
+     ;; Xvfb server from its xorg-server input, so no separate package is
+     ;; needed. Guix has no plain "xvfb" package.
+     "xvfb-run"
+     "xwininfo"
      "yt-dlp")))
 
 (define %mpd-service
