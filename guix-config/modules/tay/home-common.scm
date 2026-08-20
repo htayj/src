@@ -266,6 +266,12 @@
                  ;; and fail. Leave it as a real file under ~/.codex; the
                  ;; tracked copy in dotfiles is the seed/backup.
                  "/home/\\.codex/config\\.toml$"
+                 ;; Deployed whole-directory below instead. ASDF resolves a
+                 ;; system's components relative to the truename of its .asd,
+                 ;; and per-file store symlinks resolve straight into
+                 ;; /gnu/store, so it would look for package.lisp in
+                 ;; /gnu/store/ and fail.
+                 "/stumpwm/\\.stumpwm\\.d/modules/.*"
                  ;; These paths are owned by native Guix Home services.
                  "/config/\\.config/fontconfig/fonts\\.conf$"
                  "/config/\\.config/kitty/kitty\\.conf$"
@@ -302,6 +308,15 @@
    ;;
    ;; The helper is a no-op when no X display is reachable, so this stays
    ;; safe on headless reconfigures.
+   ;; Vendored StumpWM modules, deployed as whole directories so ASDF can
+   ;; resolve each system's components next to its .asd file.
+   (simple-service
+    'vendored-stumpwm-modules
+    home-files-service-type
+    `((".stumpwm.d/modules/desktop-entry"
+       ,(local-file (dotfile "stumpwm/.stumpwm.d/modules/desktop-entry")
+                    "stumpwm-desktop-entry"
+                    #:recursive? #t))))
    (simple-service
     'reload-spacecadet-xkb
     home-activation-service-type

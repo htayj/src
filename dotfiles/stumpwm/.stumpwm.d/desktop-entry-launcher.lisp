@@ -2,6 +2,22 @@
 
 (in-package :stumpwm)
 
+;; The desktop-entry module hardcodes *entry-paths* to /usr/share/applications
+;; and ~/.local/share/applications. Neither is where Guix keeps desktop files:
+;; the first does not exist at all, so the launcher would offer only the
+;; handful of entries under ~/.local. Derive the search path from
+;; XDG_DATA_DIRS instead, which is what every other launcher uses, and keep
+;; ~/.local/share/applications for user-local overrides.
+(setf desktop-entry:*entry-paths*
+      (remove-duplicates
+       (append
+        (loop for dir in (split-string (or (getenv "XDG_DATA_DIRS") "") ":")
+              when (plusp (length dir))
+                collect (pathname (concatenate 'string dir "/applications/")))
+        (list (merge-pathnames ".local/share/applications/"
+                               (user-homedir-pathname))))
+       :test #'equal))
+
 (ignore-errors (desktop-entry:init-entry-list))
 
 (defvar *app-launcher-history* nil

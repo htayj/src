@@ -24,6 +24,21 @@
                          :inherit-configuration))
     (init-load-path guix-sbcl-directory)))
 
+;; Locally vendored StumpWM modules.
+;;
+;; Guix packages many stumpwm-contrib modules as sbcl-stumpwm-*, but not
+;; desktop-entry, so find-module returns NIL and A-SPC silently falls back to
+;; the raw shell `exec' prompt instead of the desktop-file app-launcher.
+;; Vendor the module here and register it the same way as the Guix tree.
+(let ((local-module-directory
+        (merge-pathnames ".stumpwm.d/modules/"
+                         (user-homedir-pathname))))
+  (when (probe-file local-module-directory)
+    (asdf:initialize-source-registry
+     `(:source-registry (:tree ,(namestring local-module-directory))
+                         :inherit-configuration))
+    (init-load-path local-module-directory)))
+
 ;; Per-host fragment — sourced early so it can set *module-dir* and other
 ;; load-path tweaks before the rest of this file calls (load-module ...).
 (let ((host-file (merge-pathnames
