@@ -1,6 +1,7 @@
 (use-modules (gnu)
              (gnu packages cups)
              (gnu packages networking)
+             (gnu packages security-token)
              (gnu system accounts)
              (guix build-system copy)
              (guix download)
@@ -11,7 +12,8 @@
               ((guix licenses) #:prefix license:)
              (nongnu packages linux)
              (nongnu system linux-initrd))
-(use-service-modules containers cups dbus desktop linux networking nfs nix shepherd ssh xorg)
+(use-service-modules containers cups dbus desktop linux networking nfs nix
+                     security-token shepherd ssh xorg)
 
 (use-package-modules package-management)
 
@@ -356,6 +358,20 @@ installs Tailscale's official static Linux client and daemon binaries.")
              (list %wake-on-lan-service))
             (simple-service 'blueman dbus-root-service-type (list blueman))
             (service earlyoom-service-type %earlyoom-configuration)
+            ;; Smart-card daemon, needed for the CCID side of a YubiKey (PIV,
+            ;; OpenPGP, OATH via ykman) and for the USB NFC reader. Plain
+            ;; FIDO2/WebAuthn does not need this: it speaks HID directly and
+            ;; already works via Guix's own 60-fido-id.rules.
+            ;;
+            ;; This only makes the hardware usable. Nothing here wires a
+            ;; YubiKey into login, sudo, or LUKS; doing that would mean adding
+            ;; pam-u2f to the PAM stack, which is deliberately left alone.
+            (service pcscd-service-type)
+            ;; Device access for the non-FIDO YubiKey interfaces. The rules
+            ;; use TAG+="uaccess", so elogind grants the logged-in user access
+            ;; without any group membership.
+            (udev-rules-service 'fido2 libfido2)
+            (udev-rules-service 'yubikey yubikey-personalization)
             (udev-rules-service
              'uinput
              (udev-rule
