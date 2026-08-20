@@ -1,6 +1,8 @@
 (use-modules (gnu home)
              (gnu home services)
+             (gnu home services desktop)
              (gnu home services shepherd)
+             (gnu home services sound)
              (gnu home services syncthing)
              (gnu home services xdg)
              (gnu packages)
@@ -12,6 +14,10 @@
 (define %workstation-home-packages
   (specifications->packages
    '("binutils"
+     ;; btmon, bluetoothctl, l2ping. Note that BlueZ 5.79 no longer ships
+     ;; hcitool, hciconfig or btmgmt; they were removed upstream, so btmon
+     ;; is the supported way to observe link quality and RSSI.
+     "bluez"
      "cadr-fonts-latin"
      "cadr-fonts-symbols"
      "calibre"
@@ -49,6 +55,12 @@
      "pam-u2f"
      "pavucontrol"
      "pcsc-tools"
+     ;; For the client tools only: pactl, pacmd, pa-info. PipeWire ships
+     ;; pw-* utilities but no pactl, and pavucontrol and various scripts
+     ;; still expect it. The pulseaudio *daemon* is not started; PipeWire's
+     ;; pipewire-pulse provides the server side, and having the binary on
+     ;; PATH does not autospawn it while a PulseAudio socket already exists.
+     "pulseaudio"
      "python-yubikey-manager"
      "remmina"
      "ripgrep"
@@ -219,6 +231,25 @@
  (services
   (append %core-home-services
            (list (service home-syncthing-service-type)
+                 ;; PipeWire replaces PulseAudio. enable-pulseaudio? starts
+                 ;; pipewire-pulse, so existing PulseAudio clients (pactl,
+                 ;; pavucontrol, browsers) keep working unchanged.
+                 ;;
+                 ;; The motivation is Bluetooth: PulseAudio 16.1 only offers
+                 ;; SBC, while PipeWire ships LDAC, AptX, AAC and Opus codecs
+                 ;; that negotiate bitrate down as signal weakens instead of
+                 ;; simply dropping out, and its bluez5 transport recovers
+                 ;; from A2DP errors that PulseAudio needed a manual profile
+                 ;; cycle to clear.
+                 ;;
+                 ;; pulseaudio must also be removed from the system profile
+                 ;; in config-k8-plus.scm, otherwise its autospawn competes
+                 ;; with PipeWire for the same devices.
+                 ;; PipeWire's shepherd service requires dbus. The X session
+                 ;; already starts a session bus, but shepherd needs one it
+                 ;; declares itself to order startup correctly.
+                 (service home-dbus-service-type)
+                 (service home-pipewire-service-type)
                  (simple-service 'workstation-daemons
                                  home-shepherd-service-type
                                  (list %mpd-service

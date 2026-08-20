@@ -291,6 +291,24 @@
     'generated-stumpwmrc
     home-files-service-type
     `((".stumpwmrc" ,(generated-stumpwmrc))))
+   ;; Re-apply the Space Cadet XKB keymap after every activation.
+   ;;
+   ;; Guix Home activation replaces ~/.config/xkb wholesale with new store
+   ;; symlinks, but the running X server keeps the keymap it compiled at
+   ;; session start. The files change underneath it and nothing reloads them,
+   ;; so after a reconfigure the layout silently reverts to stock us: RALT
+   ;; goes back to ISO_Level3_Shift (AltGr) instead of the Alt_L that the
+   ;; window manager binds, and Mod3/Mod5 no longer match the layout.
+   ;;
+   ;; The helper is a no-op when no X display is reachable, so this stays
+   ;; safe on headless reconfigures.
+   (simple-service
+    'reload-spacecadet-xkb
+    home-activation-service-type
+    #~(system*
+       #$(local-file (dotfile "keyboard/manna-cadet/reload-spacecadet-xkb.sh")
+                     "reload-spacecadet-xkb.sh"
+                     #:recursive? #t)))
    (simple-service
     'kanata
     home-shepherd-service-type

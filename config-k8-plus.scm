@@ -13,7 +13,7 @@
              (nongnu packages linux)
              (nongnu system linux-initrd))
 (use-service-modules containers cups dbus desktop linux networking nfs nix
-                     security-token shepherd ssh xorg)
+                     security-token shepherd sound ssh xorg)
 
 (use-package-modules package-management)
 
@@ -256,7 +256,11 @@ installs Tailscale's official static Linux client and daemon binaries.")
     (packages
      (append
         (list (specification->package "alsa-utils")
-              (specification->package "pulseaudio")
+              ;; No pulseaudio here on purpose. Audio is PipeWire, started by
+              ;; home-pipewire-service-type in the Home configuration, and its
+              ;; pipewire-pulse shim provides the PulseAudio interface. Adding
+              ;; pulseaudio back would put a competing autospawning daemon on
+              ;; PATH and it would race PipeWire for the sound devices.
               (specification->package "pavucontrol")
               (specification->package "bluez")
               (specification->package "xrandr")
@@ -381,6 +385,21 @@ installs Tailscale's official static Linux client and daemon binaries.")
              (xorg-configuration (keyboard-layout keyboard-layout))))
        (modify-services
         %desktop-services
+        ;; %desktop-services includes pulseaudio-service-type, which sets
+        ;; PULSE_CLIENTCONFIG=/etc/pulse/client.conf. That environment
+        ;; variable overrides ~/.config/pulse/client.conf entirely, so the
+        ;; autospawn=no written by home-pipewire-service-type is ignored and
+        ;; any PulseAudio client (mpd, blueman, browsers) silently respawns
+        ;; the old daemon, which then holds /run/user/1000/pulse/native and
+        ;; makes pipewire-pulse fail to bind it.
+        ;;
+        ;; Audio is PipeWire; disable autospawn at the system level so the
+        ;; PulseAudio daemon is never started behind PipeWire's back.
+        (pulseaudio-service-type
+         config =>
+         (pulseaudio-configuration
+          (inherit config)
+          (client-conf '((autospawn . no)))))
         (elogind-service-type
          config =>
          (elogind-configuration
