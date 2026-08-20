@@ -32,11 +32,22 @@
      "kitty-bitmap"
      "libnotify"
      "kwallet"
+     ;; YubiKey / security-key tooling. The system config runs pcscd and
+     ;; installs the udev rules; these are only the user-facing commands.
+     ;;   ykman             - configure the key (FIDO2, PIV, OATH, OTP)
+     ;;   fido2-token       - low-level FIDO2, from libfido2
+     ;;   pamu2fcfg         - enroll a key for PAM, if that is ever wanted
+     ;;   opensc/pcsc-tools - smart-card debugging, including the NFC reader
+     "libfido2"
      "mpd-mpc"
      "mpd"
      "opencode"
      "opencode-desktop"
+     "opensc"
+     "pam-u2f"
      "pavucontrol"
+     "pcsc-tools"
+     "python-yubikey-manager"
      "remmina"
      "ripgrep"
      "rofi"
@@ -62,7 +73,8 @@
      ;; needed. Guix has no plain "xvfb" package.
      "xvfb-run"
      "xwininfo"
-     "yt-dlp")))
+     "yt-dlp"
+     "yubico-piv-tool")))
 
 (define %mpd-service
   (shepherd-service
