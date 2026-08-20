@@ -25,6 +25,7 @@
      "curl"
      "dec-fonts"
      "direnv"
+     "dmenu"
      "dunst"
      "emacs"
      "firefox"
