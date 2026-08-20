@@ -108,26 +108,30 @@ installed separately with npm and is not built from source by Guix Home.
 
 ## Activate the system
 
-Install the same channels for root. These commands require an interactive `sudo` password:
+Use the same pinned Guix profile that evaluated the Home configuration.  The
+profile contains immutable store links, so root can execute it directly; a
+second root-owned pull is unnecessary.  Re-evaluate, activate the generation,
+and reboot:
 
 ```sh
-sudo mkdir -p /root/.config/guix
-sudo cp ~/.config/guix/channels.scm /root/.config/guix/channels.scm
-sudo -i guix pull -C /root/.config/guix/channels.scm
-```
-
-Re-evaluate with root's Guix, activate the generation, and reboot:
-
-```sh
-sudo -i /root/.config/guix/current/bin/guix system build --dry-run \
+sudo ~/.config/guix/current/bin/guix system build --dry-run \
   /home/tay/src/config-k8-plus.scm
-sudo -i /root/.config/guix/current/bin/guix system reconfigure \
+sudo ~/.config/guix/current/bin/guix system reconfigure \
   /home/tay/src/config-k8-plus.scm
 sync
 sudo reboot
 ```
 
-The `rbs` Home alias runs `sudo guix system reconfigure ~/src/config.scm`, which is basedserv's configuration. Do not use `rbs` on basedbox.
+After bootstrap, use `rbs` for System reconfiguration and `rbh` for Home.
+Both functions explicitly use `~/.config/guix/current/bin/guix`, avoiding
+sudo's restricted PATH and eliminating the need for `guix time-machine`.
+
+They are shell functions defined in `dotfiles/home/.bashrc.d/host-basedbox`,
+which `~/.bashrc` sources only when `$HOSTNAME` is `basedbox`, so they are
+not available on other hosts and are not visible to non-interactive shells.
+`rbs` targets `~/src/config-k8-plus.scm` and `rbh` targets
+`home-workstation-configuration.scm`; neither needs `--allow-downgrades`
+while the pulled channels are at or ahead of the running generation.
 
 ## Hardware acceptance checks
 
