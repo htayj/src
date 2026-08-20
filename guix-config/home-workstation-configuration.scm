@@ -11,7 +11,8 @@
 
 (define %workstation-home-packages
   (specifications->packages
-   '("cadr-fonts-latin"
+   '("binutils"
+     "cadr-fonts-latin"
      "cadr-fonts-symbols"
      "calibre"
      "claude-code"
@@ -44,6 +45,7 @@
      "opencode"
      "opencode-desktop"
      "opensc"
+     "openssl"
      "pam-u2f"
      "pavucontrol"
      "pcsc-tools"
@@ -58,6 +60,7 @@
      "syncthing-gtk"
      "telegram-desktop"
      "tmux"
+     "unzip"
      "vim"
      "weechat"
      "xdotool"
@@ -74,7 +77,8 @@
      "xvfb-run"
      "xwininfo"
      "yt-dlp"
-     "yubico-piv-tool")))
+     "yubico-piv-tool"
+     "zip")))
 
 (define %mpd-service
   (shepherd-service
