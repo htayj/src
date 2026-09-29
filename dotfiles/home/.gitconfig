@@ -1,15 +1,19 @@
 [user]
 	name = htayj
 	email = htayj@users.noreply.github.com
-	signingkey = 3EA36B492D7E76450D2C59267B55A97A62F6D6C0 # gitleaks:allow (public PGP fingerprint)
+	signingkey = 6A27F433DC22B4DFA278E8F32F12E6A35F417606 # gitleaks:allow (public agent PGP fingerprint)
 
 [gpg]
 	format = openpgp
-	program = gpg
+	program = /home/tay/.local/bin/gpg-agent-signing
 [commit]
 	gpgsign = true
 [tag]
 	gpgsign = true
+
+[alias]
+	human-commit = !/home/tay/.local/bin/git-human-commit
+	human-tag = !/home/tay/.local/bin/git-human-tag
 
 [maintenance]
 	repo = /home/tay/.emacs.d

@@ -1,0 +1,6 @@
+# One existing ZNC network per catgirl instance. Use catgirl-znc NETWORK to
+# select its ZNC username/nick and supply the password at runtime.
+# catgirl-znc supplies trust for the existing public self-signed endpoint cert.
+# No join list: ZNC owns channels and replays its buffers on attach.
+host = 192.168.1.242
+port = 8887

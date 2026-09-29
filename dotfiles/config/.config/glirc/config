@@ -1,0 +1,68 @@
+-- vim: filetype=config-value
+-- All connections attach to already-configured ZNC networks. ZNC owns the
+-- channel list; do not add connect-cmds or automatic channel joins here.
+-- Launch with `glirc` (not with a manually supplied network).
+-- The shared certificate is public; no secret or private key is stored here.
+defaults:
+  hostname: "192.168.1.242"
+  port: 8887
+  tls: yes
+  tls-verify: yes
+  tls-server-cert: "~/.config/halloy/znc-truenas.pem"
+  password:
+    command: ["rbw", "get", "970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"]
+  autoconnect: yes
+
+-- Use the same per-network ZNC user and nick as the existing Halloy setup.
+servers:
+  * name: "GGn"
+    nick: "wx0069"
+    username: "tay/GGn"
+  * name: "SG"
+    nick: "Semaiophoron"
+    username: "tay/SG"
+  * name: "aither"
+    nick: "noessence"
+    username: "tay/aither"
+  * name: "lst"
+    nick: "novision"
+    username: "tay/lst"
+  * name: "mtv"
+    nick: "novision"
+    username: "tay/mtv"
+  * name: "ops"
+    nick: "norhythm"
+    username: "tay/ops"
+  * name: "red"
+    nick: "norhythm"
+    username: "tay/red"
+  * name: "seedpool"
+    nick: "nodepth"
+    username: "tay/seedpool"
+  * name: "blu"
+    nick: "nochew"
+    username: "tay/blu"
+  * name: "dc"
+    nick: "nocore"
+    username: "tay/dc"
+  * name: "MaM"
+    nick: "noliteracy"
+    username: "tay/MaM"
+  * name: "i2p"
+    nick: "noxie"
+    username: "tay/i2p"
+  * name: "no"
+    nick: "tay"
+    username: "tay/no"
+  * name: "libera"
+    nick: "htayj"
+    username: "tay/libera"
+  * name: "nog"
+    nick: "tay"
+    username: "tay/nog"
+
+-- Core glirc controls need no plugins. F2/F3/F5 are optional detail,
+-- activity-bar and split toggles; Ctrl+n/p and Alt+a/s navigate windows.
+hide-metadata: yes
+activity-bar: yes
+layout: one-column

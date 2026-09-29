@@ -1,0 +1,348 @@
+#!/usr/bin/env bash
+# Record NTSC VHS from the MacroSilicon MS210x EasyCAP with live preview.
+set -euo pipefail
+
+video_device="/dev/v4l/by-id/usb-MACROSILICON_USB_Video_20200909-video-index0"
+audio_source="alsa_input.usb-MACROSILICON_USB_Video_20200909-02.analog-stereo"
+output_dir="${VHS_ARCHIVE_DIR:-$HOME/archive/video_tapes}"
+blue_seconds=8
+auto_stop=true
+audio_channel="left"
+duration=""
+dry_run=false
+title=""
+
+usage() {
+  cat <<'EOF'
+Usage: vhs-record [options] "Tape title"
+
+Record an NTSC VHS tape with a live mpv preview. The selected EasyCAP audio
+channel is stored as mono. Recording stops automatically after the VCR's
+uniform blue end screen persists for eight seconds.
+
+Options:
+  --duration TIME       Also stop after TIME (for example 01:30:00)
+  --blue-seconds N      Required consecutive blue-screen seconds (default: 8)
+  --no-auto-stop        Disable blue-screen end detection
+  --audio-channel CH    Capture left, right, or mix to mono (default: left)
+  --output-dir DIR      Archive directory (default: ~/archive/video_tapes)
+  --dry-run             Validate arguments and print the planned configuration
+  -h, --help            Show this help
+
+Controls:
+  m in the mpv window   Toggle preview audio
+  q in the mpv window   Close preview; recording continues
+  Ctrl-C in terminal    Stop and finalize the recording
+
+The preview carries the same encoded video and mono audio being archived.
+
+OBS must be closed before recording because it exclusively opens the video
+device. The recorder preserves the EasyCAP's progressive 720x480, 30 fps
+output; it does not apply destructive software deinterlacing.
+EOF
+}
+
+fail() {
+  printf 'vhs-record: %s\n' "$*" >&2
+  exit 1
+}
+
+require_value() {
+  [[ $# -ge 2 && -n "$2" ]] || fail "$1 requires a value"
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --duration)
+      require_value "$@"
+      duration="$2"
+      shift 2
+      ;;
+    --blue-seconds)
+      require_value "$@"
+      blue_seconds="$2"
+      shift 2
+      ;;
+    --no-auto-stop)
+      auto_stop=false
+      shift
+      ;;
+    --audio-channel)
+      require_value "$@"
+      audio_channel="$2"
+      shift 2
+      ;;
+    --output-dir)
+      require_value "$@"
+      output_dir="$2"
+      shift 2
+      ;;
+    --dry-run)
+      dry_run=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      [[ $# -gt 0 ]] || fail "missing tape title"
+      [[ -z "$title" ]] || fail "only one tape title may be supplied"
+      title="$*"
+      break
+      ;;
+    -*)
+      fail "unknown option: $1"
+      ;;
+    *)
+      [[ -z "$title" ]] || fail "only one tape title may be supplied (quote titles containing spaces)"
+      title="$1"
+      shift
+      ;;
+  esac
+done
+
+[[ -n "$title" ]] || { usage >&2; exit 2; }
+[[ "$blue_seconds" =~ ^[1-9][0-9]*$ ]] || fail "--blue-seconds must be a positive integer"
+if [[ -n "$duration" ]]; then
+  [[ "$duration" =~ ^([0-9]+:)?[0-5]?[0-9]:[0-5][0-9](\.[0-9]+)?$ || "$duration" =~ ^[0-9]+(\.[0-9]+)?$ ]] \
+    || fail "--duration must be seconds or HH:MM:SS/MM:SS"
+fi
+case "$audio_channel" in
+  left)
+    audio_pan="c0=c0"
+    audio_mapping="input left channel -> mono"
+    ;;
+  right)
+    audio_pan="c0=c1"
+    audio_mapping="input right channel -> mono"
+    ;;
+  mix)
+    audio_pan="c0=0.5*c0+0.5*c1"
+    audio_mapping="input left/right balanced mix -> mono"
+    ;;
+  *)
+    fail "--audio-channel must be left, right, or mix"
+    ;;
+esac
+
+slug="$(printf '%s' "$title" | sed -E 's/[^A-Za-z0-9._-]+/_/g; s/^_+//; s/_+$//')"
+[[ -n "$slug" ]] || fail "tape title does not contain a usable filename character"
+timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
+final_path="$output_dir/${timestamp}_${slug}.mkv"
+partial_path="$final_path.partial"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+monitor_command="$script_dir/vhs-blue-monitor"
+
+for forbidden in '|' ':' '[' ']' "'" "\\"; do
+  [[ "$output_dir" != *"$forbidden"* ]] \
+    || fail "--output-dir contains '$forbidden', which ffmpeg's tee muxer cannot safely quote"
+done
+
+if $dry_run; then
+  cat <<EOF
+video_device=$video_device
+video_mode=720x480_yuyv422_30fps_progressive
+aspect_ratio=4:3
+software_deinterlace=disabled
+audio_source=$audio_source
+audio_channel=$audio_channel
+audio_mapping=$audio_mapping
+codec=h264_crf16_and_flac
+output=$final_path
+auto_blue_stop=$auto_stop
+blue_seconds=$blue_seconds
+preview=encoded_video_and_mono_audio_udp
+duration=${duration:-unlimited}
+EOF
+  exit 0
+fi
+
+for command in ffmpeg ffprobe mpv pactl python3 sha256sum fuser; do
+  command -v "$command" >/dev/null 2>&1 || fail "required command not found: $command"
+done
+$auto_stop && [[ -x "$monitor_command" ]] \
+  || ! $auto_stop \
+  || fail "blue-screen monitor not executable: $monitor_command"
+[[ -e "$video_device" ]] || fail "EasyCAP video device not found: $video_device"
+pactl list short sources | grep -F "$audio_source" >/dev/null \
+  || fail "EasyCAP audio source not found: $audio_source"
+
+if users="$(fuser "$video_device" 2>/dev/null)" && [[ -n "$users" ]]; then
+  details="$(ps -o pid=,comm= -p "$(tr -cd '0-9, ' <<<"$users" | xargs | tr ' ' ',')" 2>/dev/null || true)"
+  fail "video device is busy${details:+ ($details)}; close OBS or the other capture program"
+fi
+
+mkdir -p "$output_dir"
+[[ ! -e "$final_path" && ! -e "$partial_path" ]] || fail "output already exists: $final_path"
+
+work_dir="$(mktemp -d /tmp/vhs-record.XXXXXX)"
+stats_file="$work_dir/signalstats.txt"
+status_file="$work_dir/stop-status.txt"
+monitor_failure_file="$work_dir/monitor-failure.txt"
+: >"$stats_file"
+preview_port="$(python3 - <<'PY'
+import socket
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    sock.bind(("127.0.0.1", 0))
+    print(sock.getsockname()[1])
+PY
+)"
+preview_input="udp://127.0.0.1:${preview_port}?fifo_size=1000000&overrun_nonfatal=1"
+preview_output="udp://127.0.0.1:${preview_port}?pkt_size=1316"
+
+ffmpeg_pid=""
+monitor_pid=""
+watchdog_pid=""
+preview_pid=""
+manual_stop=false
+
+stop_capture() {
+  manual_stop=true
+  if [[ -n "$ffmpeg_pid" ]] && kill -0 "$ffmpeg_pid" 2>/dev/null; then
+    printf '\nStopping capture and finalizing Matroska file...\n' >&2
+    kill -INT "$ffmpeg_pid" 2>/dev/null || true
+  fi
+}
+
+cleanup() {
+  local rc=$?
+  trap - INT TERM EXIT
+  [[ -z "$watchdog_pid" ]] || kill "$watchdog_pid" 2>/dev/null || true
+  [[ -z "$monitor_pid" ]] || kill "$monitor_pid" 2>/dev/null || true
+  [[ -z "$preview_pid" ]] || kill "$preview_pid" 2>/dev/null || true
+  if [[ -n "$ffmpeg_pid" ]] && kill -0 "$ffmpeg_pid" 2>/dev/null; then
+    kill -INT "$ffmpeg_pid" 2>/dev/null || true
+    wait "$ffmpeg_pid" 2>/dev/null || true
+  fi
+  rm -rf "$work_dir"
+  exit "$rc"
+}
+trap stop_capture INT TERM
+trap cleanup EXIT
+
+mpv --no-config --no-terminal --force-window=yes --keep-open=no \
+  --title="VHS recording preview — $title" --video-aspect-override=4:3 \
+  --profile=low-latency --cache=no --mute=no "$preview_input" &
+preview_pid=$!
+
+filter_graph="[0:v]split=2[record][detect];[record]setsar=8/9,setparams=range=limited:color_primaries=smpte170m:color_trc=smpte170m:colorspace=smpte170m[vout];[detect]fps=1,scale=160:120,signalstats,metadata=mode=print:file=${stats_file}[vstats];[1:a]pan=mono|${audio_pan},aresample=async=1000:first_pts=0[aout]"
+tee_target="[f=matroska:onfail=abort]${partial_path}|[f=nut:onfail=ignore]${preview_output}"
+duration_args=()
+[[ -z "$duration" ]] || duration_args=(-t "$duration")
+log_path="$final_path.ffmpeg.log"
+
+printf 'Recording: %s\n' "$final_path"
+printf 'Preview: encoded video and mono audio (m toggles audio; q closes preview only)\n'
+printf 'Auto-stop: %s%s\n' "$auto_stop" "$([[ "$auto_stop" == true ]] && printf ' after %s seconds of VCR blue' "$blue_seconds")"
+printf 'Press Ctrl-C to stop manually. Start VCR playback now.\n\n'
+
+set +e
+ffmpeg -hide_banner -nostdin -stats -stats_period 5 \
+  -thread_queue_size 2048 \
+  -f v4l2 -input_format yuyv422 -video_size 720x480 -framerate 30 -i "$video_device" \
+  -thread_queue_size 2048 \
+  -f pulse -sample_rate 48000 -channels 2 -i "$audio_source" \
+  -filter_complex "$filter_graph" \
+  -map '[vout]' -map '[aout]' \
+  -c:v libx264 -preset veryfast -crf 16 -pix_fmt yuv420p \
+  -profile:v high -level 4.0 -fps_mode passthrough \
+  -c:a flac -compression_level 8 -ar 48000 -ac 1 \
+  -flags +global_header \
+  -metadata title="$title" \
+  "${duration_args[@]}" -f tee "$tee_target" \
+  -map '[vstats]' -an -c:v wrapped_avframe \
+  "${duration_args[@]}" -f null - \
+  2> >(tee "$log_path" >&2) &
+ffmpeg_pid=$!
+
+if $auto_stop; then
+  "$monitor_command" --stats "$stats_file" --pid "$ffmpeg_pid" --status "$status_file" \
+    --blue-seconds "$blue_seconds" --arm-seconds 10 &
+  monitor_pid=$!
+  sleep 0.1
+  kill -0 "$monitor_pid" 2>/dev/null || fail "blue-screen monitor failed to start"
+  (
+    while kill -0 "$ffmpeg_pid" 2>/dev/null; do
+      if ! kill -0 "$monitor_pid" 2>/dev/null; then
+        if [[ ! -f "$status_file" ]]; then
+          printf 'blue-screen monitor exited unexpectedly\n' >"$monitor_failure_file"
+          kill -INT "$ffmpeg_pid" 2>/dev/null || true
+        fi
+        exit 0
+      fi
+      sleep 1
+    done
+  ) &
+  watchdog_pid=$!
+fi
+
+while true; do
+  wait "$ffmpeg_pid"
+  ffmpeg_rc=$?
+  if ! kill -0 "$ffmpeg_pid" 2>/dev/null; then
+    break
+  fi
+  # A trapped Ctrl-C interrupts Bash's wait before ffmpeg has finished writing
+  # the Matroska trailer. Re-wait until the recorder process actually exits.
+done
+set -e
+ffmpeg_pid=""
+
+[[ -z "$watchdog_pid" ]] || { kill "$watchdog_pid" 2>/dev/null || true; wait "$watchdog_pid" 2>/dev/null || true; watchdog_pid=""; }
+[[ -z "$monitor_pid" ]] || { kill "$monitor_pid" 2>/dev/null || true; wait "$monitor_pid" 2>/dev/null || true; monitor_pid=""; }
+[[ -z "$preview_pid" ]] || { kill "$preview_pid" 2>/dev/null || true; wait "$preview_pid" 2>/dev/null || true; preview_pid=""; }
+
+stop_reason="capture_completed"
+if [[ -f "$status_file" ]]; then
+  stop_reason="auto_blue_screen"
+elif $manual_stop; then
+  stop_reason="manual_interrupt"
+elif [[ -n "$duration" && "$ffmpeg_rc" -eq 0 ]]; then
+  stop_reason="duration_limit"
+fi
+
+if [[ ! -s "$partial_path" ]] || ! ffprobe -v error "$partial_path" >/dev/null 2>&1; then
+  fail "capture failed (ffmpeg exit $ffmpeg_rc); partial output retained at $partial_path"
+fi
+if [[ -f "$monitor_failure_file" ]]; then
+  fail "automatic blue-screen monitor failed; valid partial output retained at $partial_path"
+fi
+if [[ "$ffmpeg_rc" -ne 0 && "$ffmpeg_rc" -ne 255 && ! ( "$manual_stop" == true && "$ffmpeg_rc" -eq 130 ) ]]; then
+  fail "ffmpeg exited with $ffmpeg_rc; valid partial output retained at $partial_path"
+fi
+
+mv "$partial_path" "$final_path"
+ffprobe -v error -show_format -show_streams -of json "$final_path" >"$final_path.ffprobe.json"
+(
+  cd "$output_dir"
+  sha256sum "$(basename "$final_path")" >"$(basename "$final_path").sha256"
+)
+
+cat >"$final_path.capture.txt" <<EOF
+VHS capture
+Title: $title
+Captured: $(date --iso-8601=seconds)
+Stop reason: $stop_reason
+Video device: $video_device
+Video mode: NTSC 720x480, 30 fps, YUYV 4:2:2 input
+Encoded video: H.264 CRF 16, yuv420p, 4:3 display aspect
+Software deinterlacing: disabled (EasyCAP output is progressive)
+Audio source: $audio_source
+Audio channel option: $audio_channel
+Audio mapping: $audio_mapping
+Encoded audio: FLAC, 48 kHz, mono
+Automatic blue-screen detection: $auto_stop
+Required blue-screen seconds: $blue_seconds
+EOF
+if [[ -f "$status_file" ]]; then
+  cat "$status_file" >>"$final_path.capture.txt"
+fi
+
+printf '\nCapture finalized successfully:\n  %s\n' "$final_path"
+printf 'Stop reason: %s\n' "$stop_reason"
+printf 'Checksum: %s\n' "$final_path.sha256"
+
+trap - EXIT
+rm -rf "$work_dir"

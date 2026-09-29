@@ -1,0 +1,10 @@
+#!/bin/sh
+# Companion to ~/.local/bin/kitty: run the kitten from the same kitty-bitmap
+# build, preferring the user profile over the Guix Home profile.
+for dir in "$HOME/.guix-profile/bin" "$HOME/.guix-home/profile/bin"; do
+    if [ -x "$dir/kitten" ]; then
+        exec "$dir/kitten" "$@"
+    fi
+done
+echo "kitten: no kitty-bitmap in ~/.guix-profile or ~/.guix-home/profile" >&2
+exit 127

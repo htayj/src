@@ -1,0 +1,12 @@
+#!/bin/sh
+# Prefer the user-profile kitty-bitmap over the Guix Home profile copy.
+# Login shells put ~/.guix-home/profile/bin ahead of ~/.guix-profile/bin, while
+# the Hyprland session uses the opposite order; this keeps both on one build.
+# Fall back to the Home profile if the user profile ever drops kitty-bitmap.
+for dir in "$HOME/.guix-profile/bin" "$HOME/.guix-home/profile/bin"; do
+    if [ -x "$dir/kitty" ]; then
+        exec "$dir/kitty" "$@"
+    fi
+done
+echo "kitty: no kitty-bitmap in ~/.guix-profile or ~/.guix-home/profile" >&2
+exit 127

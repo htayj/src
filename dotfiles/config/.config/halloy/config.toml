@@ -1,0 +1,185 @@
+# Halloy connects only to the existing TrueNAS ZNC networks.  ZNC saves the
+# channel list; do not duplicate it here.  The PEM is the public, self-signed
+# ZNC endpoint certificate (not a private key or a system-wide trust anchor).
+check_for_update_on_launch = false
+
+theme = "basedbox"
+
+[font]
+size = 16
+
+[sidebar]
+max_width = 260
+order_by = "config"
+
+[buffer.channel.nicklist]
+enabled = false
+
+[buffer.channel.topic_banner]
+enabled = false
+
+[buffer.nickname]
+color = { palette = ["#55ffff", "#55ff55", "#ffff55", "#ff55ff", "#5555ff", "#ff5555"] }
+
+[buffer.text_input]
+key_bindings = "emacs"
+
+# Hyprland reserves Alt+h/j/k/l for focus, so use Ctrl+Alt for Halloy panes.
+# Ctrl+n/p cycle all buffers; Ctrl+Shift+n/p cycle buffers with unread text.
+[keyboard]
+move_left = "ctrl+alt+h"
+move_down = "ctrl+alt+j"
+move_up = "ctrl+alt+k"
+move_right = "ctrl+alt+l"
+cycle_next_buffer = ["ctrl+n", "ctrl+tab"]
+cycle_previous_buffer = ["ctrl+p", "ctrl+shift+tab"]
+cycle_next_unread_buffer = "ctrl+shift+n"
+cycle_previous_unread_buffer = "ctrl+shift+p"
+scroll_up_page = ["pageup", "ctrl+alt+u"]
+scroll_down_page = ["pagedown", "ctrl+alt+d"]
+scroll_to_top = "ctrl+home"
+scroll_to_bottom = "ctrl+end"
+toggle_nick_list = "ctrl+alt+m"
+toggle_topic = "ctrl+alt+t"
+toggle_sidebar = "ctrl+alt+b"
+command_bar = "ctrl+k"
+mark_as_read = "ctrl+shift+m"
+
+# No password literal is stored here.  Halloy executes the command per
+# connection; if rbw is locked, unlock it manually (do not reset its agent).
+# Each username selects one already-configured ZNC network.  The nickname is
+# the corresponding network nick, not a second identity on the upstream IRC.
+[servers.GGn]
+nickname = "wx0069"
+username = "tay/GGn"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.SG]
+nickname = "Semaiophoron"
+username = "tay/SG"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.aither]
+nickname = "noessence"
+username = "tay/aither"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.lst]
+nickname = "novision"
+username = "tay/lst"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.mtv]
+nickname = "novision"
+username = "tay/mtv"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.ops]
+nickname = "norhythm"
+username = "tay/ops"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.red]
+nickname = "norhythm"
+username = "tay/red"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.seedpool]
+nickname = "nodepth"
+username = "tay/seedpool"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.blu]
+nickname = "nochew"
+username = "tay/blu"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.dc]
+nickname = "nocore"
+username = "tay/dc"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.MaM]
+nickname = "noliteracy"
+username = "tay/MaM"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.i2p]
+nickname = "noxie"
+username = "tay/i2p"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.no]
+nickname = "tay"
+username = "tay/no"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.libera]
+nickname = "htayj"
+username = "tay/libera"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"
+
+[servers.nog]
+nickname = "tay"
+username = "tay/nog"
+server = "192.168.1.242"
+port = 8887
+use_tls = true
+root_cert_path = "znc-truenas.pem"
+password_command = "rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229"

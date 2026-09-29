@@ -1,5 +1,30 @@
 # Host-specific bash fragment for basedbox.
 # Sourced by ~/.bashrc only when $HOSTNAME == basedbox.
 
-alias rbs='sudo timeout 2h guix system reconfigure ~/src/config-k8-plus.scm'
-alias rbh='timeout 4h guix time-machine -C ~/src/guix-config/channels.scm -- home reconfigure -L ~/src/guix-config/modules ~/src/guix-config/home-workstation-configuration.scm'
+# Always evaluate the system and Home configurations with the Guix produced by
+# our pinned channels.  In particular, do not let sudo resolve `guix' from its
+# restricted PATH: that selects the (usually older) system Guix and used to
+# make Home reconfiguration depend on an explicit `guix time-machine'.
+_basedbox_guix="$HOME/.config/guix/current/bin/guix"
+
+rbs() {
+	if [[ ! -x "$_basedbox_guix" ]]; then
+		printf 'Missing %s; run guix pull -C ~/src/guix-config/channels.scm first.\n' \
+			"$_basedbox_guix" >&2
+		return 1
+	fi
+	sudo timeout 2h "$_basedbox_guix" system reconfigure \
+		"$HOME/src/config-k8-plus.scm" "$@"
+}
+
+rbh() {
+	if [[ ! -x "$_basedbox_guix" ]]; then
+		printf 'Missing %s; run guix pull -C ~/src/guix-config/channels.scm first.\n' \
+			"$_basedbox_guix" >&2
+		return 1
+	fi
+	timeout 4h "$_basedbox_guix" home reconfigure \
+		-L "$HOME/src/guix-config/modules" \
+		-L "$HOME/projects/ivory-key/guix" \
+		"$HOME/src/guix-config/home-workstation-configuration.scm" "$@"
+}

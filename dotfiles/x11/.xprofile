@@ -1,9 +1,39 @@
 # Shared X session setup.
 # SDDM's Xsession sources ~/.xprofile; ~/.xinitrc sources it too.
 
-if [ -d "$HOME/.guix-home/profile/bin" ]; then
-    PATH="$HOME/.guix-home/profile/bin:$PATH"
+# Use the workstation Guix Home profile explicitly.  Display-manager sessions
+# do not reliably inherit GUIX_PROFILE, and falling through to the system or
+# legacy ~/.guix-profile tools gives XKB/StumpWM mismatched dependencies.
+GUIX_PROFILE="$HOME/.guix-home/profile"
+export GUIX_PROFILE
+if [ -d "$GUIX_PROFILE/bin" ]; then
+    PATH="$GUIX_PROFILE/bin:$PATH"
     export PATH
+fi
+
+# basedbox: Odyssey on DP, CRT below its right side. Keep other hosts unchanged.
+# Run in a subshell so positional arguments and helpers do not leak to Xsession.
+if [ -n "${DISPLAY:-}" ] && [ "$(hostname)" = basedbox ]; then
+    (
+        outputs=$(xrandr --query) || exit
+        set --
+        crt_position=0x0
+        case "$outputs" in
+            *"DisplayPort-0 connected"*)
+                set -- --output DisplayPort-0 --primary --mode 5120x1440 \
+                    --rate 119.98 --pos 0x0 --rotate normal --scale 1x1
+                crt_position=4200x1440
+                ;;
+        esac
+        case "$outputs" in
+            *"HDMI-A-0 connected"*)
+                set -- "$@" --output HDMI-A-0 --mode 800x600 --rate 75 \
+                    --pos "$crt_position" --rotate normal --scale 1x1
+                [ "$crt_position" != 0x0 ] || set -- "$@" --primary
+                ;;
+        esac
+        [ "$#" -eq 0 ] || xrandr "$@"
+    ) || printf '%s\n' 'Failed to apply the basedbox monitor layout.' >&2
 fi
 
 # Xorg rejects the Stow-created symlink-only font directories, so use the
@@ -35,16 +65,15 @@ xset fp rehash >/dev/null 2>&1 || true
 xsetroot -cursor_name left_ptr
 unset font_dir font_root profile_fonts
 
-# User-level XKB layout converted from ~/.Xmodmap. This keeps the Space Cadet
-# Greek/APL layer on the old Mode_switch key and the top/math layer on the old
-# ISO_Level3_Shift key, without installing anything under /usr/share/X11/xkb.
-if [ -n "${DISPLAY:-}" ] && [ -r "$HOME/.config/xkb/keymap/spacecadet.xkb" ]; then
-    if command -v xkbcomp >/dev/null 2>&1; then
-        xkbcomp -I"$HOME/.config/xkb" -w 0 "$HOME/.config/xkb/keymap/spacecadet.xkb" "$DISPLAY" >/dev/null 2>&1 ||
-            printf '%s\n' 'Failed to load the Space Cadet XKB map.' >&2
-    else
-        printf '%s\n' 'xkbcomp is unavailable; the Space Cadet XKB map was not loaded.' >&2
-    fi
+# Load the user-level Space Cadet XKB layout before StumpWM starts.  Use the
+# shared helper rather than xkbcomp alone: the compiled map contains inherited
+# modifier assignments which must be normalized with xmodmap before StumpWM
+# snapshots the modifier map and grabs its Alt bindings.
+spacecadet_reload="$HOME/manna-cadet/reload-spacecadet-xkb.sh"
+spacecadet_keymap="$HOME/.config/xkb/keymap/spacecadet.xkb"
+if [ -n "${DISPLAY:-}" ] && [ -x "$spacecadet_reload" ] && [ -r "$spacecadet_keymap" ]; then
+    "$spacecadet_reload" "$spacecadet_keymap" "$HOME/.config/xkb" ||
+        printf '%s\n' 'Failed to load the Space Cadet XKB map.' >&2
 fi
 
 # Hand the live X environment to the systemd --user instance so any user-level

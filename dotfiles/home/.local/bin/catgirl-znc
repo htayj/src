@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Attach one catgirl process to an existing ZNC network; never join channels.
+set -euo pipefail
+
+usage() {
+    printf 'Usage: catgirl-znc [NETWORK]\nDefault: libera\nNetworks: GGn SG aither lst mtv ops red seedpool blu dc MaM i2p no libera nog\n' >&2
+}
+
+if [[ ${1:-} == --help || ${1:-} == -h ]]; then
+    usage
+    exit 0
+fi
+if (( $# > 1 )); then
+    usage
+    exit 2
+fi
+network=${1:-libera}
+case "$network" in
+    GGn) nick=wx0069 ;;
+    SG) nick=Semaiophoron ;;
+    aither) nick=noessence ;;
+    lst|mtv) nick=novision ;;
+    ops|red) nick=norhythm ;;
+    seedpool) nick=nodepth ;;
+    blu) nick=nochew ;;
+    dc) nick=nocore ;;
+    MaM) nick=noliteracy ;;
+    i2p) nick=noxie ;;
+    no|nog) nick=tay ;;
+    libera) nick=htayj ;;
+    *) usage; exit 2 ;;
+esac
+
+config=${XDG_CONFIG_HOME:-$HOME/.config}
+cert=$config/halloy/znc-truenas.pem
+endpoint=$config/catgirl/znc
+if [[ ! -r $cert || ! -r $endpoint ]]; then
+    printf 'catgirl-znc: missing readable ZNC endpoint config or public certificate\n' >&2
+    exit 1
+fi
+if ! command -v catgirl >/dev/null; then
+    printf 'catgirl-znc: install catgirl in your user profile first\n' >&2
+    exit 127
+fi
+# catgirl's `trust` verifies the configured self-signed cert, but deliberately
+# disables hostname checks. Never use its `insecure` option. The password
+# stays in shell memory and an inherited pipe, never an argv or tracked file.
+if ! password=$(rbw get 970a7b5a-5c23-4dc1-ad9a-ae92e92b9229); then
+    printf 'catgirl-znc: rbw unavailable; unlock the existing vault session yourself\n' >&2
+    exit 1
+fi
+if [[ -z $password || $password == *$'\n'* || $password == *$'\r'* ]]; then
+    printf 'catgirl-znc: rbw returned an invalid server password\n' >&2
+    exit 1
+fi
+exec catgirl "$endpoint" -t "$cert" -n "$nick" -u "tay/$network" \
+    <(printf 'pass = %s\n' "$password")

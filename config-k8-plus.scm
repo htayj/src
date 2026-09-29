@@ -221,9 +221,9 @@ installs Tailscale's official static Linux client and daemon binaries.")
 
 (define %earlyoom-configuration
   (earlyoom-configuration
-   ;; Act while 8% of RAM and 5% of swap remain. This box has ~25G of RAM and
-   ;; a small 3.7G swap, so 8% is roughly 2G: enough headroom to kill
-   ;; something large before the machine starts thrashing.
+   ;; Act while 8% of RAM and 5% of total swap remain. The 19.7 GiB of
+   ;; disk-backed swap plus 6 GiB of compressed-RAM overflow roughly matches
+   ;; the 25.3 GiB of OS-visible RAM.
    (minimum-available-memory 8)
    (minimum-free-swap 5)
    (prefer-regexp %earlyoom-prefer-regexp)
@@ -288,6 +288,9 @@ installs Tailscale's official static Linux client and daemon binaries.")
              (specification->package "xset")
             (specification->package "xinitrc-xsession")
             (specification->package "stumpwm")
+            ;; GDM discovers sessions in the system profile, not Guix Home.
+            ;; Keep StumpWM installed and add Hyprland as an optional session.
+            (specification->package "hyprland")
             (specification->package "sbcl")
             (specification->package "sbcl-alexandria")
             (specification->package "sbcl-stumpwm-hostname")
@@ -361,6 +364,13 @@ installs Tailscale's official static Linux client and daemon binaries.")
              shepherd-root-service-type
              (list %wake-on-lan-service))
             (simple-service 'blueman dbus-root-service-type (list blueman))
+            ;; Disk swap is primary. A smaller compressed-RAM device is kept
+            ;; as overflow so nominal total swap roughly matches visible RAM.
+            (service zram-device-service-type
+                     (zram-device-configuration
+                      (size "6G")
+                      (compression-algorithm 'zstd)
+                      (priority 5)))
             (service earlyoom-service-type %earlyoom-configuration)
             ;; Smart-card daemon, needed for the CCID side of a YubiKey (PIV,
             ;; OpenPGP, OATH via ykman) and for the USB NFC reader. Plain
@@ -431,7 +441,11 @@ installs Tailscale's official static Linux client and daemon binaries.")
       (keyboard-layout keyboard-layout)))
     (swap-devices
      (list (swap-space
-            (target (uuid "d23519bc-ece4-4a0d-b4db-224d6e2c6f58")))))
+            (target "/swapfile")
+            (priority 10))
+           (swap-space
+            (target (uuid "d23519bc-ece4-4a0d-b4db-224d6e2c6f58"))
+            (priority 10))))
     (file-systems
      (cons* (file-system
              (mount-point "/boot/efi")

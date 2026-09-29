@@ -4,10 +4,11 @@ set -euo pipefail
 readonly system_config=/home/tay/src/config-k8-plus.scm
 readonly efi_directory=/boot/efi/EFI
 readonly owner=tay
+readonly guix=/home/tay/.config/guix/current/bin/guix
 
 if [[ ${1:-} == --check ]]; then
     hostname
-    guix system describe
+    "$guix" system describe
     efibootmgr -v
     grep '^input:' /etc/group
     exit 0
@@ -28,7 +29,7 @@ mkdir -p "$evidence_directory"
 trap 'chown -R tay:users "$evidence_directory"' EXIT
 
 efibootmgr -v >"$evidence_directory/efibootmgr-before.txt"
-guix system describe >"$evidence_directory/system-before.txt"
+"$guix" system describe >"$evidence_directory/system-before.txt"
 
 mapfile -t guix_entries < <(
     efibootmgr | sed -n 's/^Boot\([[:xdigit:]]\{4\}\)\*\{0,1\} Guix.*/\1/p'
@@ -42,7 +43,7 @@ if [[ ${#guix_entries[@]} -ne 1 || ${#windows_entries[@]} -ne 1 ]]; then
     exit 1
 fi
 
-timeout 90m guix system reconfigure "$system_config" \
+timeout 90m "$guix" system reconfigure "$system_config" \
     >"$evidence_directory/reconfigure.log" 2>&1
 
 input_group=$(grep '^input:' /etc/group)
@@ -63,7 +64,7 @@ efibootmgr --bootnum "${windows_entries[0]}" --delete-bootnum
 efibootmgr --bootorder "${guix_entries[0]}"
 
 efibootmgr -v >"$evidence_directory/efibootmgr-after.txt"
-guix system describe >"$evidence_directory/system-after.txt"
+"$guix" system describe >"$evidence_directory/system-after.txt"
 
 if grep -q '^Boot[[:xdigit:]]\{4\}.*Windows Boot Manager' \
     "$evidence_directory/efibootmgr-after.txt"; then

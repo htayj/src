@@ -1,0 +1,44 @@
+{
+    "general": {
+        "apps": {
+            "terminal": [
+                "kitty"
+            ],
+            "audio": [
+                "pavucontrol"
+            ],
+            "explorer": [
+                "thunar"
+            ]
+        },
+        "idle": {
+            "lockBeforeSleep": false,
+            "inhibitWhenAudio": false,
+            "timeouts": [
+                {
+                    "timeout": 1200,
+                    "idleAction": "dpms off",
+                    "returnAction": "dpms on"
+                }
+            ]
+        }
+    },
+    "bar": {
+        "excludedScreens": [
+            "HDMI-A-1"
+        ]
+    },
+    "dashboard": {
+        "showWeather": false
+    },
+    "lock": {
+        "enableFprint": false,
+        "enableHowdy": false
+    },
+    "services": {
+        "weatherEnabled": false
+    },
+    "paths": {
+        "wallpaperDir": "~/.config/hypr/wallpapers"
+    }
+}

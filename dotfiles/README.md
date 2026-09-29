@@ -6,7 +6,7 @@ It is intentionally separate from `/home/tay/src/guix-config/dotfiles`.
 Install all packages:
 
 ```sh
-stow -d ~/src/dotfiles -t ~ home x11 stumpwm sway emacs config keyboard claude pi
+stow -d ~/src/dotfiles -t ~ home x11 stumpwm sway emacs config keyboard claude
 ```
 
 Install one package:
@@ -26,10 +26,15 @@ guix home reconfigure -L ~/src/guix-config/modules \
 Once bootstrap is complete, apply the full workstation profile:
 
 ```sh
-guix time-machine -C ~/src/guix-config/channels.scm -- home reconfigure \
+~/.config/guix/current/bin/guix home reconfigure \
   -L ~/src/guix-config/modules \
   ~/src/guix-config/home-workstation-configuration.scm
 ```
+
+On `basedbox`, `rbh` runs that Home command and `rbs` runs the System
+reconfiguration with the same pinned Guix.  Run `guix pull` only when
+`guix-config/channels.scm` changes; reconfiguring after ordinary configuration
+edits does not require `guix time-machine` or a separate root pull.
 
 `guix-config/modules/tay/home-common.scm` owns shared Guile values such as
 `%primary-font`, generates `~/.stumpwmrc`, and replaces the Fedora systemd
@@ -64,12 +69,10 @@ Managed packages:
   settings.json, keybindings.json, hooks, statusline, safer-curl wrapper).
   Per-host and per-project overrides go in `~/.claude/.claude/settings.local.json`
   (untracked) per Claude Code's override convention.
-- `pi`: Pi Coding Agent global config under `~/.pi/agent`, including
-  `settings.json`, custom subagents/chains, and local packages such as
-  `general-dev-suite` and `okf-knowledge`. Mutable OKF knowledge bundles
-  (`~/.pi/agent/knowledge` and project `.pi/knowledge`) are runtime/user data,
-  not stowed dotfiles. Runtime state, auth, sessions, binaries, and intercom
-  sockets are intentionally excluded.
+
+Pi configuration is now a separate Git repository directly at `~/.pi/agent`.
+Edit it there; it is not managed by Guix Home or GNU Stow. Auth, sessions,
+caches, downloaded packages, and other runtime data remain untracked.
 
 ## Per-host fragments
 

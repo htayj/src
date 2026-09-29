@@ -15,6 +15,12 @@ next_workspace = "super+j"
 previous_agent = "super+p"
 next_agent = "super+n"
 
+[[keys.command]]
+key = "prefix+u"
+type = "plugin_action"
+command = "herdr-quota.open-dashboard"
+description = "AI quota"
+
 [terminal]
 new_cwd = "follow"
 

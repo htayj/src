@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec env GNUPGHOME="${HOME}/.gnupg" \
+  git \
+  -c gpg.format=openpgp \
+  -c gpg.program=gpg \
+  -c user.signingkey=3EA36B492D7E76450D2C59267B55A97A62F6D6C0 \
+  -c tag.gpgsign=true \
+  tag "$@"

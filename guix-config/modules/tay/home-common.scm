@@ -9,6 +9,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (guix gexp)
+  #:use-module (ivory-key packages)
   #:export (%primary-font
             %core-home-packages
             %core-home-services))
@@ -71,8 +72,7 @@
   (let* ((service-name (symbol->string provision))
          (provisions (list provision))
          (config (local-file (dotfile file-name) service-name))
-         (kanata (file-append (specification->package "kanata")
-                              "/bin/kanata"))
+         (kanata (file-append kanata-1.12 "/bin/kanata"))
          (launcher
           (program-file
            (string-append service-name "-launcher")
@@ -175,14 +175,15 @@
 
 (define %core-home-packages
   (specifications->packages
-   '("kanata"
-     "age"
+   '("age"
      "jq"
      "sops"
      "gnupg"
       "stumpish"
       "xrdb"
       "xkbcomp"
+      "xmodmap"
+      "xprop"
       "xsetroot"
       "node"
      "python"
@@ -245,7 +246,7 @@
              (layout 'stow)
              (directories '("."))
              (packages '("home" "x11" "stumpwm" "config" "keyboard"
-                         "emacs" "clawmacs" "claude" "pi" "gnupg"))
+                         "emacs" "clawmacs" "claude" "gnupg"))
              (excluded
                '(".*~"
                  ".*\\.swp"
@@ -297,6 +298,17 @@
     'generated-stumpwmrc
     home-files-service-type
     `((".stumpwmrc" ,(generated-stumpwmrc))))
+   ;; Advertise dark mode through both GNOME's settings schema and the
+   ;; freedesktop Settings portal. Firefox and other applications using
+   ;; "System" consume org.freedesktop.appearance/color-scheme from here.
+   (simple-service
+    'prefer-dark-color-scheme
+    home-activation-service-type
+    #~(system* (string-append (getenv "HOME")
+                              "/.guix-home/profile/bin/dconf")
+               "write"
+               "/org/gnome/desktop/interface/color-scheme"
+               "'prefer-dark'"))
    ;; Re-apply the Space Cadet XKB keymap after every activation.
    ;;
    ;; Guix Home activation replaces ~/.config/xkb wholesale with new store

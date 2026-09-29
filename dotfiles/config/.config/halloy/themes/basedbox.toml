@@ -1,0 +1,69 @@
+# High-contrast terminal-style colors shared with the workstation's kitty
+# palette. Halloy fills unspecified slots from its built-in theme.
+[general]
+background = "#000000"
+border = "#555555"
+horizontal_rule = "#555555"
+scrollbar = "#555555"
+unread_indicator = "#55ffff"
+highlight_indicator = "#ffff55"
+
+[text]
+primary = "#ffffff"
+secondary = "#aaaaaa"
+tertiary = "#55ffff"
+success = "#55ff55"
+error = "#ff5555"
+warning = "#ffff55"
+info = "#55ffff"
+debug = "#aaaaaa"
+trace = "#555555"
+
+[buffer]
+background = "#000000"
+background_text_input = "#000000"
+background_title_bar = "#000000"
+border = "#555555"
+border_selected = "#55ffff"
+timestamp = "#aaaaaa"
+action = "#55ff55"
+topic = "#aaaaaa"
+highlight = "#333300"
+code = "#55ffff"
+nickname = "#55ffff"
+nickname_offline = "#555555"
+url = "#55ffff"
+selection = "#0d0db7"
+
+[buffer.server_messages]
+default = "#ffff55"
+
+[buttons.primary]
+background = "#000000"
+background_hover = "#333333"
+background_selected = "#555555"
+background_selected_hover = "#555555"
+
+[buttons.secondary]
+background = "#000000"
+background_hover = "#333333"
+background_selected = "#555555"
+background_selected_hover = "#555555"
+
+[formatting]
+white = "#ffffff"
+black = "#000000"
+blue = "#0d0db7"
+green = "#00aa00"
+red = "#aa0000"
+brown = "#aa5500"
+magenta = "#aa00aa"
+orange = "#ff5555"
+yellow = "#ffff55"
+lightgreen = "#55ff55"
+cyan = "#00aaaa"
+lightcyan = "#55ffff"
+lightblue = "#5555ff"
+pink = "#ff55ff"
+grey = "#555555"
+lightgrey = "#aaaaaa"

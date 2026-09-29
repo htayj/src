@@ -23,7 +23,7 @@ else
   sudo test -s /root/.config/sops/age/keys.txt
 fi
 
-root_guix=/root/.config/guix/current/bin/guix
+root_guix=/home/tay/.config/guix/current/bin/guix
 sudo timeout 20m "$root_guix" system build --dry-run "$config"
 sudo timeout 30m "$root_guix" system reconfigure "$config"
 

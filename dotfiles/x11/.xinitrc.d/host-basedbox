@@ -4,4 +4,7 @@ if command -v dunst >/dev/null 2>&1; then
     dunst &
 fi
 
-exec stumpwm
+# StumpWM itself is system-installed, but launch it with the workstation Home
+# profile environment established by ~/.xprofile.  In particular, the XKB map
+# and modifier normalization above must complete before StumpWM grabs keys.
+exec /run/current-system/profile/bin/stumpwm

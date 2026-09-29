@@ -8,17 +8,15 @@ fi
 
 config_root=/home/tay/src/guix-config
 system_config=/home/tay/src/config-k8-plus.scm
-channels="$config_root/channels.scm"
+guix=/home/tay/.config/guix/current/bin/guix
 
-sudo mkdir -p /root/.config/guix
-sudo cp "$channels" /root/.config/guix/channels.scm
-sudo timeout 20m /run/current-system/profile/bin/guix pull \
-  -C /root/.config/guix/channels.scm \
-  -p /root/.config/guix/current
+if [ ! -x "$guix" ]; then
+  printf 'Missing %s; pull %s first.\n' "$guix" "$config_root/channels.scm" >&2
+  exit 1
+fi
 
-root_guix=/root/.config/guix/current/bin/guix
-sudo timeout 20m "$root_guix" system build --dry-run "$system_config"
-sudo timeout 30m "$root_guix" system reconfigure "$system_config"
+sudo timeout 20m "$guix" system build --dry-run "$system_config"
+sudo timeout 30m "$guix" system reconfigure "$system_config"
 
 sudo nmcli connection modify "Wired connection 2" \
   802-3-ethernet.wake-on-lan magic

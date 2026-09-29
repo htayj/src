@@ -9,11 +9,15 @@
              (gnu services)
              (gnu services shepherd)
              (guix gexp)
-             (tay home-common))
+             (tay packages caelestia-cli)
+             (tay packages caelestia-shell)
+             (tay home-common)
+             (tay catgirl))
 
 (define %workstation-home-packages
-  (specifications->packages
-   '("binutils"
+  (append
+   (specifications->packages
+    '("binutils"
      ;; btmon, bluetoothctl, l2ping. Note that BlueZ 5.79 no longer ships
      ;; hcitool, hciconfig or btmgmt; they were removed upstream, so btmon
      ;; is the supported way to observe link quality and RSSI.
@@ -22,11 +26,18 @@
      "cadr-fonts-symbols"
      "calibre"
      "claude-code"
+     ;; CUPS client commands (lp, lpstat, lpoptions, lpadmin); the scheduler
+     ;; itself is the system config's cups-service-type.
+     "cups"
      "curl"
      "dec-fonts"
      "direnv"
      "dmenu"
      "dunst"
+     "dconf"
+     "gsettings-desktop-schemas"
+     "xdg-desktop-portal-gtk"
+     "xdg-desktop-portal-hyprland"
      "emacs"
      "firefox"
      "font-unscii"
@@ -35,7 +46,28 @@
      "git"
      "github-cli"
      "gucharmap"
+     ;; IRC client for the TrueNAS ZNC bouncer; upstream release binary
+     ;; packaged in ~/projects/guix-channel (tay packages halloy).
+     "halloy"
+     "glirc"
+     ;; The local libtls/OpenSSL variant accepts the existing ZNC leaf pin.
+     ;; Stock catgirl's LibreSSL verifier rejects its self-signed CA:FALSE cert.
+     "herdr"
      "htop"
+     ;; Optional Wayland session; StumpWM and its X clients stay available.
+     "hyprland"
+     ;; Caelestia shell 2.5.0 pins its own Quickshell; the Hyprland session
+     ;; helper owns its lifecycle and a standalone polkit-gnome agent.
+     "polkit-gnome"
+     "cliphist"
+     "grim"
+     "slurp"
+     "wl-clipboard"
+     "python"
+     "dbus"
+     "xdg-utils"
+     "papirus-icon-theme"
+     "qt6ct"
      "imagemagick"
      "kitty-bitmap"
      "libnotify"
@@ -47,8 +79,11 @@
      ;;   pamu2fcfg         - enroll a key for PAM, if that is ever wanted
      ;;   opensc/pcsc-tools - smart-card debugging, including the NFC reader
      "libfido2"
+     "moonlight-qt"
      "mpd-mpc"
      "mpd"
+     ;; PDF/document viewer; prints through the system CUPS scheduler.
+     "okular"
      "opencode"
      "opencode-desktop"
      "opensc"
@@ -56,6 +91,7 @@
      "pam-u2f"
      "pavucontrol"
      "pcsc-tools"
+     "pinentry-tty"
      ;; For the client tools only: pactl, pacmd, pa-info. PipeWire ships
      ;; pw-* utilities but no pactl, and pavucontrol and various scripts
      ;; still expect it. The pulseaudio *daemon* is not started; PipeWire's
@@ -63,15 +99,25 @@
      ;; PATH does not autospawn it while a PulseAudio socket already exists.
      "pulseaudio"
      "python-yubikey-manager"
+     "rbw"
      "remmina"
      "ripgrep"
      "rofi"
      "rsync"
+     ;; Network scanning for the HP Officejet 7610 over eSCL/AirScan.
+     ;; sane-backends supplies scanimage and the SANE_CONFIG_DIR /
+     ;; SANE_BACKEND_LIB_PATH search paths; sane-airscan must share its
+     ;; profile so its dll.d entry and airscan.conf are found. The system
+     ;; sane-backends (sane-service-type) has no eSCL backend.
+     "sane-airscan"
+     "sane-backends"
      "scrot"
+     "simple-scan"
      "signal-desktop"
      "syncthing"
      "syncthing-gtk"
      "telegram-desktop"
+     "thunar"
      "tmux"
      "unzip"
      "vim"
@@ -91,7 +137,8 @@
      "xwininfo"
      "yt-dlp"
      "yubico-piv-tool"
-     "zip")))
+     "zip"))
+   (list catgirl-openssl)))
 
 (define %mpd-service
   (shepherd-service
@@ -104,6 +151,49 @@
                    "/home/tay/.config/mpd/mpd.conf")
              #:log-file (string-append %user-log-dir "/mpd.log")))
    (stop #~(make-kill-destructor))))
+
+;; Rootless Podman ha-mcp 8.5.0 + loopback Caddy bearer proxy.
+;; Containers are created separately (names ha-mcp-admin / ha-mcp-admin-proxy);
+;; Shepherd only starts/stops them. Stop must stop the container, not just the
+;; wait client. `podman start --attach` exits 125 when already running, so
+;; start uses podman-attach.sh (start-if-needed + wait). No secrets here.
+(define %podman "/run/current-system/profile/bin/podman")
+(define %ha-mcp-attach "/home/tay/.config/ha-mcp-admin/podman-attach.sh")
+
+(define %ha-mcp-admin-service
+  (shepherd-service
+   (documentation "Run pinned ha-mcp 8.5.0 HTTP server in a rootless container.")
+   (provision '(ha-mcp-admin))
+   (auto-start? #t)
+   (respawn? #t)
+   (respawn-delay 5)
+   (respawn-limit '(5 . 60))
+   (modules '((shepherd support)))
+   (start #~(make-forkexec-constructor
+             (list "/bin/sh" #$%ha-mcp-attach "ha-mcp-admin")
+             #:log-file (string-append %user-log-dir "/ha-mcp-admin.log")))
+   (stop #~(lambda _
+             (system* #$%podman "stop" "--time" "15" "ha-mcp-admin")
+             #f))))
+
+(define %ha-mcp-admin-proxy-service
+  (shepherd-service
+   (documentation "Loopback Caddy bearer proxy in front of ha-mcp-admin.")
+   (provision '(ha-mcp-admin-proxy))
+   (requirement '(ha-mcp-admin))
+   (auto-start? #t)
+   (respawn? #t)
+   (respawn-delay 5)
+   (respawn-limit '(5 . 60))
+   (modules '((shepherd support)))
+   (start #~(make-forkexec-constructor
+             (list "/bin/sh" #$%ha-mcp-attach "ha-mcp-admin-proxy")
+             #:log-file (string-append %user-log-dir "/ha-mcp-admin-proxy.log")))
+   (stop #~(lambda _
+             (system* #$%podman "stop" "--time" "15" "ha-mcp-admin-proxy")
+             #f))))
+
+
 
 ;; KWallet, so Electron/Chromium apps can use a real secret store instead of
 ;; writing their encryption keys to disk in plaintext.
@@ -228,7 +318,8 @@
    "MimeType=x-scheme-handler/sgnl;x-scheme-handler/signalcaptcha;\n"))
 
 (home-environment
- (packages (append %core-home-packages %workstation-home-packages))
+ (packages (append %core-home-packages %workstation-home-packages
+                   (list caelestia-shell caelestia-cli)))
  (services
   (append %core-home-services
            (list (service home-syncthing-service-type)
@@ -255,9 +346,31 @@
                                  home-shepherd-service-type
                                  (list %mpd-service
                                        %ksecretd-service
-                                       %kwalletd6-service))
+                                       %kwalletd6-service
+                                       %ha-mcp-admin-service
+                                       %ha-mcp-admin-proxy-service))
                  (simple-service 'signal-kwallet-desktop-entry
                                  home-xdg-data-files-service-type
                                  `(("applications/signal-desktop.desktop"
-                                    ,%signal-desktop-entry))))
+                                    ,%signal-desktop-entry)))
+                 (simple-service 'basedserv-gaming-desktop-entry
+                                 home-xdg-data-files-service-type
+                                 `(("applications/basedserv-gaming.desktop"
+                                    ,(mixed-text-file
+                                      "basedserv-gaming.desktop"
+                                      "[Desktop Entry]\n"
+                                      "Type=Application\n"
+                                      "Name=basedserv Gaming\n"
+                                      "Comment=Stream the Steam Headless desktop at 1440p/60\n"
+                                      "Icon=moonlight\n"
+                                      "Terminal=false\n"
+                                      "Categories=Game;\n"
+                                      "Exec="
+                                      (file-append
+                                       (specification->package "moonlight-qt")
+                                       "/bin/moonlight")
+                                      " stream 192.168.7.119 Desktop"
+                                      " --resolution 2560x1440 --fps 60 --bitrate 40000"
+                                      " --video-codec HEVC --video-decoder hardware"
+                                      " --display-mode fullscreen --no-hdr\n")))))
            %base-home-services)))

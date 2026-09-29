@@ -96,3 +96,10 @@ dotfiles/config/.config/systemd/user/xgame-keep-going-reminder.timer
 # Pi subagent run artifacts. These are session transcripts, and they contain
 # API keys echoed back in tool output — never commit them to a public repo.
 /.pi-subagents/
+
+# Public endpoint certificate required by the IRC clients; no private key.
+!dotfiles/config/.config/halloy/znc-truenas.pem
+
+# Process memory dumps can contain credentials; never publish them.
+/core
+/core.[0-9]*

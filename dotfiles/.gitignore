@@ -14,3 +14,13 @@ config/.config/ghostty/*.bak-*
 # npm dependencies for the omo opencode wrapper — 62 MB, reinstallable from
 # the committed package.json / package-lock.json.
 config/.config/omo/opencode/node_modules/
+
+# Halloy's live ~/.config/halloy points into this tree. Allowlist only the
+# portable config, theme and public endpoint certificate; keep any GUI state,
+# history, logs or credentials that appear there outside version control.
+config/.config/halloy/*
+!config/.config/halloy/config.toml
+!config/.config/halloy/znc-truenas.pem
+!config/.config/halloy/themes/
+config/.config/halloy/themes/*
+!config/.config/halloy/themes/basedbox.toml
