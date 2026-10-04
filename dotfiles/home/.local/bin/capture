@@ -1,0 +1,581 @@
+#!/usr/bin/env python3
+"""Capture one private note into the Second Brain Memos inbox from a terminal.
+
+The note is created in Memos only. Hermes files it into the wiki later; this
+tool never touches the wiki or Hermes directly.
+"""
+
+import argparse
+import curses
+import http.client
+import json
+import locale
+import os
+import re
+import signal
+import ssl
+import subprocess
+import sys
+import unicodedata
+
+HOST = "elitedesk.tail53428b.ts.net"
+PORT = 8443
+ORIGIN = f"https://{HOST}:{PORT}"
+CREATE_PATH = "/api/v1/memos"
+RBW_ITEM = "Kubernetes / memos / tay-workstation-capture"
+HTTP_TIMEOUT = 20  # seconds, per socket operation
+RBW_TIMEOUT = 15  # rbw unlocked
+RBW_PROMPT_TIMEOUT = 300  # rbw get may wait for a pinentry-tty re-prompt
+MAX_RESPONSE = 1 << 20
+# System trust stores tried, in order, only when neither SSL_CERT_FILE nor
+# SSL_CERT_DIR is set and OpenSSL's compiled-in store is empty (Guix Python
+# in a non-login SSH session). Verification is never disabled.
+CA_DIRS = ("/run/current-system/profile/etc/ssl/certs", "/etc/ssl/certs")
+AUTOSAVE_MS = 2000
+MEMO_NAME = re.compile(r"memos/[A-Za-z0-9][A-Za-z0-9-]{0,63}")
+TOKEN = re.compile(r"[\x21-\x7e]{8,4096}")
+
+KEYS = """keys:
+  arrows, Home/End (Ctrl-A/Ctrl-E), PgUp/PgDn  move
+  Enter  new line      Backspace/Delete  delete
+  Ctrl-S submit to Memos as PRIVATE
+  Ctrl-Q (or Ctrl-C)  save draft and quit"""
+
+
+class Hangup(Exception):
+    pass
+
+
+class CaptureError(Exception):
+    """A failed submission; `ambiguous` means the memo may exist anyway."""
+
+    def __init__(self, message, ambiguous=False):
+        super().__init__(message)
+        self.ambiguous = ambiguous
+
+
+def clean(text):
+    """Printable single-line text for error messages."""
+    return "".join(c if c.isprintable() else " " for c in str(text))[:200]
+
+
+# ---------------------------------------------------------------- draft --
+
+def state_dir():
+    base = os.environ.get("XDG_STATE_HOME") or os.path.expanduser("~/.local/state")
+    return os.path.join(base, "memos-capture")
+
+
+def draft_path():
+    return os.path.join(state_dir(), "draft.txt")
+
+
+def ensure_state_dir():
+    path = state_dir()
+    os.makedirs(os.path.dirname(path), mode=0o700, exist_ok=True)
+    try:
+        os.mkdir(path, 0o700)
+    except FileExistsError:
+        pass
+    st = os.lstat(path)
+    if not os.path.isdir(path) or os.path.islink(path) or st.st_uid != os.getuid():
+        raise CaptureError(f"unsafe draft directory {path}; fix it by hand")
+    if st.st_mode & 0o777 != 0o700:
+        os.chmod(path, 0o700)
+    return path
+
+
+def load_draft():
+    try:
+        fd = os.open(draft_path(), os.O_RDONLY | os.O_NOFOLLOW)
+    except FileNotFoundError:
+        return ""
+    with os.fdopen(fd, "rb") as f:
+        st = os.fstat(f.fileno())
+        if st.st_uid != os.getuid() or not (st.st_mode & 0o170000 == 0o100000):
+            raise CaptureError(f"unsafe draft file {draft_path()}; fix it by hand")
+        if st.st_mode & 0o777 != 0o600:
+            os.fchmod(f.fileno(), 0o600)
+        return f.read().decode("utf-8", "replace")
+
+
+def save_draft(text):
+    """Atomically write the draft (0600); a blank draft removes the file."""
+    ensure_state_dir()
+    if not text.strip():
+        try:
+            os.unlink(draft_path())
+        except FileNotFoundError:
+            pass
+        return False
+    tmp = draft_path() + f".{os.getpid()}.tmp"
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(text.encode("utf-8"))
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, draft_path())
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except FileNotFoundError:
+            pass
+        raise
+    return True
+
+
+# ----------------------------------------------------------- submission --
+
+def fetch_token():
+    """Read the dedicated Memos PAT from an already-unlocked rbw vault.
+
+    Called once at launch, before curses starts: the item has master-password
+    re-prompt, so rbw's pinentry-tty needs the controlling terminal on stdin
+    and stderr; only stdout is captured. Never unlocks, locks, or otherwise
+    changes the vault session. The token stays in memory: no argv,
+    environment, file, or output.
+    """
+    try:
+        unlocked = subprocess.run(
+            ["rbw", "unlocked"], stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=RBW_TIMEOUT)
+    except FileNotFoundError:
+        raise CaptureError("rbw is not installed")
+    except subprocess.TimeoutExpired:
+        raise CaptureError("rbw did not answer")
+    if unlocked.returncode != 0:
+        raise CaptureError("rbw vault is locked; unlock it yourself, then rerun capture")
+    try:
+        got = subprocess.run(
+            ["rbw", "get", RBW_ITEM], stdout=subprocess.PIPE,
+            timeout=RBW_PROMPT_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        raise CaptureError("rbw get timed out waiting for the re-prompt")
+    if got.returncode != 0:
+        raise CaptureError(f"rbw could not read item '{RBW_ITEM}'")
+    # Without a usable TTY rbw can exit 0 with empty output: treat as failure.
+    token = got.stdout.decode("utf-8", "replace").rstrip("\r\n")
+    if not TOKEN.fullmatch(token):
+        raise CaptureError(f"rbw item '{RBW_ITEM}' returned no valid token")
+    return token
+
+
+def has_entries(path):
+    try:
+        with os.scandir(path) as it:
+            return any(True for _ in it)
+    except OSError:
+        return False
+
+
+def tls_context():
+    ctx = ssl.create_default_context()
+    if os.environ.get("SSL_CERT_FILE") or os.environ.get("SSL_CERT_DIR"):
+        return ctx  # explicit configuration wins
+    paths = ssl.get_default_verify_paths()
+    if (paths.cafile and os.path.isfile(paths.cafile)) or (
+            paths.capath and has_entries(paths.capath)):
+        return ctx
+    for d in CA_DIRS:
+        bundle = os.path.join(d, "ca-certificates.crt")
+        if os.path.isfile(bundle):
+            ctx.load_verify_locations(cafile=bundle)
+            return ctx
+        if has_entries(d):
+            ctx.load_verify_locations(capath=d)
+            return ctx
+    return ctx  # no store found: verification fails closed
+
+
+def create_memo(text, token):
+    """POST one PRIVATE memo; return its verified resource name. No retries."""
+    body = json.dumps({"content": text, "visibility": "PRIVATE"}).encode("utf-8")
+    conn = http.client.HTTPSConnection(
+        HOST, PORT, timeout=HTTP_TIMEOUT, context=tls_context())
+    try:
+        try:
+            conn.connect()
+        except ssl.SSLError as e:
+            raise CaptureError(f"TLS verification failed ({clean(e.__class__.__name__)}); note not sent")
+        except OSError as e:
+            raise CaptureError(f"cannot reach {HOST}:{PORT} ({clean(e.__class__.__name__)}); note not sent")
+        try:
+            conn.request("POST", CREATE_PATH, body=body, headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "memos-capture",
+            })
+            resp = conn.getresponse()
+            status = resp.status
+            payload = resp.read(MAX_RESPONSE + 1)
+        except (OSError, http.client.HTTPException) as e:
+            raise CaptureError(
+                f"connection failed mid-request ({clean(e.__class__.__name__)})", ambiguous=True)
+    finally:
+        conn.close()
+    # Response bodies are never shown: they may echo request details.
+    if 300 <= status < 400:
+        raise CaptureError(f"server answered redirect {status}; refused, note not sent")
+    if status in (401, 403):
+        raise CaptureError(f"Memos rejected the token (HTTP {status}); note not created")
+    if 400 <= status < 500:
+        raise CaptureError(f"Memos rejected the note (HTTP {status}); note not created")
+    if status != 200:
+        raise CaptureError(f"server error HTTP {status}", ambiguous=True)
+    try:
+        if len(payload) > MAX_RESPONSE:
+            raise ValueError
+        name = json.loads(payload.decode("utf-8"))["name"]
+    except (ValueError, KeyError, TypeError, UnicodeDecodeError):
+        name = None
+    if not isinstance(name, str) or not MEMO_NAME.fullmatch(name):
+        raise CaptureError("HTTP 200 without a memo name in the reply", ambiguous=True)
+    return name
+
+
+# --------------------------------------------------------------- editor --
+
+def char_width(ch):
+    if unicodedata.combining(ch) or ch in "\u200b\u200c\u200d\ufe0f":
+        return 0
+    return 2 if unicodedata.east_asian_width(ch) in ("W", "F") else 1
+
+
+def text_width(s):
+    return sum(char_width(c) for c in s)
+
+
+class Editor:
+    def __init__(self, text):
+        self.lines = text.replace("\r\n", "\n").replace("\t", "    ").split("\n") or [""]
+        self.lines = ["".join(c for c in line if c.isprintable()) for line in self.lines]
+        self.row = len(self.lines) - 1
+        self.col = len(self.lines[self.row])
+        self.top = 0
+        self.goal = None  # sticky display column for vertical moves
+        self.dirty = False
+
+    def text(self):
+        return "\n".join(self.lines)
+
+    # Soft-wrapped visual rows: (line index, start, end) per screen row.
+    def rows(self, width):
+        out = []
+        for li, line in enumerate(self.lines):
+            start, used = 0, 0
+            for i, ch in enumerate(line):
+                w = char_width(ch)
+                if used + w > width and i > start:
+                    out.append((li, start, i))
+                    start, used = i, 0
+                used += w
+            out.append((li, start, len(line)))
+            if line and used >= width:
+                out.append((li, len(line), len(line)))
+        return out
+
+    def cursor_row(self, rows):
+        for r, (li, s, e) in enumerate(rows):
+            if li != self.row:
+                continue
+            last = r + 1 == len(rows) or rows[r + 1][0] != li
+            if s <= self.col < e or (last and self.col == e):
+                return r
+        return 0
+
+    def move_vertical(self, rows, delta):
+        r = self.cursor_row(rows)
+        li, s, _ = rows[r]
+        if self.goal is None:
+            self.goal = text_width(self.lines[li][s:self.col])
+        t = max(0, min(len(rows) - 1, r + delta))
+        li, s, e = rows[t]
+        last = t + 1 == len(rows) or rows[t + 1][0] != li
+        pos, used = s, 0
+        while pos < e and used + char_width(self.lines[li][pos]) <= self.goal:
+            used += char_width(self.lines[li][pos])
+            pos += 1
+        if not last and pos == e and e > s:
+            pos = e - 1
+        self.row, self.col = li, pos
+
+    def insert(self, s):
+        line = self.lines[self.row]
+        self.lines[self.row] = line[:self.col] + s + line[self.col:]
+        self.col += len(s)
+        self.dirty = True
+
+    def newline(self):
+        line = self.lines[self.row]
+        self.lines[self.row:self.row + 1] = [line[:self.col], line[self.col:]]
+        self.row, self.col = self.row + 1, 0
+        self.dirty = True
+
+    def backspace(self):
+        if self.col > 0:
+            line = self.lines[self.row]
+            self.lines[self.row] = line[:self.col - 1] + line[self.col:]
+            self.col -= 1
+        elif self.row > 0:
+            self.col = len(self.lines[self.row - 1])
+            self.lines[self.row - 1] += self.lines.pop(self.row)
+            self.row -= 1
+        else:
+            return
+        self.dirty = True
+
+    def delete(self):
+        line = self.lines[self.row]
+        if self.col < len(line):
+            self.lines[self.row] = line[:self.col] + line[self.col + 1:]
+        elif self.row + 1 < len(self.lines):
+            self.lines[self.row] += self.lines.pop(self.row + 1)
+        else:
+            return
+        self.dirty = True
+
+    def left(self):
+        if self.col > 0:
+            self.col -= 1
+        elif self.row > 0:
+            self.row -= 1
+            self.col = len(self.lines[self.row])
+
+    def right(self):
+        if self.col < len(self.lines[self.row]):
+            self.col += 1
+        elif self.row + 1 < len(self.lines):
+            self.row, self.col = self.row + 1, 0
+
+
+def put(win, y, x, s, attr=0):
+    try:
+        win.addstr(y, x, s, attr)
+    except curses.error:
+        pass  # writing the bottom-right cell or a clipped string
+
+
+def fit(s, width):
+    out, used = [], 0
+    for ch in s:
+        w = char_width(ch)
+        if used + w > width:
+            break
+        out.append(ch)
+        used += w
+    return "".join(out)
+
+
+def draw(scr, ed, status):
+    scr.erase()
+    height, width = scr.getmaxyx()
+    if height < 4 or width < 20:
+        put(scr, 0, 0, fit("terminal too small", width))
+        scr.refresh()
+        return
+    body = height - 2
+    rows = ed.rows(width)
+    cur = ed.cursor_row(rows)
+    ed.top = max(0, min(ed.top, cur, len(rows) - 1))
+    if cur >= ed.top + body:
+        ed.top = cur - body + 1
+    head = "capture -> Memos PRIVATE   ^S submit   ^Q save draft & quit"
+    put(scr, 0, 0, fit(head, width).ljust(width), curses.A_REVERSE)
+    for y, (li, s, e) in enumerate(rows[ed.top:ed.top + body], start=1):
+        put(scr, y, 0, ed.lines[li][s:e])
+    put(scr, height - 1, 0, fit(status, width - 1), curses.A_BOLD)
+    li, s, _ = rows[cur]
+    scr.move(cur - ed.top + 1, min(width - 1, text_width(ed.lines[li][s:ed.col])))
+    scr.refresh()
+    return body
+
+
+# Raw escape sequences that terminfo did not translate (e.g. a TERM mismatch
+# under tmux). Unknown sequences are swallowed rather than typed as text.
+ESCAPES = {
+    "[A": curses.KEY_UP, "[B": curses.KEY_DOWN, "[C": curses.KEY_RIGHT,
+    "[D": curses.KEY_LEFT, "OA": curses.KEY_UP, "OB": curses.KEY_DOWN,
+    "OC": curses.KEY_RIGHT, "OD": curses.KEY_LEFT, "[H": curses.KEY_HOME,
+    "[F": curses.KEY_END, "OH": curses.KEY_HOME, "OF": curses.KEY_END,
+    "[1~": curses.KEY_HOME, "[7~": curses.KEY_HOME, "[4~": curses.KEY_END,
+    "[8~": curses.KEY_END, "[3~": curses.KEY_DC, "[5~": curses.KEY_PPAGE,
+    "[6~": curses.KEY_NPAGE,
+}
+
+
+def read_escape(scr):
+    """Decode the rest of an escape sequence already queued after ESC."""
+    seq = ""
+    scr.timeout(25)
+    try:
+        while len(seq) < 16:
+            try:
+                ch = scr.get_wch()
+            except curses.error:
+                break
+            if not isinstance(ch, str):
+                break
+            seq += ch
+            if seq[0] not in "[O" or (len(seq) > 1 and (ch.isalpha() or ch == "~")):
+                break
+    finally:
+        scr.timeout(AUTOSAVE_MS)
+    return ESCAPES.get(seq)
+
+
+def run(scr, ed, restored, token):
+    """Edit loop. Returns the created memo name, or None after save-and-quit."""
+    curses.raw()  # Ctrl-S/Ctrl-Q/Ctrl-C reach us instead of the tty driver
+    curses.nonl()
+    scr.keypad(True)
+    scr.timeout(AUTOSAVE_MS)
+    status = "restored saved draft" if restored else "type your note"
+    if not locale.getpreferredencoding(False).lower().replace("-", "") == "utf8":
+        status = "warning: non-UTF-8 locale; non-ASCII input may break"
+    ambiguous = False
+    confirm = False
+    while True:
+        body = draw(scr, ed, status) or 1
+        try:
+            key = scr.get_wch()
+        except curses.error:  # autosave tick
+            if ed.dirty:
+                save_draft(ed.text())
+                ed.dirty = False
+            continue
+        if key == "\x1b":
+            key = read_escape(scr)
+            if key is None:
+                continue
+        width = scr.getmaxyx()[1]
+        vertical = key in (curses.KEY_UP, curses.KEY_DOWN, curses.KEY_PPAGE, curses.KEY_NPAGE)
+        if not vertical:
+            ed.goal = None
+        if key != "\x13":
+            confirm = False
+        if key in ("\x11", "\x03"):
+            return None
+        if key == "\x13":
+            text = ed.text().rstrip()
+            if not text.strip():
+                status = "refusing to submit a blank note"
+                continue
+            if ambiguous and not confirm:
+                confirm = True
+                status = "last submit may have succeeded; check Memos, ^S again to send anyway"
+                continue
+            save_draft(ed.text())
+            ed.dirty = False
+            status = "submitting..."
+            draw(scr, ed, status)
+            try:
+                return create_memo(text, token)
+            except CaptureError as e:
+                ambiguous = e.ambiguous
+                if ambiguous:
+                    status = f"UNKNOWN: {e}; memo MAY exist, check {ORIGIN} before resending (duplicate possible). Draft kept."
+                else:
+                    status = f"failed: {e}. Draft kept."
+            continue
+        if key == curses.KEY_RESIZE:
+            continue
+        if key in ("\r", "\n", curses.KEY_ENTER):
+            ed.newline()
+        elif key in (curses.KEY_BACKSPACE, "\x7f", "\x08"):
+            ed.backspace()
+        elif key == curses.KEY_DC:
+            ed.delete()
+        elif key == curses.KEY_LEFT:
+            ed.left()
+        elif key == curses.KEY_RIGHT:
+            ed.right()
+        elif key == curses.KEY_UP:
+            ed.move_vertical(ed.rows(width), -1)
+        elif key == curses.KEY_DOWN:
+            ed.move_vertical(ed.rows(width), 1)
+        elif key == curses.KEY_PPAGE:
+            ed.move_vertical(ed.rows(width), -body)
+        elif key == curses.KEY_NPAGE:
+            ed.move_vertical(ed.rows(width), body)
+        elif key in (curses.KEY_HOME, curses.KEY_FIND, "\x01"):
+            ed.col = 0
+        elif key in (curses.KEY_END, curses.KEY_SELECT, "\x05"):
+            ed.col = len(ed.lines[ed.row])
+        elif key == "\t":
+            ed.insert("    ")
+        elif isinstance(key, str) and key.isprintable():
+            ed.insert(key)
+        if ed.dirty:
+            status = "editing (draft autosaves)"
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog="capture",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=(
+            f"Write a note in a small terminal editor and create it as a PRIVATE memo\n"
+            f"in the Second Brain Memos inbox:\n  {ORIGIN}\n"
+            f"Hermes files it into the wiki afterwards; a created memo is captured,\n"
+            f"not yet filed."),
+        epilog=(
+            f"{KEYS}\n\n"
+            f"auth: dedicated Memos token from the already-unlocked rbw item\n"
+            f"  '{RBW_ITEM}',\n"
+            f"  read once at launch before the editor opens (rbw re-prompts for the\n"
+            f"  master password); capture never unlocks or locks rbw.\n"
+            f"draft: $XDG_STATE_HOME/memos-capture/draft.txt (default ~/.local/state),\n"
+            f"  kept on quit or failure, removed only after Memos confirms the memo.\n"
+            f"A failed submit is never retried automatically; after an uncertain\n"
+            f"failure check Memos before resending to avoid a duplicate."))
+    parser.parse_args()
+    if not (sys.stdin.isatty() and sys.stdout.isatty()):
+        parser.error("needs an interactive terminal")
+    locale.setlocale(locale.LC_ALL, "")
+    os.environ.setdefault("ESCDELAY", "25")
+    try:
+        ensure_state_dir()
+        text = load_draft()
+    except (CaptureError, OSError) as e:
+        print(f"capture: {clean(e)}", file=sys.stderr)
+        return 1
+    try:
+        token = fetch_token()
+    except CaptureError as e:
+        kept = f"; draft kept at {draft_path()}" if text.strip() else ""
+        print(f"capture: {e}{kept}", file=sys.stderr)
+        return 1
+
+    def hangup(signum, frame):
+        raise Hangup()
+
+    signal.signal(signal.SIGHUP, hangup)
+    signal.signal(signal.SIGTERM, hangup)
+    ed = Editor(text)
+    name = None
+    try:
+        name = curses.wrapper(run, ed, bool(text.strip()), token)
+    finally:
+        if name is None:
+            kept = save_draft(ed.text())
+        else:
+            save_draft("")
+    if name is None:
+        print(f"Draft saved to {draft_path()}" if kept else "Nothing to save; no draft kept.")
+        return 0
+    print(f"Captured {name} (PRIVATE).")
+    print(f"  {ORIGIN}/{name}")
+    print("Not filed yet: Hermes files it into the wiki shortly (usually within a")
+    print("minute or two); the memo gains a 'Filed as' comment and #filed when done.")
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except Hangup:
+        sys.exit(129)
+    except KeyboardInterrupt:
+        sys.exit(130)

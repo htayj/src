@@ -9,8 +9,10 @@
              (gnu services)
              (gnu services shepherd)
              (guix gexp)
+             (guix modules)
              (tay packages caelestia-cli)
              (tay packages caelestia-shell)
+             (tay packages caelestia-panes)
              (tay home-common)
              (tay catgirl))
 
@@ -56,6 +58,10 @@
      "htop"
      ;; Optional Wayland session; StumpWM and its X clients stay available.
      "hyprland"
+     ;; Version-matched manual tree layout; local channel pins the plugin ABI.
+     "hy3"
+     ;; Community tiling plugin; declares ABI compat with this Hyprland.
+     "hyprland-dualmaster"
      ;; Caelestia shell 2.5.0 pins its own Quickshell; the Hyprland session
      ;; helper owns its lifecycle and a standalone polkit-gnome agent.
      "polkit-gnome"
@@ -167,7 +173,7 @@
    (auto-start? #t)
    (respawn? #t)
    (respawn-delay 5)
-   (respawn-limit '(5 . 60))
+   (respawn-limit #~'(5 . 60))
    (modules '((shepherd support)))
    (start #~(make-forkexec-constructor
              (list "/bin/sh" #$%ha-mcp-attach "ha-mcp-admin")
@@ -184,7 +190,7 @@
    (auto-start? #t)
    (respawn? #t)
    (respawn-delay 5)
-   (respawn-limit '(5 . 60))
+   (respawn-limit #~'(5 . 60))
    (modules '((shepherd support)))
    (start #~(make-forkexec-constructor
              (list "/bin/sh" #$%ha-mcp-attach "ha-mcp-admin-proxy")
@@ -319,7 +325,7 @@
 
 (home-environment
  (packages (append %core-home-packages %workstation-home-packages
-                   (list caelestia-shell caelestia-cli)))
+                   (list caelestia-shell caelestia-cli caelestia-panes)))
  (services
   (append %core-home-services
            (list (service home-syncthing-service-type)
@@ -342,6 +348,70 @@
                  ;; declares itself to order startup correctly.
                  (service home-dbus-service-type)
                  (service home-pipewire-service-type)
+                 ;; The symlink manager runs first and removes the old store
+                 ;; link on the initial transition. Recover that generation's
+                 ;; bytes before using the seed; subsequent regular state is
+                 ;; left untouched so GUI edits survive every activation.
+                 (simple-service
+                  'seed-g9-hdr-config
+                  home-activation-service-type
+                  (with-imported-modules
+                      (source-module-closure '((guix build utils)))
+                    #~(begin
+                        (use-modules (guix build utils))
+                        (let* ((destination
+                                (string-append (getenv "HOME")
+                                               "/.config/hypr/g9-hdr.conf"))
+                               (state
+                                (catch 'system-error
+                                  (lambda () (lstat destination))
+                                  (lambda args
+                                    (if (= ENOENT (system-error-errno args))
+                                        #f
+                                        (apply throw args))))))
+                          (when (or (not state)
+                                    (eq? 'symlink (stat:type state)))
+                            (let* ((old-home (getenv "GUIX_OLD_HOME"))
+                                   (old-file
+                                    (and old-home
+                                         (string-append
+                                          old-home
+                                          "/files/.config/hypr/g9-hdr.conf")))
+                                   (source
+                                    (cond
+                                     (state destination)
+                                     ((and old-file (access? old-file R_OK))
+                                      old-file)
+                                     (else
+                                      #$(local-file
+                                         "/home/tay/src/dotfiles/config/.config/hypr/g9-hdr.conf"
+                                         "g9-hdr.conf-seed")))))
+                              (mkdir-p (dirname destination))
+                              (let* ((temporary
+                                      (string-append destination ".XXXXXX"))
+                                     (output (mkstemp! temporary))
+                                     (installed? #f))
+                                (dynamic-wind
+                                  (lambda () #t)
+                                  (lambda ()
+                                    (call-with-ascii-input-file source
+                                      (lambda (input)
+                                        (sendfile output input
+                                                  (stat:size (stat input))
+                                                  0)))
+                                    (close-port output)
+                                    (chmod temporary #o600)
+                                    (rename-file temporary destination)
+                                    (set! installed? #t))
+                                  (lambda ()
+                                    (dynamic-wind
+                                      (lambda () #t)
+                                      (lambda ()
+                                        (unless (port-closed? output)
+                                          (close-port output)))
+                                      (lambda ()
+                                        (unless installed?
+                                          (delete-file temporary)))))))))))))
                  (simple-service 'workstation-daemons
                                  home-shepherd-service-type
                                  (list %mpd-service

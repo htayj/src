@@ -25,6 +25,7 @@ rbh() {
 	fi
 	timeout 4h "$_basedbox_guix" home reconfigure \
 		-L "$HOME/src/guix-config/modules" \
+		-L "$HOME/projects/guix-channel/guix" \
 		-L "$HOME/projects/ivory-key/guix" \
 		"$HOME/src/guix-config/home-workstation-configuration.scm" "$@"
 }

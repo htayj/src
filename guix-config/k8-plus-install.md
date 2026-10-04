@@ -133,6 +133,219 @@ not available on other hosts and are not visible to non-interactive shells.
 `home-workstation-configuration.scm`; neither needs `--allow-downgrades`
 while the pulled channels are at or ahead of the running generation.
 
+## Hyprland workspace layouts (2026-09-30; layout card and dualmaster updated 2026-10-02)
+
+The live-linked config keeps `dwindle` as its default and loads the matched
+`hy3` and `hyprland-dualmaster` plugins from
+`$HOME/.guix-profile/lib/hyprland/libhy3.so` and
+`$HOME/.guix-profile/lib/hyprland/libdualmaster.so`. Built-in scrolling uses
+one-third-width columns (cycling through thirds, halves, two-thirds and full
+width); master retains its centered main pane with a 0.5 size factor.
+
+Press **Right Alt+Y**, release Alt, then **D** (dwindle), **M** (unchanged
+centered master), **W** (dual centered masters), **S** (scrolling), or **H**
+(hy3). Escape cancels. The helper
+`~/.config/hypr/layout-controls.py` changes only the focused workspace,
+including named/special workspace selectors. Choices last until config
+reload or session restart; these shortcuts do not rewrite the default.
+Right Alt+H/J/K/L and Shift variants use hy3's navigation when appropriate.
+Right Alt+Shift+X/Z cycle scrolling column widths; Right Alt+Shift+M swaps
+with master. The Alt+Y prefix also exposes hy3 group actions:
+T new tab group, V horizontal split, B vertical split, U toggle existing
+group tabs, K/J focus parent/child, E equalize. Alt+? lists live bindings.
+
+**W / dualmaster** assigns the first two tiled windows to side-by-side masters
+sharing an adjustable centered region: **60% of usable width by default**,
+30% per master. Remaining windows alternate between left/right 20%-width
+slave columns, stacked vertically on each side. One window occupies the
+current combined centered width. Two masters reserve the side columns even
+without slaves; removing a primary promotes the next tiled window. **M**
+remains the built-in half-width centered master; **W** is runtime-only.
+
+**Right Alt+right-button drag** uses the unchanged `resizewindow` binding and
+built-in master mouse semantics: corner/side-aware direction, smart-resizing
+scaling, 5%–95% combined-width clamp and vertical slave sizing. Horizontal
+dragging resizes both masters together, preserving equal masters and symmetric
+sides. Width is per-workspace runtime state, reset when its layout is recreated
+or configuration reloads; it is not persisted in the config.
+
+Alt+Y now opens `~/.config/hypr/layout-help.qml`, a persistent layout card
+themed from the live Caelestia scheme, instead of a brief notification.
+`layout-controls.py` populates its choices from current `layouts` bindings
+and waits for the card to map before entering that submap. It has no display
+timeout: a selection/action, Escape, an external submap reset/change, or a
+config reload closes it. Invalid keys leave it visible. Reload also resets
+the active `layouts` submap; repeated invocation retains the existing card.
+The overlay takes no keyboard focus or mouse input: Hyprland owns the
+bindings, and pointer input passes through to the desktop.
+
+**Home snapshot helper-path repair, 2026-10-04:** after the accepted GDM
+login, the operator reported Right Alt+Y missing `keybind-help.py`. The deployed
+binding is `$mainMod = ALT`, `$layouts = python3 ~/.config/hypr/layout-controls.py`,
+then `$layouts menu`. Home deployed that launcher as the standalone file
+`/gnu/store/jzaw9hrklb07pa32wclyx2pa7ksv5rvz-home-dotfiles--config-hypr-layout-controls-py`.
+Its `Path(__file__).resolve().with_name("keybind-help.py")` therefore selected
+missing `/gnu/store/keybind-help.py`, not the existing separately stored
+`~/.config/hypr/keybind-help.py`. The source launcher now imports through
+`Path.home() / ".config/hypr/keybind-help.py"`, matching the direct help binding,
+QML data/dismiss callers and the existing logical Home QML paths.
+
+Scoped deployment links `~/.config/hypr/layout-controls.py` to
+`~/src/dotfiles/config/.config/hypr/layout-controls.py`; the prior store symlink
+is preserved at
+`~/.local/state/hyprland-setup/20261004-ralt-y-help-path/layout-controls.py.before`.
+No other binding/helper, Home activation or compositor reload/restart changed.
+The corrected tracked source is used by future `rbh` snapshots.
+
+Throwaway Python smoke exited0 for the exact deployed `...layout-controls.py
+menu` argv and a private-HOME independent-file snapshot symlink. Both imported
+the real deployed help module and resolved its real installed pinned
+Quickshell0.3.1 dependency, stopping before the first `hyprctl` call. An audit
+hook prohibited process launches/socket connections; an initial harness sentinel
+hit launcher cleanup and its attempted process launch was blocked, then the
+sentinel was corrected. No live IPC or UI action occurred. Receipt:
+`~/.cache/ralt-y-help-path-20261004.json`; temporary harness/private files removed.
+This proves helper/runtime command resolution, not physical Right Alt+Y or
+rendered layout-card acceptance. No current-monitor test or input was issued.
+
+**Startup plugin-path repair, 2026-10-04 (Home91 snapshot deployed; live workaround user-accepted):** tilde plugin paths
+in the source config silently failed to load: Hyprland's config parser
+expands `$VAR` references (so `$HOME` becomes an absolute path before the
+plugin handler runs), but the legacy plugin handler does not expand a literal
+`~` — unlike the `source` handler's `GLOB_TILDE`, it records the raw
+right-hand side, and `dlopen` on the literal-tilde string returns NULL.
+Plugin load failures appear only in logging/notifications, not
+`configerrors`, so the plugins silently never load and `plugin[]` stays empty.
+The actual cause is path resolution, not an ABI mismatch. Upstream at the
+pinned `v0.55.4` tag:
+`https://github.com/hyprwm/Hyprland/blob/v0.55.4/src/config/legacy/ConfigManager.cpp`
+and
+`https://github.com/hyprwm/Hyprland/blob/v0.55.4/src/plugins/PluginSystem.cpp`.
+The `layout-controls.py` generic
+message is unchanged: it cannot diagnose the load cause. Source
+`dotfiles/config/.config/hypr/hyprland.conf` now uses
+`$HOME/.guix-profile/lib/hyprland/...` for both directives with an explanatory
+comment. Home91 now links `~/.config/hypr/hyprland.conf` to
+`/gnu/store/av46dhfsclmw4fryia2d0rny16dwvfkv-home-dotfiles--config-hypr-hyprland-conf`,
+which contains the corrected directives. The running compositor still parses
+its startup-canonicalized `h646...-hyprland-conf` path; a normal reload does
+not retarget an explicit config path to the new Home snapshot. The corrected
+snapshot is deployed, but plugin startup persistence after logout/reboot is
+**not confirmed**. The plugin ABI checks are unchanged.
+
+Isolated verification used installed Hyprland0.55.4
+(`a0136d8c04687bb36eb8a28eb9d1ff92aea99704`) under a private HOME/XDG
+dbus/labwc nested session with the corrected source config: both plugins
+load/map, `configerrors` is whitespace-only, and six disposable Kitty windows
+confirmed centered master, dual centered masters and alternating side stacks
+(hy3+dualmaster); the actual `layout-controls.py` switches exited0 with
+workspace readbacks. Profile plugin SHA256: hy3
+`74c5d77e165d943003b822ef1b25fa5e62ab902edadd35b72cf9ccad7a77c9a0`; dualmaster
+`6f73a16a006e42f57f44a19825f7d34e0874df651e3d6598c2b6795e2529bb39`. Receipt:
+`~/.cache/hyprland-plugin-path-proof-20261004.json`. The source repair did not
+touch the running compositor (PID 2478). Immediate loads from the current
+session are (no reload needed; HYPRLAND_INSTANCE_SIGNATURE is picked up from
+the session environment):
+
+```sh
+/home/tay/.guix-profile/bin/hyprctl plugin load /home/tay/.guix-profile/lib/hyprland/libhy3.so
+/home/tay/.guix-profile/bin/hyprctl plugin load /home/tay/.guix-profile/lib/hyprland/libdualmaster.so
+```
+
+On 2026-10-04, the operator confirmed “that worked” after instructions to
+load both plugins from those absolute profile paths and select dualmaster.
+This accepts the live-session workaround and dualmaster success as
+user-reported evidence, not an independent runtime check. The subsequent
+read-only Home91 snapshot readback confirms deployment of the corrected
+directives; startup persistence after logout/reboot remains unconfirmed.
+
+`(tay packages hy3)` in the local Guix channel pins source
+`d7e0c58a1116df3d79f24a225f17b988112ca1ad` to Hyprland 0.55.4 and keeps the
+runtime ABI check. Build/install with:
+
+```sh
+guix build -L ~/projects/guix-channel/guix hy3 --cores=1 --max-jobs=1
+guix install -L ~/projects/guix-channel/guix hy3
+```
+
+The scoped user-profile installation is deployed; the Home package list
+also includes hy3, but no full Home/System reconfiguration was activated.
+Update the source pin and rebuild the plugin when upgrading Hyprland.
+
+`(tay packages hyprland-dualmaster)` provides version `0.55.4-0.1.1` from local
+source `guix/tay/packages/files/hyprland-dualmaster/` in the channel, with a
+GCC 15 Release build and exact compositor ABI check. The recipe rejects a
+different Hyprland package version; rebuild/upgrade them together.
+
+```sh
+guix build -L ~/projects/guix-channel/guix hyprland-dualmaster --cores=1 --max-jobs=1
+guix install -L ~/projects/guix-channel/guix hyprland-dualmaster
+```
+
+On 2026-10-02 version `0.55.4-0.1.1` was built, scoped-installed and loaded into
+the running compositor from
+`/gnu/store/srab5n9r468z0gz27hqyxq3ggf13sh0w-hyprland-dualmaster-0.55.4-0.1.1`.
+The plugin directive follows hy3; the workstation Home declaration includes
+the package in `home-workstation-configuration.scm`. No compositor restart or
+full Home/System activation was performed. The upgrade switched active
+dualmaster workspaces to dwindle before unloading, then restored their layout
+choices and exact master/slave slot order; no reload or monitor/DPMS command
+was issued by the resize worker.
+
+On 2026-09-30, three temporary Kitty windows verified switching all four layouts,
+centered-master geometry, scrolling width/focus, hy3 tabs/navigation/group
+actions, and execution of the registered H binding command. Named-workspace
+selection also passed. Existing workspace layouts and monitor/HDR/gamma
+settings were unchanged; temporary windows were removed and the original
+workspace restored. Reload reports no errors and retains the plugin.
+That run did not confirm physical key events or visual window layouts: wtype
+did not trigger the bindings, and grim returned wallpaper-only captures both
+with and without the plugin. Offline package metadata/derivation lint passed;
+full lint timed out fetching the CVE database.
+The wallpaper-only limitation is historical, superseded for the current `grim`
+path by the HDR screenshot repair documented below on 2026-10-02. It does not
+retroactively establish visual window-layout proof for that earlier run.
+
+On 2026-10-02, live card smoke confirmed persistence beyond five seconds,
+repeat invocation retaining the same card, invalid virtual A leaving it open,
+and virtual Escape/D closing it with the default submap restored. External
+reset, reload and forced Qt startup failure left no helper/card or active
+`layouts` mode. D selected the already-dwindle workspace without changing it.
+A QML-rendered capture showed the title, all 12 binding rows and footer
+readably without overlap; compositor capture did not complete. Physical
+Right Alt+Y and pointer pass-through remain untested. Virtual input required
+a temporary device-specific bind-symbol override, removed by reload; reload's
+changes to previous runtime master overrides were restored, leaving all
+workspace layouts matching the baseline. No compositor restart or full
+Home/System activation was performed.
+
+**Resize verification, 2026-10-02:** old two-window horizontal-resize no-op
+reproduced before replacement. Actual virtual evdev/uinput Right Alt,
+right-button and pointer-motion events exercised the existing binding for
+both masters and all four corners; IPC confirmed coupled growth/shrinkage,
+equal masters and symmetric sides. Default 1/2/3/8 clients, 5%/95% width limits,
+smart/non-smart slave sizing, cornerless/single-window resizing, fullscreen/
+maximized guards and workspace isolation were exercised. All 14 original
+clients, workspaces, exact slot order, floating/fullscreen state, focus/cursor
+were restored; scratch windows/input removed. Workspace 1 remains dualmaster
+at default 60% (master clients `x=1076/2588`, width `1506` each); other layouts,
+monitor modes/positions preserved, no config errors, hy3 loaded. Physical
+hand-operated dragging and compositor screenshots were not verified.
+
+**Historical initial 0.1.0 smoke, earlier 2026-10-02:** fixed two-thirds center
+(one-third masters, one-sixth sides) is superseded by the adjustable 60% default.
+Real IPC covered 1/2/3/4/6 windows in logical usable `x=65 y=15 w=5040 h=1410`:
+master clients `x=908/2588`, width `1674`; slave clients `x=66/4268`, width `836`;
+six-window side stacks `y=16/723`, height `701` (gaps/borders included).
+Fullscreen/maximized, directional movement, promotion/removal/addition,
+slave sizing and virtual W/M selection passed. That run removed scratch,
+restored baseline layouts to dwindle and returned both displays to DPMS off.
+
+**Historical G9 recovery during this task, 2026-10-02:** user reported “mode not supported” before
+any resize-worker monitor changes. IPC still showed DP-1 `5120x1440@119.979`,
+XRGB2101010, HDR/VRR enabled. DP-1-only DPMS off/on recovered it, confirmed
+by the user. Root cause unknown; saved G9 configuration/CRT and modes unchanged.
+
 ## Optional Hyprland session
 
 The workstation Home package list includes `hyprland`,
@@ -199,42 +412,246 @@ the existing X session:
 ```sh
 ~/.guix-profile/bin/Hyprland --verify-config \
   --config ~/.config/hypr/hyprland.conf
-~/.guix-profile/bin/start-hyprland -- \
-  --config ~/.config/hypr/hyprland.conf
+~/.config/hypr/start-session.sh
 ```
 
-The system package list also includes Hyprland for **future** GDM discovery.
-Guix's GDM service searches the system profile's `share/wayland-sessions`, not
-the user's Home/profile directory. The package supplies
-`share/wayland-sessions/hyprland.desktop` with `Exec=start-hyprland`. It becomes
-available in GDM only after an authorized system deployment; user installation
-alone does not add the chooser entry. Root authorization is not needed for the
-TTY route. Do not loosen device/store permissions or restart GDM to add it.
+### GDM Caelestia entry prepared, 2026-10-04
 
-To deploy only this package addition, instead of unrelated edits in
-`~/src/config-k8-plus.scm`, an administrator can inherit the immutable running
-configuration. First review the pinned channels and dry-run plan, then run the
-same command without `--dry-run` only with approval:
+The System declaration now uses local `%hyprland-caelestia-session` instead of
+the raw Hyprland package. It retains the upstream binaries/data through store
+symlinks and replaces **the same** `hyprland.desktop` entry, avoiding duplicate
+chooser items. StumpWM and LXQt remain unchanged. Guix's GDM searches the System
+profile's `share/wayland-sessions`, not the user's Home/profile directory.
+The chooser name is **Hyprland (Caelestia)**, with absolute immutable
+`Exec`/`TryExec` pointing to `hyprland-caelestia-session`.
+
+That launcher obtains `HOME` from the logged-in UID's passwd entry, respects a
+nonempty `XDG_CONFIG_HOME`, and invokes the tracked
+`${XDG_CONFIG_HOME:-$HOME/.config}/hypr/start-session.sh --gdm`. Missing startup
+source, unreadable `hyprland.conf`, or absent GDM session bus fails clearly;
+there is no silent raw-Hyprland fallback. GDM already runs its Guix login-shell
+wrapper, so this launcher adds neither another login shell nor another bus.
+It preserves the bus/runtime/authentication environment inherited by the
+desktop entry; Guix Home's login setup can select its standard user bus before
+that entry runs. This does not claim that GDM's private bus and Home's bus are
+identical, or isolate multiple GDM sessions sharing one UID.
+
+Both TTY and GDM use the same profile PATH, XDG data, Qt/QML and Kitty Meta
+setup. Compositor resolution prefers the user profile, then Home, then System,
+matching the configured user-profile plugin ABI. The TTY invocation above
+still creates a private `dbus-run-session` to leave concurrent X-session
+services untouched; `--gdm` requires and retains the inherited bus instead.
+
+The historical prepared System build was
+`/gnu/store/cia953aqn0zwfnh9xw3x5mmg6wwj83cv-system`; the historical refreshed
+Home build was `/gnu/store/1rsna9xclg8z8gmm8hpyg6648cn9r75a-home`.
+The operator subsequently activated both and rebooted. Earlier parent byte comparisons of built Home
+`files/.config/hypr/start-session.sh` and `files/.bashrc.d/host-basedbox` with
+the corrected sources exited0. Startup SHA256
+`1701a88ec40ae0d5f9b28df48e8097fcdde7b28fe3ef41d12ecc25c444a157b4`
+matches the isolated proof's exercised source bytes. The corrected host
+fragment is deployed as a source link; its original is preserved at
+`~/.local/state/host-basedbox-rbh-20261004/host-basedbox.before`.
+The actual immutable System desktop Exec was exercised in isolated real
+Hyprland under headless labwc, using private XDG config/runtime/cache/state/
+data and a minimal no-autostart config with the tracked keymap. Actual IPC,
+empty configerrors, keymap, process environment and active1280×720 headless
+output passed; GDM-path inherited bus, distinct TTY-path bus/GetId, and
+missing-script/config/bus failures were checked. Task-created sessions exited
+cleanly; no live-session IPC or monitor was used.
+Evidence: `~/.cache/gdm-hyprland-readiness-20261004.json`.
+This verifies both complete builds and the launcher contract, **not physical
+GDM/PAM login, first-login full Caelestia startup, or hardware/keyboard behavior**.
+
+**Historical first reboot/GDM login failure on 2026-10-04; later operator-confirmed recovery below.**
+At08:39, GDM opened a PAM Wayland session but full Home user-Shepherd load
+failed with `source expression failed to match any pattern in form (5 . 60)`.
+Home generation89's `/gnu/store/82kv1zprnfjr313v58c5nv0mi9phv2zw-shepherd.conf`
+loads the two ha-mcp services with unquoted `#:respawn-limit (5 . 60)`.
+The pinned Guix serializer emits this field as code, so the source pair's
+ordinary quote was consumed too early. No captured evidence traced whether
+the entry Exec or startup script's bus guard ran after the Home failure.
+Later amdgpu framebuffer-teardown warnings are separate observations, not
+proof of the login failure's cause or proof that the GPU is uninvolved.
+
+Both source fields now stage the quote with `(respawn-limit #~'(5 . 60))`,
+preserving five starts per sixty seconds and a five-second respawn delay.
+Complete Home build exited0 with cores2/jobs1 and exactly these load paths:
 
 ```sh
-sudo ~/.config/guix/current/bin/guix system reconfigure --dry-run -e '
-(begin
-  (use-modules (gnu) (gnu packages))
-  (let ((base (load "/run/current-system/configuration.scm")))
-    (operating-system
-      (inherit base)
-      (packages (cons (specification->package "hyprland")
-                      (operating-system-packages base))))))'
+~/.config/guix/current/bin/guix home build --cores=2 --max-jobs=1 \
+  -L ~/src/guix-config/modules -L ~/projects/guix-channel/guix \
+  -L ~/projects/ivory-key/guix \
+  ~/src/guix-config/home-workstation-configuration.scm
 ```
-The unprivileged dry-run of this expression succeeded on 2026-09-27 and
-reported 282.5 MB of downloads. It was not activated: `sudo -n` requires the
-operator's password.
+
+Output: `/gnu/store/6kkq41d6rlzdkpvbs9pffy83lxjkngl9-home`; fixed startup
+config: `/gnu/store/afr0hcng77bqnvs4n93jivwaa82afbv6-shepherd.conf`.
+Generated ha-mcp files now contain `#:respawn-limit (quote (5 . 60))`.
+Actual Shepherd1.0.9 evaluated the **whole generated registration prefix**
+with private HOME/XDG directories/socket/logfile. A fail-closed Scheme
+structure match omitted the original daemonize/auto-start expressions;
+all15 original generated service files were loaded and their real services
+registered, stopped/not running. Both real respawn-limit accessors returned
+`(5 . 60)`, exit0. No service constructors/files were mocked or replaced and
+no configured start/stop or credential operation ran. Receipt:
+`~/.cache/shepherd-respawn-validation-20261004.json`.
+
+**Activated as Home generation90; operator confirmed reboot/login recovery on 2026-10-04.**
+The operator superseded the earlier activation hold and explicitly requested
+the normal `rbh`, accepting its existing Home hooks rather than a separate
+manual Shepherd hot-reload. This command completed successfully (exit0):
+
+```sh
+source ~/.bashrc.d/host-basedbox
+rbh --cores=2 --max-jobs=1
+```
+
+The corrected helper supplies all three load paths. Readback confirms
+`~/.guix-home` resolves to `/gnu/store/6kkq41d6rlzdkpvbs9pffy83lxjkngl9-home`,
+the profile points to `guix-home-90-link`, and
+`~/.config/shepherd/init.scm` resolves to the fixed `afr0...-shepherd.conf`.
+Normal activation included the existing display-discovering keyboard reload
+hook. It printed `error: Could not connect: No such file or directory` before
+Shepherd load (origin not conclusively established), then loaded the corrected
+config, daemonized as process8772 and printed `Starting services...`.
+This does not prove that all configured services or the session bus recovered.
+
+No separate manual Shepherd hot-reload/restart/service-start command was run.
+After the reboot retry, the operator confirmed on 2026-10-04: “good. it works
+now.” This accepts the reported GDM **Hyprland (Caelestia)** login/session
+recovery after the Shepherd fix, superseding its pending acceptance. No System
+reconfigure was needed. This is user-reported success, not an independent
+physical GUI test or post-reboot service/bus inventory; it does not certify
+every peripheral/service or keyboard/display behavior, or resolve the separate
+causally-unproven GPU/early-boot observations. This documentation update ran
+no tests/commands and changed no systems/runtime, services, credentials or rbw
+vault session/settings. The repair task performed no GDM restart, reboot, VT
+change, synthetic physical GUI input/IPC, credential access or rbw operation.
+Existing unrelated package warnings remain. Reboot ends session processes/
+companion PTYs; preserved state is not PTY migration.
+
+The earlier 2026-09-27 scoped raw-Hyprland reconfigure expression is superseded:
+it bypassed this shared startup and is not the prepared Caelestia login route.
+
+### G9 HDR recovery and mapping history
+**Home source-include error and mutable HDR ownership, 2026-10-04:** after the
+operator's Home activation, read-only `hyprctl configerrors` still reports
+`source= globbing error: found no match` at line17 of the running compositor's
+old `h646...` main-config snapshot. Current Home91's include is at line18 and
+the readable HDR file is linked to
+`/gnu/store/316blrlacqn80vs492hfp8fvlmkkrq08-home-dotfiles--config-hypr-g9-hdr-conf`;
+its bytes equal the tracked60Hz/VRR-off seed below. This is not a missing
+file now, a plugin-path error, or a store-relative include: `source` expands
+the process HOME with `GLOB_TILDE`.
+
+The pinned Home manager deletes all previous store links before recreating
+new links. Its exact generated script was exercised in a private HOME: the
+HDR link disappears and an identical Hyprland inotify watch receives
+`IN_IGNORED`. Hyprland0.55.4 forwards that event without mask filtering to a
+synchronous config reload. Thus activation has a concrete absent-include
+window and reload trigger. **The live incident's exact ordering was not
+traced**, so the race is strongly supported, not a proven timeline. The
+generated activation runs the manager before the keyboard hook; that hook
+only handles XKB and does not issue a Hyprland reload.
+
+Source correction excludes only `g9-hdr.conf` from immutable dotfiles. A
+workstation-only `seed-g9-hdr-config` activation service creates a0600 regular
+file atomically when absent or migrating a symlink, preserving current link
+bytes or the previous Home generation before falling back to the tracked
+seed. Existing regular settings are untouched. This also fixes the panel's
+resolved-target writes otherwise trying to write into `/gnu/store`.
+The required `source` declaration, errors, monitor values and reload hooks
+are unchanged. **Source-only: not activated.** First migration follows the
+manager's deletion and can still require one manual reload; subsequent Home
+activations no longer remove/relink mutable HDR state.
+
+Isolated proof: exact pinned manager and lowered source seed gexp; old-generation
+and existing-symlink byte preservation, fresh seed, repeated regular-file
+inode/settings preservation, real panel `atomic_write` on private settings,
+strict dangling-link failure/temporary cleanup. Installed
+`Hyprland --verify-config` reports the same error with the private include
+absent (exit1) and `config ok` when restored/seeded (exit0), without starting
+a compositor. Receipt: `~/.cache/hdr-home-source-proof-20261004.json`.
+An initial full-declaration extraction stopped on `hy3: unknown package` in
+the pinned package catalog; direct seed-expression lowering succeeded.
+The parent subsequently evaluated the actual complete Home with `--dry-run`
+and all three load paths (configuration modules, local channel, ivory-key):
+exit0, planning only activate/files/Home derivations. This verifies declaration
+evaluation, **not a build or activation**. No `rbh`, full build/activation,
+physical reload/monitor/input, credential or rbw operation was performed.
+
+To clear the current stale error, the operator may run once from their
+Hyprland terminal (not executed by this repair):
+
+```sh
+/home/tay/.guix-profile/bin/hyprctl reload
+```
+
+This reapplies the saved monitor configuration, not a new experimental mode;
+it does not load the new main snapshot or prove next-login plugin persistence.
 
 
-This still requires administrator authorization and a normal Guix System
-activation; it is not an unprivileged GDM workaround. Do not execute the full
-repository System reconfigure just for Hyprland, and leave the active
-StumpWM/Xorg session running.
+**Current recovery (2026-10-03):** the live-linked DP-1 `g9-hdr.conf`
+`monitorv2` block now uses **5120x1440@60, VRR off** (`vrr = 0`), 0x0,
+scale 1, `bitdepth = 10`, `cm = hdr`, `sdr_min_luminance = 0.005`,
+`sdr_max_luminance = 200`, brightness `1.2` and saturation `1.05`.
+The saved SDR transfer curve remains `render:cm_sdr_eotf = gamma22`.
+Only mode and VRR changed; the configuration watcher applied them without
+an explicit reload, compositor restart or DPMS cycle. Parent IPC verifies
+59.99900 Hz, HDR/XRGB2101010, VRR false, DPMS on, white 200, brightness 1.20,
+saturation 1.05, gamma22 set and no config errors; black is rounded to 0.00
+by IPC while the saved value is exactly 0.005. CRT settings are unchanged.
+The user confirmed the preceding SDR 60 Hz recovery after DPMS cycling failed;
+the restored HDR 60 Hz physical picture remains **unconfirmed**. Do not
+return to the historical 120 Hz/VRR mode for recovery. These saved appearance
+values are not instrument calibration or proof of HDR playback/stability.
+
+**Historical VRR/HDR trial (2026-09-30):** the live-linked
+`dotfiles/config/.config/hypr/hyprland.conf` sources `g9-hdr.conf`. During
+that trial its DP-1 `monitorv2` block used 5120x1440@119.98 at 0x0,
+scale 1, `vrr = 1`, `bitdepth = 10`, `cm = hdr`,
+`sdr_min_luminance = 0.005`, `sdr_max_luminance = 200` and saturation 1.0,
+without panel peak-luminance overrides. These 120 Hz/VRR settings are
+historical, not the current recovery mode. The CRT remains SDR 800x600@75
+at 4200x1440.
+
+The user cleared a right-half bounce by switching to 60 Hz and back.
+Initial HDR defaults looked muted except the cursor; SDR was restored before
+retrying HDR with the adjusted SDR mapping above. Reload succeeded; IPC at
+that trial reported VRR true, XRGB2101010, hdr, white 200 and no config errors.
+At this stage the user confirmed better black-terminal contrast but Herdr/OMP
+still looked washed out. A runtime-only `render:cm_sdr_eotf = gamma22` trial
+perhaps helped slightly; it has since been saved in the live-linked
+`hyprland.conf` as the baseline for reloads and sessions. The subsequent
+reload succeeded with no config errors, and the user reported the picture
+looks perfect afterward. HDR playback and sustained stability remain
+unverified. G95SC EDID read on 2026-09-30 advertises PQ, BT.2020, 10-bit, HDR desired
+max 400, frame-average 248.372 and min 0 cd/m²; these are not measured
+calibration values. This is a mapping trial, not measured panel calibration.
+Do not reuse the historical 120 Hz/VRR trial as a recovery command. Legacy
+`keyword monitor` commands can reset the calibrated SDR mapping to defaults;
+gamma22 belongs to `render:cm_sdr_eotf`, not the monitor `cm` preset.
+For an SDR comparison, use the controls below while retaining the recovery
+mode and VRR-off setting.
+
+Reload restores the saved G9 file. Use `g9-hdr-controls` or launcher entry
+**G9 HDR Controls** for persistent adjustments or an SDR comparison.
+Sliders stage changes; **Apply & save** updates only `g9-hdr.conf` and reloads
+Hyprland. **Restore starting settings** restores the opening snapshot.
+Closing retains the last applied values. The panel preserves the runtime SDR
+transfer curve across its reloads, while `hyprland.conf` now persists gamma22;
+other runtime-only overrides may reset.
+
+The small GTK panel uses a scoped Python/PyGObject environment at
+`~/.local/share/hyprmod-venv` with GC-rooted Guix dependencies at
+`~/.local/share/hyprmod-runtime`. These historical names come from a removed
+HyprMod trial whose legacy monitor writer did not preserve this monitorv2
+setup. No full Home/System reconfiguration. See the dotfiles README for
+source/launcher details and controls. Actual GUI Apply at 205 and Restore
+to 200 verified the saved file, HDR/VRR and unchanged CRT. The later gamma22
+reload had no config errors and the user reported satisfactory appearance;
+this remains a visual judgment, not instrument calibration.
 
 ### Caelestia shell on Guix (2.5.0)
 
@@ -252,7 +669,7 @@ true). When that switch is false, every weather and IP-geolocation request, repl
 handler and timer is disabled.
 
 The declared workstation Home packages are `caelestia-shell`, `caelestia-cli`,
-and the standalone `polkit-gnome` agent, plus `cliphist`, `grim`, `slurp`,
+`caelestia-panes` and the standalone `polkit-gnome` agent, plus `cliphist`, `grim`, `slurp`,
 `wl-clipboard`, Python, D-Bus, `papirus-icon-theme` and `qt6ct`. Caelestia
 contains no polkit agent, so GUI privilege prompts in the Hyprland session come
 from `polkit-gnome`. The session helper starts that agent, which runs only in
@@ -262,7 +679,7 @@ user profile without activating unrelated Home changes:
 ```sh
 ~/.config/guix/current/bin/guix install \
   -L ~/projects/guix-channel/guix --cores=1 --max-jobs=1 \
-  caelestia-shell caelestia-cli polkit-gnome
+  caelestia-shell caelestia-cli caelestia-panes polkit-gnome
 ~/.config/guix/current/bin/guix remove dank-material-shell-shell-only quickshell
 ```
 
@@ -286,7 +703,8 @@ channels, so keep the Ivory-Key load path above. Omitting it makes the
 This deploys all files from the existing `config` Stow package. For a scoped
 deployment, preserve the previous destinations first, then link these source
 files into `~/.config/hypr/`: `caelestia-session.py`, `keybind-help.py`,
-`screenshot.sh`, `start-session.sh`, `hyprland.conf`, and the `wallpapers/`
+`keybind-help.qml`, `layout-controls.py`, `layout-help.qml`, `screenshot.sh`,
+`start-session.sh`, `hyprland.conf`, and the `wallpapers/`
 directory. Also deploy `xdg-desktop-portal/hyprland-portals.conf` to the
 corresponding `~/.config/xdg-desktop-portal/` path, and link the tracked seeds
 into `~/.config/caelestia/`:
@@ -303,9 +721,11 @@ are preserved. The existing X desktop `portals.conf` stays unchanged.
 From a fresh local TTY login, `~/start-hyprland.sh` delegates to
 `sh ~/.config/hypr/start-session.sh`, which creates a private D-Bus session with
 `XDG_CURRENT_DESKTOP=Hyprland`. This leaves the concurrent X session's Dunst and
-portal ownership intact. GDM's stock session entry still uses `start-hyprland`.
-The supervisor also works there, but it refuses to start if another process
-already owns the notification name. Private-bus KWallet activation and a fresh
+portal ownership intact. The prepared **Hyprland (Caelestia)** GDM entry uses
+the immutable wrapper and shared `start-session.sh --gdm`, retaining the bus
+inherited by that entry rather than creating a private bus. The supervisor
+refuses to start if another process already owns the notification name.
+Private-bus TTY KWallet activation, fresh full Caelestia startup and physical
 GDM login need separate verification. Existing shared-bus Home wallet and
 PipeWire services are not restarted.
 
@@ -319,9 +739,9 @@ exec-once = python3 ~/.config/hypr/caelestia-session.py run
 
 `caelestia-session.py run` performs these steps:
 
-1. It resolves `caelestia-shell`, `caelestia`, `wl-paste`, `cliphist` and
-   `libexec/polkit-gnome-authentication-agent-1` from `~/.guix-profile`, then
-   from `~/.guix-home/profile`. If any of them is missing, it refuses to start.
+1. It resolves `caelestia-shell`, `caelestia`, `caelestia-panes`, `wl-paste`,
+   `cliphist` and `libexec/polkit-gnome-authentication-agent-1` from
+   `~/.guix-profile`, then `~/.guix-home/profile`. Missing tools fail startup.
 2. It holds the per-user `flock` `$XDG_RUNTIME_DIR/caelestia-hyprland.lock`. A
    second `run` exits 0 without doing anything.
 3. It seeds the absent mutable config from the tracked `*.seed.json` files. It
@@ -329,10 +749,15 @@ exec-once = python3 ~/.config/hypr/caelestia-session.py run
    `theme.enable*` flags explicitly to `false`.
 4. It refuses to start if `org.freedesktop.Notifications` already has an owner
    on the session bus. It never kills Dunst or another shell.
-5. It starts three children, each in its own process group: `caelestia-shell -n`
-   in the foreground, `wl-paste --watch cliphist store`, and the `polkit-gnome`
-   agent. Their output goes to `~/.local/state/caelestia/hyprland-session.log`.
-6. It records `{instance, pid, shell}` in `$XDG_RUNTIME_DIR/caelestia-hyprland.json`.
+5. It starts `caelestia-panes serve` hidden, the `wl-paste --watch cliphist store`
+   watcher and the `polkit-gnome` agent, then checks an actual companion
+   status reply within ten seconds before starting `caelestia-shell -n`.
+   Panes is optional: failed readiness is logged and that owned pane process
+   is stopped individually; the healthy shell/watcher/agent still start.
+   Output goes to `~/.local/state/caelestia/hyprland-session.log`.
+6. It records `{instance, pid, shell, panes}` in
+   `$XDG_RUNTIME_DIR/caelestia-hyprland.json`, mode 0600; `panes` is null
+   when the optional companion is unavailable.
 
 The children get `QT_QPA_PLATFORMTHEME=qt6ct`, so the Papirus-Dark icons from
 `~/.config/qt6ct/qt6ct.conf` apply to them. No global Qt platform-theme variable
@@ -340,15 +765,22 @@ is set. The supervisor removes `QML_IMPORT_PATH` and `QML2_IMPORT_PATH` from the
 children's environment, because any plain `quickshell` QML modules still in a
 profile would shadow the pinned build.
 
-The supervisor stops when the compositor exits, when it receives SIGTERM/SIGINT,
-or when any of its children exits. Before exiting it terminates only its own
-process groups and removes its state file and the clipboard database. Never use
-a global `pkill`, `killall quickshell`, or systemd user units for this shell.
-`hyprctl reload` applies Hyprland config edits without running `exec-once`
-again, so it neither duplicates nor restarts the shell. To restart the shell,
-send SIGTERM to the supervisor `pid` recorded in the state file, then run the
-helper again from a Hyprland-spawned terminal. Check the log above when startup
-fails.
+The supervisor stops at compositor exit, SIGTERM/SIGINT, or a clipboard
+watcher or polkit-agent exit. An optional **panes exit is logged once with
+its exit code**, changes recorded `panes` to null, and does not stop the
+healthy shell/watcher/agent. There is no automatic pane retry. A
+**Quickshell-only exit restarts just the shell**, updating its recorded PID
+while preserving any healthy companion's WebView, native draft and pane-owned
+glirc. `hyprctl reload` does not rerun `exec-once` or duplicate these processes.
+For a complete supervisor restart, terminate only its recorded `pid`, then
+run the helper from a Hyprland-spawned terminal; unlike a shell-only restart,
+this ends the pane daemon and its glirc PTY. Inspect the log above for failures.
+
+Cleanup terminates only owned children. The companion is signaled individually,
+not as a process group that could include a user-owned rbw agent. Never use
+global `pkill`, `killall quickshell`, or systemd user units for this shell;
+never lock/logout/reset/stop rbw as cleanup. State file and session clipboard
+database are removed at supervisor exit, not reader profile/native draft.
 
 The helper's other subcommands check that the state file belongs to the current
 `HYPRLAND_INSTANCE_SIGNATURE`:
@@ -363,6 +795,192 @@ python3 ~/.config/hypr/caelestia-session.py lock
 `ipc TARGET FUNCTION [ARGS]` runs
 `caelestia-shell ipc --pid <shell> call TARGET FUNCTION [ARGS]`, which targets
 only the recorded instance.
+
+#### Input wake repair and scoped recovery (2026-10-04)
+
+The host remained active, not suspended; the compositor received input while
+DPMS was off. The shell's 1200-second `dpms off`/`dpms on` pair is correctly
+configured, but its return-action owner was absent after supervisor teardown.
+Hyprland0.55.4's native key/mouse wake controls both default false and were
+unset. Source now explicitly enables both in `misc`, so input wake does not
+depend on the shell. Optional-pane failure isolation above prevents a future
+pane exit from taking down healthy shell/watcher/polkit children.
+
+The session log's `Gdk-Message: 11:53:38.129: Error 22 (Invalid argument)
+dispatching to Wayland display` has no PID or protocol interface/object/code.
+Attribution to the GTK panes process is inference; the Qt shell logged a
+monitor-null burst about two seconds earlier. Compositor verbose logging was
+disabled. These logs do not establish a particular invalid Wayland request,
+GPU cause or pane-source correction, so no speculative native patch/build was
+made. The separate Quickshell timeout-registration bug was not reproduced in
+this changed path; no broad backport was applied.
+
+Installed0.55.4 in a private headless-labwc/nested Hyprland session passed six
+actual virtual-key/pointer DPMS assertions with shell/idle daemon absent:
+each option independently wakes on its own input; both-disabled and opposite
+input controls stay off. Private compositor cleanup segfaulted after the
+assertions; all task-owned processes/directories were removed. This is native
+DPMS-state proof, not physical G9/DRM/visible wake acceptance. The unchanged
+supervisor `run()` passed45 lifecycle contract checks across pane exit37,
+startup readiness failure and healthy cleanup using private subprocess/socket
+stand-ins; healthy children survive, failure logs once, state becomes null,
+and shell-only restart does not retry panes.
+
+Live recovery targeted only PID2478's exact signature
+`a0136d8c04687bb36eb8a28eb9d1ff92aea99704_1791120301_1384389477`:
+two `hyprctl keyword misc:*_enables_dpms true` calls and **one** `dispatch dpms on`,
+all returning `ok`; no off, injected input, whole reload or monitor-setting
+change. Both options read `int1,settrue`. DP-1 briefly disappeared during a
+logged disconnect/reconnect; subsequent read-only IPC shows both outputs on,
+G9 `5120x1440@59.999` HDR/XRGB2101010/VRR-off and CRT `800x600@75`.
+Saved HDR bytes are unchanged; `configerrors` is whitespace-only at final
+readback. **Neither this state nor the hotplug recovery proves GPU faults fixed
+or a visible physical picture.**
+
+Only `~/.config/hypr/caelestia-session.py` was source-linked, with its prior link
+at `~/.local/state/hyprland-setup/20261004-dpms-wake/caelestia-session.py.before`.
+After bus/tool/theme readiness and unowned Notifications were checked, the
+absent supervisor was launched through exact-instance `dispatch exec`:
+supervisor1521, shell1550, panes1526, watcher1527 and polkit1528 alive; actual
+pane status replies `ok`, all panes hidden/uncreated. No live pane/glirc was
+terminated and no credential/rbw session or settings were touched.
+
+The immutable main config link was deliberately **not** replaced, avoiding its
+autoreload path and preserving existing plugin/HDR changes. Native options are
+live for this compositor and persistent in tracked source; next `rbh` must
+capture them before next-login persistence can be claimed. No Home activation
+or physical acceptance ran. Receipts:
+`~/.cache/hyprland-native-dpms-proof-20261004.json`,
+`~/.cache/caelestia-wake-supervisor-proof-20261004.json`,
+`~/.cache/hyprland-wake-recovery-20261004.json`.
+
+#### Persistent GTK4 service panes (2026-10-03)
+
+`caelestia-panes` is a native C/GTK4 layer-shell companion integrated with
+Caelestia IPC and live theme/output selection, not a normal browser/Kitty
+scratchpad, foreign-window embed or QtWebEngine patch. Right Alt+B/M/I opens
+bottom SilverBullet/top Memos/left glirc; repeat the same chord hides. One pane
+owns focus, hidden surfaces unmap, no workspace retile/reservation or edge
+hover. Right Alt+S and Left Alt application Meta are unchanged. Reader/capture
+Escape hides; chat Escape stays with glirc.
+
+Compact drawer update: no companion title/close header or reader toolbar;
+Ctrl+K opens Silversearch, F5/Ctrl+R explicitly reloads/retries reader setup,
+and F1 shows help. Empty/normal ready feedback stays hidden. Chat Connect
+disappears once started and returns after exit. The fixed transparent surface
+reveals/retracts a `surface`-coloured shape with rounded outer corners and
+concave 28px frame joins, no shadow/outline and shape-only pointer input.
+Anchoring uses Caelestia's existing border/bar exclusions (including border0).
+EXCLUSIVE keyboard interactivity is retained until unmap: the former mapped
+NONE commit hit Hyprland 0.55.4's same-window/null-surface early return and left
+seat keyboard focus empty. This is not repaired by repeatedly focusing the
+same reported activewindow address.
+
+Accepted output `/gnu/store/f4wb442qxwh0rac9aw6z0kjs92i2j5vb-caelestia-panes-1.0.0`
+was built serially with cores2/jobs1 and installed as profile target
+`/gnu/store/q0adkzynyr5nyag0rishmbrp2bakrkqr-profile` (2026-10-04). Isolated
+nested Hyprland checks covered all three panes at two cursor positions, pane
+switch, closed previous window, BIG border10/CRT border0 shapes, partial
+reveal/retract and shell-only persistence. CRT captures selected `--output CRT`
+explicitly because nested QML focusedMonitor remained BIG. The user then
+authorized a live companion restart, accepting volatile chat PTY/draft/scrollback
+and reader position loss. New supervisor/shell/companion31724/31772/31728;
+live verification was process executable/health plus whitespace-only
+`configerrors`, without input/toggles/screenshots. Saved Memos draft hash and
+reader profile/cookie file were retained; independent glirc32575 remained.
+Evidence: `~/.cache/caelestia-panes-polish-20261004/`.
+
+```sh
+python3 ~/.config/hypr/caelestia-session.py ipc panes toggle silverbullet
+python3 ~/.config/hypr/caelestia-session.py ipc panes toggle memos
+python3 ~/.config/hypr/caelestia-session.py ipc panes toggle chat
+python3 ~/.config/hypr/caelestia-session.py ipc panes close
+```
+
+The runtime's private socket is `$XDG_RUNTIME_DIR/caelestia-panes.sock` (0600).
+The actual WebKitGTK reader stays allocated across toggles; current page,
+history/search/selection/scroll survive hide/show and Quickshell-only restart.
+Use SilverBullet's own search, wiki links and native topbar Mark read.
+First use requires the real login form in a dedicated WebKit profile; no
+inherited browser cookies. **`http://192.168.7.135/` is deliberate LAN HTTP,
+not TLS: login/password and cookies cross the wire as HTTP.** No HTTPS reader
+endpoint was established. Mark read and some plugins write files; hidden
+editor chrome is not read-only authorization.
+
+Reader state: `$XDG_STATE_HOME/caelestia-panes/reader/{data,cache}` (default
+`~/.local/state/caelestia-panes/reader/`), directories 0700,
+`data/cookies.sqlite` 0600. Sensitive plaintext storage is owner-only, not
+encrypted at rest; arbitrary UI-state restoration after daemon crash is not
+guaranteed. Reload/Retry is explicit, never triggered by toggling.
+
+Native Memos Enter inserts newline; Ctrl+Enter / Submit PRIVATE submits.
+Authenticate displays a genuine rbw terminal re-prompt for the existing
+workstation PAT; credential stdout uses a private FD, not terminal/argv/env/
+disk/log. The operator unlocks rbw if needed. Successful authentication caches
+only in memory and **does not auto-submit**: submit explicitly afterward.
+Draft text+cursor are atomically saved/restored at
+`$XDG_STATE_HOME/memos-capture/draft-pane.json`, mode 0600/parent 0700, separate
+from the existing TUI `draft.txt`. Unsafe storage fails closed.
+Verified HTTPS `https://elitedesk.tail53428b.ts.net:8443/api/v1/memos` receives
+one request at a time with a 30-second deadline; editing is disabled during
+submission. Only HTTP 200 with valid `memos/<uid>` and PRIVATE acknowledgement
+clears text. Cancel/error/timeout/ambiguous response keeps it. No automatic
+write/auth retries/redirects; check Memos before deliberate ambiguous resubmit.
+
+Chat initially shows **Connect glirc**. Click deliberately to start a separate
+PTY with existing `~/.config/glirc/config` (13 ZNC networks, password.command,
+public cert pin, strict IP-SAN TLS). Saved ZNC MultiClients was read back
+enabled; client identifiers do not isolate shared normal history buffers.
+The existing Kitty/glirc and unsent draft are not migrated or touched. The
+pane's own glirc process/draft/buffer/scrollback survives hides/shell reload,
+not daemon/session exit. Meta+a/s, Ctrl+n/p/x remain navigation;
+Ctrl+Shift+C/V copy/paste. Connect/startup/auth errors require deliberate
+operator action; the companion never autoconnects or restarts exited glirc.
+It adds no local history archive; the existing glirc network policy is retained.
+
+**Authentication acceptance limits:** native Memos creation, authenticated
+WebKit SilverBullet search/read/Mark read and new-pane glirc network auth are
+not verified without the operator's login/mandatory re-prompt. Prior browser/
+TUI/service acceptance is not evidence for these new sessions. No current PTY
+migration, phone voice/Wi-Fi-off or route approval was performed; Second Brain
+expansion/lint limits remain on its OKF service page. Credentials/vault
+session/autolock were not changed.
+
+Historical 2026-10-03 live pane acceptance observed all three layer namespaces and legible
+controls on the real 800×600 CRT, including the genuine reader HTTP login.
+Hyprland B/M/I binding readback and a Quickshell-only restart retained the
+companion/widgets; existing compositor, Kitty/glirc and Kanata stayed intact,
+and DPMS-off was restored. Isolated evidence covers 1080p/CRT layers, rapid
+toggle/unmap behavior, offline actual glirc PID/draft across five toggles,
+native draft/cursor restoration and private unavailable-auth draft retention.
+These are not authenticated service or physical-keypress acceptance.
+Evidence: `~/.cache/caelestia-panes-smoke-live.json`,
+`~/.cache/caelestia-panes-smoke-isolated.json` and adjacent pane PNG captures.
+Parent scoped no-network Guix lint checks (description, synopsis, input
+classification and patch-file names) exited 0; full lint was not claimed.
+
+No dedicated pre-pane configuration backup was established. Earlier Guix
+profile generations provide **package-only** rollback. Reverting live-linked
+dotfiles/package source changes requires an explicit reviewed manual revert
+preserving unrelated edits; a package rollback alone is not a full session
+rollback. Do not overwrite native draft/reader profile or the existing TUI
+draft as part of that operation. The older general Caelestia cutover backup
+below is historical, not a new pre-pane snapshot.
+
+Historical scoped installed/live outputs (2026-10-03, superseded by polish above):
+`/gnu/store/vis0g8vibcl9b6qqls1pdqg82vp19gwi-caelestia-shell-2.5.0` and
+`/gnu/store/n5jir4sn4y8mdavj3max188zgpd4d5kg-caelestia-panes-1.0.0`, profile
+target `/gnu/store/0annq1kzwb1a4ndr8lc0ndd9h8i0z0hk-profile`.
+Final supervisor/shell/companion were 30433/30457/30435, same compositor12814;
+old glirc32575/Kanata2447 preserved. All panes left hidden and DPMS off.
+Final live CRT captures `~/.cache/caelestia-panes-smoke-final-live-*.png`
+were visually inspected. Final private auth-terminal container rendered the
+genuine helper's unavailable-vault error/status legibly, retained the draft
+and shut down with exit 0; no real vault/pending re-prompt cancellation test.
+Home dry-run with the three load paths above and Hyprland configuration
+verification exited 0; unrelated existing nhfourk warning remains. Earlier
+package paths/PIDs in evidence are historical, not final installed targets.
+
 
 #### Seeded Caelestia configuration
 
@@ -384,7 +1002,9 @@ only the recorded instance.
   suspends at 600 s. Do not delete the `timeouts` key, because the upstream
   defaults would come back. There is no automatic lock or suspend, and the
   host's elogind sleep inhibitor is unchanged. The old `hypridle.conf` is not
-  autostarted.
+  autostarted. Hyprland's explicit `misc:mouse_move_enables_dpms = true` and
+  `misc:key_press_enables_dpms = true` independently wake outputs on input,
+  even if the shell's idle return-action owner has exited.
 - **Lock screen.** `lock.enableFprint` and `lock.enableHowdy` are false. Manual
   lock authenticates through Guix's `login` PAM stack and the root-setuid
   `/run/privileged/bin/unix_chkpwd`. Do not hand-write PAM files or loosen
@@ -393,7 +1013,17 @@ only the recorded instance.
 - **Weather.** `services.weatherEnabled` is false, and the dashboard weather tab
   is hidden.
 - **Applications and wallpaper.** The shell's apps are Kitty, pavucontrol and
-  Thunar. `paths.wallpaperDir` is `~/.config/hypr/wallpapers`.
+  Thunar. `paths.wallpaperDir` is `~/Pictures/Wallpapers` in both the mutable
+  `~/.config/caelestia/shell.json` and the tracked `shell.seed.json`. This is
+  the picker directory and matches the directory already used by CLI random
+  wallpaper selection; it does not turn on rotation or choose a new wallpaper.
+  The seed supplies this value only when the mutable file is absent. On
+  2026-09-30, read-only `env WAYLAND_DISPLAY=wayland-1 caelestia shell
+  wallpaper list` returned 22 absolute paths, all under
+  `/home/tay/Pictures/Wallpapers`, and `env WAYLAND_DISPLAY=wayland-1 caelestia
+  shell wallpaper get` returned the unchanged
+  `/home/tay/Pictures/Wallpapers/1767891491823566.png`. No visual picker
+  screenshot verification was performed.
 
 The tracked tidal-dusk wallpaper now lives at the neutral path
 `~/.config/hypr/wallpapers/`, as `tidal-dusk.svg` plus a 5120x1440
@@ -419,9 +1049,12 @@ group, special workspace, or Alt+x prefix binding was moved:
 | Alt+A | Utilities / quick controls (`drawers toggle utilities`) |
 | Alt+Comma | Nexus settings window (`nexus open`) |
 | Alt+N | Sidebar with notification centre (`drawers toggle sidebar`) |
+| Alt+B | Bottom SilverBullet pane (`panes toggle silverbullet`); same chord hides |
+| Alt+M | Top native Memos pane (`panes toggle memos`); same chord hides |
+| Alt+I | Left glirc pane (`panes toggle chat`); same chord hides |
 | Alt+Shift+V | Clipboard history (`caelestia clipboard`); Alt+V still toggles tiling split |
 | Alt+Ctrl+L | Manual Caelestia lock (`lock lock`) |
-| Alt+Print / Alt+Shift+Print | Area / full desktop screenshot |
+| Alt+G / Alt+Shift+G | Area / full desktop screenshot (replaces Print-key chords, 2026-10-02) |
 | Alt+Shift+A | pavucontrol audio mixer |
 | Alt+Shift+N | NetworkManager connection editor |
 | Alt+Shift+E | Screenshots folder in Thunar |
@@ -429,28 +1062,80 @@ group, special workspace, or Alt+x prefix binding was moved:
 
 Alt+? is bound by keysym as `bindd = $mainMod SHIFT, slash, ...`; the
 manna-cadet XKB key `<AB10>` produces `slash`/`question`, and Hyprland matches
-the unshifted keysym with the Shift modifier. The helper opens a floating,
-centred Kitty window (class `hypr-keybind-help`, half the monitor width and 80 %
-of its height) running `less` over a table generated at open time from
-`hyprctl -j binds`. Every loaded bind, including the Alt+x `stumpwm` submap, is
-listed, so the sheet cannot drift from the config. Rows use the `bindd`
-description when one exists and otherwise the dispatcher and argument. `q`
-quits, `/` searches, and pressing Alt+? again closes only that window. Kitty's
-close confirmation is disabled for this window only. Caelestia 2.5.0 has no
-native keybinding cheat sheet or IPC target for one.
+the unshifted keysym with the Shift modifier. The binding is unchanged; it now
+opens a transient **Quickshell overlay**, not Kitty/less. A centered card uses
+the monitor focused when opened; other monitors dim and capture pointer input.
+The sole exclusive keyboard grab and shortcut inhibitor follow Hyprland's
+focused monitor, while the card remains on its opening monitor. Each opening
+reads `hyprctl -j binds`, categorizes the current bindings, and includes submaps such as Alt+x `stumpwm`
+and Alt+y layout controls. Rows prefer `bindd` descriptions; complete repeated
+families are compacted while partial/custom families stay explicit. Colors
+track Caelestia's `$XDG_STATE_HOME/caelestia/scheme.json` (by default
+`~/.local/state/caelestia/scheme.json`).
 
-Deployed live on 2026-09-28 with one `hyprctl reload` (no compositor or shell
-restart; every previously loaded bind unchanged). Dispatching the bind's exact
-command in the live instance mapped the popup on DP-1, and a second dispatch
-closed it.
-Evidence: `~/.cache/hyprland-keybind-help-smoke.json` and
-`~/.cache/hyprland-keybind-help.png`. The physical RAlt+Shift+/ chord has not
-been pressed as part of that test.
+Any **new key or mouse-button press** dismisses the card. It consumes the
+matching release before the process exits, preventing desktop shortcuts and
+click-through; the opening chord's releases and held-key autorepeat are ignored.
+The wheel scrolls long lists without dismissing. A second helper invocation
+closes only this QML instance, leaving Caelestia and other Quickshell instances
+alone. After the consumed release, QML invokes internal `--dismiss PID`:
+configuration, process owner and executable are checked before pidfd-scoped
+SIGTERM. This avoids a hanging `Qt.quit()` teardown in the installed runtime
+and leaves no invisible help process. The old terminal window rule is removed.
+
+Deploy both `keybind-help.py` and `keybind-help.qml`. The helper resolves the
+exact `qs` runtime dependency of the installed Guix `caelestia-shell` wrapper,
+not a generic `qs` from `PATH`, and launches a standalone QML configuration on
+demand. No new package, persistent daemon or Caelestia IPC extension is required.
+Runtime failures are reported on stderr, not hidden behind a terminal fallback.
+
+2026-09-30 live smoke: real QML `grabToImage` captures visually confirmed
+readable grouped themed keycaps without clipping on G9 (2100×1392 card) and
+CRT (752×552 with a scroll affordance). Injected Escape dismissed the card and
+the process exited; right-click on the displayed monitor and middle-click on
+the other monitor also dismissed it. Caelestia PID 7291 remained unchanged.
+**Limits:** `grim` compositor captures excluded the overlay, so the visual
+evidence is QML render captures, not physical-desktop screenshots. Physical
+RAlt+? and actual wheel scrolling are not established by this smoke evidence.
+The 2026-09-28 Kitty-popup captures are historical only.
+The overlay-exclusion limitation describes that earlier smoke and is
+superseded for the current `grim` path by the 2026-10-02 repair below;
+it does not retroactively provide a compositor image of the help card.
 
 Screenshot helpers run only on explicit invocation. Cancelling an area
 selection saves nothing. Successful captures save unique PNGs under
 `~/Pictures/Screenshots` (or `XDG_SCREENSHOTS_DIR`) and copy the **image bytes**
 to the Wayland clipboard.
+
+**HDR screenshot repair, deployed 2026-10-02:** persisted
+`render:keep_unmodified_copy = 0` next to `render:cm_sdr_eotf = gamma22` in
+live-linked `dotfiles/config/.config/hypr/hyprland.conf`. This repairs observed
+stale-frame/wallpaper-only `grim` captures while retaining display color:
+monitor modes, HDR/VRR, gamma22, SDR brightness 200, brightness 1.2 and
+saturation 1.05 unchanged. No compositor restart or modeset; no config errors.
+Matching Hyprland 0.55.4 source makes 0 consult `needsACopyFB()` for an
+on-demand unmodified copy, rather than keeping a persistent mirror/second
+attachment (1 unconditionally; 2 with HDR PQ/HLG plus SDR modifiers). It is
+not a global disable of capture copies. **[INFERENCE]** The persistent buffer
+path is implicated by comparison, but the exact stale-frame cause is unproven;
+this session's verified workaround gives no long-term guarantee.
+
+Real bounded `grim` PNGs were inspected: modes 1/2 stayed stale after replacing
+the synthetic window; 0 captured animated counters **1216 → 1222** across a
+mixed-monitor workspace transition, replacement **9981**, and **1372 → 1378**
+after saving. Geometry `1810,460 880x480` was wholly inside a synthetic 900×500
+Kitty at `1800,450`; no private desktop images were retained. Unchanged
+`screenshot.sh area` and `full` each exited 0 and produced PNG counter **9981**.
+PATH adapters supplied deterministic `slurp` geometry and bounded full mode
+to the same region using real `grim`; clipboard/notification sinks preserved
+the user's clipboard. Real interactive selection failed. Selection UI, actual
+clipboard transfer, physical Right Alt+G / Right Alt+Shift+G and unrestricted
+full-desktop capture were **not reverified**. All smoke files removed; original
+focus, DP-1 workspace 1 / HDMI-A-1 workspace 10, workspace 1 dualmaster and the
+other original dwindle layouts restored. Exact cursor restoration was not
+established after the verification kernel lost its baseline. Retained earlier
+capture limitations are historical and superseded for the current `grim` path,
+not retroactive visual proof of the earlier layout/help-card smokes.
 
 Clipboard history is **session-only**. The watcher and the picker share
 `CLIPHIST_DB_PATH=$XDG_RUNTIME_DIR/caelestia-clipboard.db` and a 50-item cap
@@ -668,7 +1353,7 @@ with LibreTLS 3.8.1 over OpenSSL; to install it with the pinned Guix:
 No new channel joins, parts, nick changes or private/channel messages were
 made. Keep Halloy and the existing ZNC settings unchanged.
 
-Run `glirc` in a real terminal for all 15 *existing* ZNC networks at once.
+Run `glirc` in a real terminal for all 13 *existing* ZNC networks at once.
 The live `~/.config/glirc/config` symlinks directly to
 `~/src/dotfiles/config/.config/glirc/config`. ZNC owns the saved channel list;
 the config has no join commands. Built-in `password.command` calls `rbw get`
@@ -688,7 +1373,7 @@ focus. Passive readback showed 15 established TLS sockets to ZNC, but neither
 all upstream network health nor historical replay was proven.
 
 Run `catgirl-znc` for `libera`, or `catgirl-znc NETWORK` for one of the
-15 existing ZNC networks; `catgirl-znc --help` lists them. Its tracked
+13 existing ZNC networks; `catgirl-znc --help` lists them. Its tracked
 launcher and endpoint config are at `~/src/dotfiles/home/.local/bin/catgirl-znc`
 and `~/src/dotfiles/config/.config/catgirl/znc`, directly linked at
 `~/.local/bin/catgirl-znc` and `~/.config/catgirl/znc`. It passes the rbw
@@ -702,6 +1387,12 @@ verification**, unlike glirc's IP-SAN check. A desktop Kitty
 TLS/auth error and one established TLS socket to `:8887`; Ctrl+n/p navigated
 locally. Exit with Ctrl+c. Do not type messages or channel/nick-changing
 commands. Other networks and historical replay remain unverified.
+
+On 2026-09-29, networks `no` and `nog` were deleted through ZNC webadmin
+and removed from all three managed client configurations. The remaining
+13 networks matched the persisted ZNC configuration. Existing glirc sessions
+can use the local `/reload` command to reread configuration; no client restart
+or automatic command injection was performed, preserving any draft input.
 
 ## Printing
 

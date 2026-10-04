@@ -3,7 +3,7 @@
 set -euo pipefail
 
 usage() {
-    printf 'Usage: catgirl-znc [NETWORK]\nDefault: libera\nNetworks: GGn SG aither lst mtv ops red seedpool blu dc MaM i2p no libera nog\n' >&2
+    printf 'Usage: catgirl-znc [NETWORK]\nDefault: libera\nNetworks: GGn SG aither lst mtv ops red seedpool blu dc MaM i2p libera\n' >&2
 }
 
 if [[ ${1:-} == --help || ${1:-} == -h ]]; then
@@ -26,7 +26,6 @@ case "$network" in
     dc) nick=nocore ;;
     MaM) nick=noliteracy ;;
     i2p) nick=noxie ;;
-    no|nog) nick=tay ;;
     libera) nick=htayj ;;
     *) usage; exit 2 ;;
 esac

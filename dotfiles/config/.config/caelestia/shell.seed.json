@@ -39,6 +39,6 @@
         "weatherEnabled": false
     },
     "paths": {
-        "wallpaperDir": "~/.config/hypr/wallpapers"
+        "wallpaperDir": "~/Pictures/Wallpapers"
     }
 }

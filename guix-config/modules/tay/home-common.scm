@@ -267,6 +267,11 @@
                  ;; and fail. Leave it as a real file under ~/.codex; the
                  ;; tracked copy in dotfiles is the seed/backup.
                  "/home/\\.codex/config\\.toml$"
+                 ;; g9-hdr-controls resolves its save target before atomic
+                 ;; replacement, so a store symlink makes GUI saves fail.
+                 ;; Workstation activation seeds a mutable regular file;
+                 ;; only this HDR state file leaves dotfiles ownership.
+                 "/config/\\.config/hypr/g9-hdr\\.conf$"
                  ;; Deployed whole-directory below instead. ASDF resolves a
                  ;; system's components relative to the truename of its .asd,
                  ;; and per-file store symlinks resolve straight into

@@ -51,15 +51,9 @@ servers:
   * name: "i2p"
     nick: "noxie"
     username: "tay/i2p"
-  * name: "no"
-    nick: "tay"
-    username: "tay/no"
   * name: "libera"
     nick: "htayj"
     username: "tay/libera"
-  * name: "nog"
-    nick: "tay"
-    username: "tay/nog"
 
 -- Core glirc controls need no plugins. F2/F3/F5 are optional detail,
 -- activity-bar and split toggles; Ctrl+n/p and Alt+a/s navigate windows.

@@ -1,0 +1,5 @@
+#!/bin/sh
+# The scoped GTK runtime was installed during the HyprMod compatibility trial.
+exec guix shell -p "$HOME/.local/share/hyprmod-runtime" -- \
+    "$HOME/.local/share/hyprmod-venv/bin/python" \
+    "$HOME/.config/hypr/g9-hdr-controls.py" "$@"

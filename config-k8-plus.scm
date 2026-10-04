@@ -4,6 +4,7 @@
              (gnu packages security-token)
              (gnu system accounts)
              (guix build-system copy)
+             (guix build-system trivial)
              (guix download)
              (guix gexp)
               (guix packages)
@@ -16,6 +17,66 @@
                      security-token shepherd sound ssh xorg)
 
 (use-package-modules package-management)
+
+;; Replace the upstream entry in one package, rather than adding a second
+;; chooser item or rebuilding Hyprland. GDM already invokes a login shell.
+(define %hyprland
+  (specification->package "hyprland"))
+
+(define %hyprland-caelestia-launcher
+  (program-file
+   "hyprland-caelestia-session"
+   #~(let* ((home (passwd:dir (getpw (getuid))))
+            (config-home (let ((value (getenv "XDG_CONFIG_HOME")))
+                           (if (and value (not (string-null? value)))
+                               value
+                               (string-append home "/.config"))))
+            (startup (string-append config-home "/hypr/start-session.sh")))
+       (setenv "HOME" home)
+       (unless (access? startup R_OK)
+         (format (current-error-port)
+                 "Hyprland (Caelestia): missing readable startup script: ~a~%"
+                 startup)
+         (exit 1))
+       ;; Do not add another login shell or bus; preserve GDM's inherited
+       ;; runtime, seat and authentication environment.
+       (apply execl
+              #$(file-append (specification->package "bash-minimal") "/bin/sh")
+              "sh" startup "--gdm" (cdr (command-line))))))
+
+(define %hyprland-caelestia-session
+  (package
+    (name "hyprland-caelestia-session")
+    (version (package-version %hyprland))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     (list
+      #:modules '((guix build utils))
+      #:builder
+      #~(begin
+          (use-modules (guix build utils))
+          (copy-recursively #$%hyprland #$output #:copy-file symlink)
+          (let ((launcher (string-append #$output "/bin/hyprland-caelestia-session"))
+                (desktop (string-append #$output
+                                        "/share/wayland-sessions/hyprland.desktop")))
+            (symlink #$%hyprland-caelestia-launcher launcher)
+            (delete-file desktop)
+            (call-with-output-file desktop
+              (lambda (port)
+                (format port
+                        "[Desktop Entry]~%Name=Hyprland (Caelestia)~%Comment=Hyprland with the tracked Caelestia session environment~%Exec=~a~%TryExec=~a~%Type=Application~%DesktopNames=Hyprland~%"
+                        launcher launcher)))))))
+    (inputs (list %hyprland))
+    (supported-systems (package-supported-systems %hyprland))
+    (synopsis "Hyprland session with the shared Caelestia startup")
+    (description
+     "This System session retains the upstream Hyprland executables and data,
+but replaces its GDM chooser entry with Hyprland (Caelestia).  The immutable
+launcher invokes the logged-in user's tracked Hyprland startup script without
+creating a second login shell or D-Bus session.")
+    (home-page (package-home-page %hyprland))
+    (license (package-license %hyprland))))
 
 (define %tailscale
   (package
@@ -289,8 +350,8 @@ installs Tailscale's official static Linux client and daemon binaries.")
             (specification->package "xinitrc-xsession")
             (specification->package "stumpwm")
             ;; GDM discovers sessions in the system profile, not Guix Home.
-            ;; Keep StumpWM installed and add Hyprland as an optional session.
-            (specification->package "hyprland")
+            ;; This replaces only Hyprland's chooser entry; keep StumpWM/LXQt.
+            %hyprland-caelestia-session
             (specification->package "sbcl")
             (specification->package "sbcl-alexandria")
             (specification->package "sbcl-stumpwm-hostname")
