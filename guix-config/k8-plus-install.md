@@ -766,6 +766,86 @@ companion PTYs; preserved state is not PTY migration.
 The earlier 2026-09-27 scoped raw-Hyprland reconfigure expression is superseded:
 it bypassed this shared startup and is not the prepared Caelestia login route.
 
+### Local Penpot MCP service, 2026-10-04
+
+The cluster instance at `http://192.168.7.138/` reports Penpot2.18.0;
+this task changed no cluster deployment. The local official npm package is
+**pinned `@penpot/mcp@2.17.0`**, not an invented2.18 release: the public registry
+publishes no2.18 package, and the official Penpot2.18.0 tag's
+`mcp/package.json` itself declares2.17.0. The published package nevertheless
+differs from later source in that tag. Its plugin warns that it targets
+Penpot2.17.0; retain that warning and treat compatibility as runtime-tested,
+not a claim of exact source equivalence.
+
+Installation: `~/.local/share/mcp-servers/penpot-mcp/`, with exact package and
+pnpm11.9.0 pins in its npm lock; the copied, locked, built runtime lives in
+its `runtime/` directory. Node24.18.0 is supplied by the existing Home profile.
+The released `PluginBridge.ts` omits a WebSocket bind host. A narrow local
+patch at `packages/server/src/PluginBridge.ts:47` in both the installed package
+and runtime supplies `host: process.env.PENPOT_MCP_SERVER_HOST ?? "localhost"`.
+The server was built after this patch. Reinstalling/replacing that package or
+runtime can overwrite it: retain/reapply the patch or verify upstream support
+before any upgrade. Routine service restarts do not reinstall dependencies
+or rebuild the patched server.
+
+Existing user **Shepherd**, not systemd, supervises `penpot-mcp`. Its launcher
+`~/.local/share/mcp-servers/penpot-mcp/run.sh` runs the already installed
+`concurrently` binary with `--kill-others`, the built server, and the official
+Vite plugin watch/preview command. It sets both bind-host variables to
+`127.0.0.1` and plugin task timeout120s. Observed listeners4400 (plugin),4401
+(HTTP MCP),4402 (WebSocket), and4403 (REPL) all bind only127.0.0.1. This
+published release ignores `PENPOT_MCP_REPL_ENABLE=false`;4403 remains local.
+
+The hot-load definition is `~/.config/penpot-mcp/shepherd.scm`; it uses
+respawn-delay5 and quoted runtime limit `(5 . 60)`. The Guix Home source now
+declares `%penpot-mcp-service` in `workstation-daemons`, retaining the staged
+`(respawn-limit #~'(5 . 60))` serializer fix. No full Home build/activation or
+Shepherd/display-session restart was performed for this addition. For actual
+next-login startup without desktop activation, `~/.config/shepherd/init.scm`
+is temporarily a small **regular wrapper**, loading the exact previous
+`/gnu/store/afr0hcng77bqnvs4n93jivwaa82afbv6-shepherd.conf`, then the hot-load
+definition and `start-in-the-background` for `penpot-mcp`. The original exact
+store symlink is preserved at
+`~/.config/shepherd/init.scm.before-penpot-mcp-20261004`. This intentional
+managed-init divergence will be replaced by a future normal Home activation;
+the source declaration is ready for that activation but is not yet built or
+deployed. Actual logout/reboot startup has not been exercised.
+
+```sh
+herd status penpot-mcp
+herd stop penpot-mcp
+herd start penpot-mcp
+herd restart penpot-mcp
+# Load into an existing supervisor when the service is absent:
+herd load root ~/.config/penpot-mcp/shepherd.scm
+```
+
+Logs: `~/.local/state/shepherd/penpot-mcp.log`. OMP's existing
+`~/.omp/agent/mcp.json` retains its other entries and adds `penpot` as
+`type:http`, URL `http://localhost:4401/mcp`, timeout150000ms (longer than the
+server's120s tool deadline). Use `/mcp reload` in OMP to discover it.
+Load the browser plugin from `http://localhost:4400/manifest.json`, connect it
+inside a design file, and keep that plugin UI/tab open and active.
+
+Evidence: locked dependency installation and official runtime build exited0;
+real initialize HTTP200 negotiated a session, initialized notification202,
+tools/list200 listed five official tools, and read-only
+`high_level_overview`200 returned official guidance. That overview is a
+documentation tool, not proof of file inspection. After the narrow launcher
+restart and browser plugin reconnect, actual read-only `execute_code` returned
+HTTP200: Penpot2.18.0, file `OMP MCP connection check`
+(`4252abbf-6768-8054-8008-bd6c18cb3478`), `Page 1`
+(`4252abbf-6768-8054-8008-bd6c18cb3479`), rootChildCount0. No mutation methods
+were called and no design objects were added. Initialize/tools/overview also
+passed again after restart. The first direct-launch attempt omitted the
+server package working directory and failed resource lookup; the corrected
+launcher restores that directory, and the service was explicitly re-enabled
+after reaching its five-start respawn limit. Final listeners remain loopback.
+Protocol and connected-file receipt:
+`~/.local/state/penpot-mcp-protocol-20261004.json`. Credentials and rbw
+session/settings untouched.
+
+
 ### G9 HDR recovery and mapping history
 **Home source-include error and mutable HDR ownership, 2026-10-04:** after the
 operator's Home activation, read-only `hyprctl configerrors` still reports

@@ -213,6 +213,20 @@
              (system* #$%podman "stop" "--time" "15" "ha-mcp-admin-proxy")
              #f))))
 
+(define %penpot-mcp-service
+  (shepherd-service
+   (documentation "Run pinned official @penpot/mcp 2.17.0 loopback HTTP and plugin servers.")
+   (provision '(penpot-mcp))
+   (auto-start? #t)
+   (respawn? #t)
+   (respawn-delay 5)
+   (respawn-limit #~'(5 . 60))
+   (modules '((shepherd support)))
+   (start #~(make-forkexec-constructor
+             (list "/home/tay/.local/share/mcp-servers/penpot-mcp/run.sh")
+             #:log-file (string-append %user-log-dir "/penpot-mcp.log")))
+   (stop #~(make-kill-destructor))))
+
 
 
 ;; KWallet, so Electron/Chromium apps can use a real secret store instead of
@@ -446,7 +460,8 @@
                                        %ksecretd-service
                                        %kwalletd6-service
                                        %ha-mcp-admin-service
-                                       %ha-mcp-admin-proxy-service))
+                                       %ha-mcp-admin-proxy-service
+                                       %penpot-mcp-service))
                  (simple-service 'signal-kwallet-desktop-entry
                                  home-xdg-data-files-service-type
                                  `(("applications/signal-desktop.desktop"
