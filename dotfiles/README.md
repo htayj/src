@@ -101,6 +101,52 @@ in a non-login SSH session, and Python's built-in CA store is empty, `capture`
 uses the Guix system bundle under `/run/current-system/profile/etc/ssl/certs`
 (or `/etc/ssl/certs`). If either variable is set, it is always used.
 
+## Tern pinky Super bridge (basedbox)
+
+`config/.config/hypr/tern-pinky.py` ports the EndeavourOS G3's Tern-only
+bridge to Hyprland's legacy configuration. Local Space Cadet puts pinky
+`Super_L` on Mod4 (`SUPER`), unlike the laptop's Mod3. Alt desktop shortcuts
+and Super+Alt group shortcuts are unchanged. With `so.stencil.tern` focused:
+
+| Pinky chord | Tern action | Forwarded chord |
+| --- | --- | --- |
+| Super+Shift+U | Toggle Usage Monitor | Ctrl+Alt+Shift+U |
+| Super+Shift+A | New agent tab (pinky-navigation plugin) | Ctrl+Alt+Shift+A |
+| Super+H / L | Previous / next tab | Ctrl+Alt+Shift+H / L |
+| Super+J / K | Next / previous session | Ctrl+Alt+Shift+J / K |
+| Super+N / P | Next / previous pane | Ctrl+Alt+Shift+N / P |
+| Super+Ctrl+N | New note | Ctrl+Alt+N |
+| Super+Ctrl+P | Picture in picture | Ctrl+Alt+P |
+
+The helper uses the invoking compositor's Unix IPC socket, snapshots the
+focused window and targets its address explicitly. Outside Tern it resends
+the original Super chord to that window, rather than translating it or
+using the asynchronous `pass` dispatcher's mutable last-key state. No daemon,
+extra input-injection dependency, keymap change or application restart is
+needed. Deploy `tern-pinky.py` and `tern-pinky.conf` under `~/.config/hypr/`;
+Guix Home's existing `config` stow package includes both. The bindings are
+sourced exactly once through the mutable `g9-hdr.conf`, which is already
+included by both the running immutable main config and the tracked main.
+This small compatibility entrypoint preserves bindings across normal reloads
+without modifying Guix store files or restarting the session. Monitor values
+are unchanged; `g9-hdr-controls` preserves the include when saving individual
+HDR settings. The tracked `g9-hdr.conf` seed carries the same include for
+future Home activations. The live main-config link also points to tracked
+source; neither it nor a future login adds a second copy of the bindings.
+
+On local Tern 0.9.2, `pinky-navigation` registers the agent chord itself;
+there is no missing built-in binding to add to settings. Its `SettingsCx:get`,
+`Launch.command` and `LayoutCx:new_tab` calls match the locally emitted plugin
+types. An isolated real-window check on 2026-10-22 ran a harmless `sleep 180`
+agent command: the installed Shift+A bridge created a new active tab in the
+focused pane's directory. No plugin compatibility patch or settings rewrite
+was needed. Earlier no-op smoke attempts were not reproduced; a command that
+exits immediately is unsuitable for checking that a tab remains open.
+For developer control, preserve scenario quoting inside the shell argument:
+`tern ctl --control EP agent-command '"sleep 180"'`. This is test-only setup,
+not the user's agent configuration or evidence of provider authentication.
+
+
 ## Hyprland keybinding help (basedbox)
 
 **Right Alt+Shift+/** (**RAlt+?**) keeps its existing binding and opens a
