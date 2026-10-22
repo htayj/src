@@ -485,14 +485,16 @@ installs Tailscale's official static Linux client and daemon binaries.")
         (guix-configuration
          (inherit config)
          (substitute-urls
-          (cons* "https://substitutes.nonguix.org"
+          (cons* "http://192.168.7.140"
+                 "https://substitutes.nonguix.org"
                  %default-substitute-urls))
          (authorized-keys
           (append
            (list
             (plain-file
              "non-guix.pub"
-             "(public-key \n  (ecc \n   (curve Ed25519)\n   (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)\n   )\n  )"))
+             "(public-key \n  (ecc \n   (curve Ed25519)\n   (q #C1FD53E5D4CE971933EC50C9F307AE2171A2D3B52C804642A7A35F84F3A4EA98#)\n   )\n  )")
+            (local-file "/home/tay/src/guix-config/guix-substitutes.pub"))
            %default-authorized-guix-keys)))))))
 
     (bootloader

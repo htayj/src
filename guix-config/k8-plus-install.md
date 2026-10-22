@@ -1,6 +1,29 @@
 # Basedbox deployment and hardware acceptance
 
 Use this runbook with `/home/tay/src/config-k8-plus.scm`. The GMKtec K8 Plus is already installed. Do not repartition or format it.
+## LAN Guix substitutes — source prepared 2026-10-18
+
+`/home/tay/src/config-k8-plus.scm` now declares `http://192.168.7.140`
+before Nonguix and the official substitute URLs. It adds only the public key
+in `guix-config/guix-substitutes.pub`, retaining all existing authorized keys.
+Exact public-file SHA256:
+`89c32e63068356480cb8d30f02e28df30c47cf9c4501f2237d08a16adc5b47f9`.
+
+This is **not activated**: noninteractive sudo required a password, so no
+system reconfigure, daemon restart, or live ACL modification was performed.
+The Guix reader parsed all 21 configuration forms successfully. The exact
+prechange configuration is retained at
+`/home/tay/src/config-k8-plus.scm.guix-substitutes-prechange-20261018`.
+
+Activate only through a reviewed, channel-pinned system reconfigure with
+administrative authentication; preserve an administrative recovery session
+and the existing ACL first. Do not run the broader deferred-admin script just
+to activate substitutes. Roll back both the URL and key declaration together;
+restoring source alone does not revoke an already authorized live key.
+
+Server deployment and verification are recorded in the kube repository's
+`docs/runbooks/guix-substitutes.md`; source presence here does not establish
+server availability or complete package coverage.
 
 ## Hardware and firmware map
 
