@@ -1317,11 +1317,18 @@ package paths/PIDs in evidence are historical, not final installed targets.
   autostarted. Hyprland's explicit `misc:mouse_move_enables_dpms = true` and
   `misc:key_press_enables_dpms = true` independently wake outputs on input,
   even if the shell's idle return-action owner has exited.
-- **Lock screen.** `lock.enableFprint` and `lock.enableHowdy` are false. Manual
+- **Lock screen.** Caelestia's built-in locker is already installed and wired;
+  no separate locker is needed. Physical **Right Alt+Ctrl+L** (`$mainMod CTRL,
+  L`, `$mainMod = ALT`) runs `python3 ~/.config/hypr/caelestia-session.py lock`.
+  `lock.enableFprint` and `lock.enableHowdy` are false. Manual
   lock authenticates through Guix's `login` PAM stack and the root-setuid
   `/run/privileged/bin/unix_chkpwd`. Do not hand-write PAM files or loosen
-  helper permissions. Test a real password unlock from a spare logged-in TTY
-  before relying on the locker.
+  helper permissions. An isolated nested-Hyprland proof on 2026-10-12
+  (`~/.cache/caelestia-lock-smoke-20261012/receipt.json`) showed the chord
+  locks, normal binds stay suppressed, and a synthetic wrong password is
+  rejected while the session stays locked. A successful real-password unlock,
+  and locking on the physical seat, are untested: try it from a spare
+  logged-in TTY before relying on the locker.
 - **Weather.** `services.weatherEnabled` is false, and the dashboard weather tab
   is hidden.
 - **Applications and wallpaper.** The shell's apps are Kitty, pavucontrol and
