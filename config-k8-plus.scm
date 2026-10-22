@@ -425,6 +425,12 @@ installs Tailscale's official static Linux client and daemon binaries.")
              shepherd-root-service-type
              (list %wake-on-lan-service))
             (simple-service 'blueman dbus-root-service-type (list blueman))
+            ;; PipeWire (started by Guix Home) asks RealtimeKit over the
+            ;; system bus for SCHED_RR on its data-loop threads. Without this
+            ;; service org.freedesktop.RealtimeKit1 is not activatable, the
+            ;; user's RLIMIT_RTPRIO is 0, and the audio graph runs at normal
+            ;; priority, so it underruns (choppy audio) under CPU pressure.
+            (service rtkit-service-type)
             ;; Disk swap is primary. A smaller compressed-RAM device is kept
             ;; as overflow so nominal total swap roughly matches visible RAM.
             (service zram-device-service-type

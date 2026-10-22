@@ -1652,6 +1652,104 @@ pactl list short sources
 
 Test analog, HDMI or DisplayPort, Bluetooth, and every microphone path that matters.
 
+#### Real-time scheduling and quantum floor (2026-10-07)
+
+Choppy audio on the DP sink `alsa_output.pci-0000_c6_00.1.hdmi-stereo`
+(Odyssey G95SC) came from two causes. First, `pw-top` error counters rose on
+the sink, WoW and Firefox at quantum 256 / 48 kHz. Second, PipeWire's
+data-loop thread ran at normal priority. Shepherd's `herd` logs showed RTKit
+`ServiceUnknown` because `%desktop-services` does not include
+`rtkit-service-type`, and tay's `RLIMIT_RTPRIO` is 0.
+
+**Permanent configuration.**
+
+- `config-k8-plus.scm` adds `(service rtkit-service-type)` from
+  `(gnu services dbus)`. It sets up the D-Bus activation file, the polkit
+  actions and the `rtkit` system account. A `pam-limits` rtprio entry would not
+  help, because pam_limits only covers login, greetd, gdm-password, sshd and
+  similar PAM services. **Deployed:** System generation 19
+  (`/gnu/store/f8nxsswlgg9lbckvn15pabh62z3i0ixs-system`). Its scope review
+  found the kernel, initrd and profile unchanged. The only additions were the
+  rtkit 0.14 package and its account, D-Bus and polkit wrappers. Activation
+  used the deployed channels and exited 0:
+
+  ```sh
+  sudo ~/.config/guix/current/bin/guix time-machine \
+    -C /run/current-system/channels.scm -- \
+    system reconfigure ~/src/config-k8-plus.scm
+  ```
+
+  A root `ReloadConfig` of the system bus also exited 0. RealtimeKit1 now
+  answers and reports a `MaxRealtimePriority` of 20.
+- `home-workstation-configuration.scm` adds the basedbox-only simple-service
+  `basedbox-pipewire-min-quantum`, and `modules/tay/home-common.scm` keeps
+  `.config/pipewire` out of the shared stow. It installs two fragments:
+  - `dotfiles/config/.config/pipewire/pipewire.conf.d/10-basedbox-min-quantum.conf`
+    sets `default.clock.min-quantum = 1024` and
+    `module.rt.args = { rtportal.enabled = false }`.
+  - The matching `pipewire-pulse.conf.d` fragment sets
+    `module.rt.args = { rtportal.enabled = false }` and
+    `pulse.min.quantum = 1024/48000`.
+
+  `rtportal.enabled = false` is needed because module-rt tries the
+  xdg-desktop-portal Realtime interface before RTKit. In portal 1.20.3,
+  `map_pid` fails with `ENOTDIR` on its pidfd and module-rt does not fall back.
+  A restarted PipeWire therefore spent about 3 × 25 s in startup and ended up
+  with no RT priority.
+
+  Both fragments are linked directly from source into `~/.config/pipewire/`
+  until the next `rbh`. Home was not activated; its dry run completed, with
+  warnings from the existing nhfourk/winrm module syntax. The parent checked
+  the parse with `pw-config -n pipewire.conf merge context.properties`, which
+  showed `default.clock.min-quantum = 1024` and
+  `module.rt.args = { rtportal.enabled = false }`. The pulse config showed the
+  same `context.properties` and a `pulse.properties` `pulse.min.quantum` of
+  `1024/48000`. Only the `pw-config` parser was run; no isolated PipeWire
+  process was started. The `rtportal.enabled =
+  false` setting reaches the running daemons through these source links. It
+  only takes effect on a fresh-login start of PipeWire, and that has not
+  happened yet.
+
+**Current session, after the PipeWire restart (2026-10-07).** PipeWire and
+pipewire-pulse were restarted without a reboot or a Home activation. Home
+Shepherd started them at first login, and they still start under the dead
+elogind session `c2`. RTKit's stock policy denies requests from that session.
+There is deliberately no custom polkit rule and no desktop restart, so this
+stale-session authorization stays unresolved for daemons that start
+automatically in this login.
+
+- Real-time priority comes only from a manual graphical polkit `chrt`. Both
+  new data-loop threads were verified at `SCHED_FIFO` 20: tid 5388 in PipeWire
+  PID 5379, and tid 5962 in pipewire-pulse PID 5959. Another restart loses it.
+- The min-quantum 1024 floor is loaded and `clock.force-quantum` is 0. The
+  sink actually ran at 2048/48000, which the parent judged a valid result of
+  the pulse floor.
+- `wpctl` showed Firefox Nightly (node 85) active and routed to the Odyssey
+  G95SC monitor sink (node 54). The Yeti source was unchanged.
+- Over 60 s, all 59 active samples had the sink (node 54) at 2048/48000. Sink
+  errors stayed at 0 and Firefox (node 85) errors stayed at 0.
+- WoW had no stream after the restart, so it was not tested in this final
+  configuration.
+
+Before the restart, at a forced quantum of 1024, a 60 s sample with all 59
+active samples on the sink at 1024/48000 showed no new errors. The sink (node
+109) stayed at 541, WoW (node 112) at 900, and Firefox Nightly (node 108) at 0.
+
+Direct RTKit scheduling needs both the disabled portal path and an active
+session. It first applies after the next fresh reboot or login and has not
+been verified yet. Do not reboot just for this.
+
+Checks to run after the next fresh login:
+
+```sh
+busctl --system call org.freedesktop.DBus /org/freedesktop/DBus \
+  org.freedesktop.DBus ListActivatableNames | grep -o RealtimeKit1
+herd log pipewire          # no portal ENOTDIR retries, no RTKit errors
+chrt -p <data-loop tid>    # SCHED_FIFO/RR, priority capped at RTKit's max of 20
+pw-metadata -n settings 0 clock.min-quantum   # expect 1024
+pw-top                     # ERR should stay flat under load
+```
+
 ### Suspend and resume
 
 ```sh

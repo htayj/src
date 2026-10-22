@@ -348,6 +348,20 @@
                  ;; declares itself to order startup correctly.
                  (service home-dbus-service-type)
                  (service home-pipewire-service-type)
+                 ;; basedbox's DP sink and game/browser streams underrun at
+                 ;; PipeWire's default 256-frame quantum under load; keep the
+                 ;; graph and pulse floor at 1024 frames on this host only.
+                 (simple-service
+                  'basedbox-pipewire-min-quantum
+                  home-xdg-configuration-files-service-type
+                  `(("pipewire/pipewire.conf.d/10-basedbox-min-quantum.conf"
+                     ,(local-file
+                       "/home/tay/src/dotfiles/config/.config/pipewire/pipewire.conf.d/10-basedbox-min-quantum.conf"
+                       "pipewire-10-basedbox-min-quantum.conf"))
+                    ("pipewire/pipewire-pulse.conf.d/10-basedbox-min-quantum.conf"
+                     ,(local-file
+                       "/home/tay/src/dotfiles/config/.config/pipewire/pipewire-pulse.conf.d/10-basedbox-min-quantum.conf"
+                       "pipewire-pulse-10-basedbox-min-quantum.conf"))))
                  ;; The symlink manager runs first and removes the old store
                  ;; link on the initial transition. Recover that generation's
                  ;; bytes before using the seed; subsequent regular state is

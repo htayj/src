@@ -272,6 +272,9 @@
                  ;; Workstation activation seeds a mutable regular file;
                  ;; only this HDR state file leaves dotfiles ownership.
                  "/config/\\.config/hypr/g9-hdr\\.conf$"
+                 ;; basedbox-only PipeWire quantum floor, deployed by
+                 ;; home-workstation-configuration.scm, not the shared stow.
+                 "/config/\\.config/pipewire/.*"
                  ;; Deployed whole-directory below instead. ASDF resolves a
                  ;; system's components relative to the truename of its .asd,
                  ;; and per-file store symlinks resolve straight into
