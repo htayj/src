@@ -10,11 +10,25 @@
              (gnu services shepherd)
              (guix gexp)
              (guix modules)
+             (guix packages)
+             (tay packages aquamarine)
              (tay packages caelestia-cli)
              (tay packages caelestia-shell)
              (tay packages caelestia-panes)
              (tay home-common)
              (tay catgirl))
+
+;; Graft the ABI-compatible output-lifetime backport without recompiling
+;; Hyprland or changing the 0.55.4/client-hash ABI of hy3 and dualmaster.
+;; A running compositor retains its old library until the next normal login.
+(define %hyprland-dpms-safe
+  ((package-input-rewriting/spec
+    (list (cons "aquamarine"
+                (lambda (original)
+                  (package
+                    (inherit original)
+                    (replacement aquamarine-dpms-safe))))))
+   (specification->package "hyprland")))
 
 (define %workstation-home-packages
   (append
@@ -58,8 +72,6 @@
      "htop"
     ;; Mozilla Thunderbird, packaged under its GNU-unbranded name Icedove.
     "icedove"
-     ;; Optional Wayland session; StumpWM and its X clients stay available.
-     "hyprland"
      ;; Version-matched manual tree layout; local channel pins the plugin ABI.
      "hy3"
      ;; Community tiling plugin; declares ABI compat with this Hyprland.
@@ -146,7 +158,7 @@
      "yt-dlp"
      "yubico-piv-tool"
      "zip"))
-   (list catgirl-openssl)))
+   (list catgirl-openssl %hyprland-dpms-safe)))
 
 (define %mpd-service
   (shepherd-service

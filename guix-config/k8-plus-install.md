@@ -1,6 +1,110 @@
 # Basedbox deployment and hardware acceptance
 
 Use this runbook with `/home/tay/src/config-k8-plus.scm`. The GMKtec K8 Plus is already installed. Do not repartition or format it.
+
+## Hyprland output-disconnect repair — installed for next login 2026-10-21
+
+Recurrent reports `2478` (October 5), `28521` (October 10), and `22287`
+(October 21), dated by filesystem timestamps, show DP-1 disconnect/disable
+followed by SIGSEGV in `CSignalListener::emitInternal` →
+`CSignalBase::emitInternal` → Aquamarine's `CBackend::dispatchIdle`.
+Report `26928` (October 20) is truncated before the backtrace and cannot
+establish the same signature; subsequent safe-mode dialog crashes are
+secondary. The internal June 11 date is the build date, not the crash date.
+Host uptime was 17 days, GDM had run since October 4, and physical Hyprland
+PID `23760` started October 21 at 13:26:35: no recent reboot was established.
+
+The source strongly matches [Aquamarine #328](https://github.com/hyprwm/aquamarine/issues/328),
+the [July 14 deferred-frame fix](https://github.com/hyprwm/aquamarine/commit/86f26251004355ef0d7a7ecf3b57e21c5471c05b)
+and [September 9 captured-self correction](https://github.com/hyprwm/aquamarine/commit/61ddacaf586edb35604e7db4ccf6926a2c516cf1)
+(retrieved October 21). This is not a physical reproduction or proof that
+every crash has that cause. No evidence attributes it to the manual lock,
+plugins or 120 Hz; matching crashes predate the refresh-rate change.
+
+`~/projects/guix-channel/guix/tay/packages/aquamarine.scm` exports
+`aquamarine-dpms-safe`, using
+`patches/aquamarine-0.12.1-frame-idle-lifetime.patch`. The backport lazily
+creates the deferred frame callback in `scheduleFrame`, captures only the
+output weak pointer, and keeps a locked strong reference through emission.
+Removed outputs therefore leave harmless callbacks rather than raw `this`;
+the public class/header layout is unchanged. The actual package name/version
+remains `aquamarine`/`0.12.1` for equal-length graft paths:
+`aquamarine-dpms-safe` is a Scheme variable, **not** a `--with-graft` package
+specification.
+
+### Build and closure evidence
+
+* Guix build passed after correcting an initial patch-hunk failure. Repaired
+  library: `/gnu/store/n1cj7c69c01w2wvj7498rp2i8xp5bjqz-aquamarine-0.12.1`;
+  ungrafted derivation identity `7b68bphi0zzv87bg97kwmg6amc1hngki`.
+* All 17 public headers are byte-identical; SONAME remains 11. Synopsis,
+  description and patch-file-name metadata lint passed.
+* The exact installed compositor
+  `/gnu/store/ycaqzkym0dzdwsv5gdhac05fdfs6f5hm-hyprland-0.55.4` was grafted to
+  `/gnu/store/crilpdpxgm856l1bvrybrnq9fg90l4bh-hyprland-0.55.4`.
+  References differ only by compositor-self and Aquamarine paths; the
+  executable is identical after those two store-path substitutions. There
+  was **no compositor rebuild or graphics-stack upgrade**. Keep the existing
+  matched hy3/dualmaster packages, load paths and plugin client hash.
+* `home-workstation-configuration.scm` attaches the replacement Scheme object
+  using `package-input-rewriting/spec` only on its Hyprland selection; the
+  selected replacement's ungrafted derivation identity was checked. Full
+  Home evaluation failed on an existing unresolved `hy3` even with the
+  ivory-key load path included. This source integration is not Home activation.
+* Profile installation dry-run completed. The semantic manifest delta check
+  passed: 46 entries preserved, with **only** Hyprland's output changing
+  from `ycaqzkym0dzdwsv5gdhac05fdfs6f5hm` to
+  `crilpdpxgm856l1bvrybrnq9fg90l4bh`. A dry-run is not installation.
+
+### Bounded runtime verification
+
+* A frame-lifecycle regression harness used the real NULL `CBackend` and
+  synthetic `CDRMOutput::scheduleFrame`. The old library emitted the live
+  frame then failed the retention assertion (deliberate safe exit 20);
+  the patched library exited 0. It emitted exactly one live frame, retained
+  the output through a listener releasing the final external owner, then
+  released it afterward. A first idle callback destroying the output
+  mid-batch left the queued stale frame callback harmless with zero events.
+  This tests ownership behavior, not physical DRM unplugging.
+* The private nested smoke passed its bounded IPC checks: repaired Aquamarine
+  mapped, installed hy3 and dualmaster loaded, and no configerrors. PID
+  `11144` survived Caelestia lock false → true → false and headless `AQSMOKE`
+  DPMS true → false → true. It used private HOME/XDG/runtime/D-Bus state and
+  a headless labwc allocator; all task processes stopped and private directories
+  were removed. Hyprland's SIGTERM cleanup returned -11, a separate repeated
+  teardown issue, not a clean-exit claim. The locked/after screenshots captured
+  the wrong private parent and were black: **visual lock/rendering and PAM
+  success were not verified**. Receipt:
+  `~/.cache/aquamarine-nested-smoke-20261021/receipt.json`.
+
+### Deployment boundary
+
+**Installed for next login; not active in the physical session.** Profile
+installation exited 0 and built the 47-package profile. The semantic delta
+check preserved 46 entries and changed only Hyprland's output. Both
+`~/.guix-profile/bin/Hyprland` and `~/.guix-profile/bin/start-hyprland` resolve
+to `/gnu/store/crilpdpxgm856l1bvrybrnq9fg90l4bh-hyprland-0.55.4/bin/…`.
+Physical PID `23760` remains running with the old Aquamarine mapped;
+physical `configerrors` is empty. Main receipt:
+`~/.cache/hyprland-output-repair-20261021/receipt.json`.
+Do not substitute a newly resolved compositor closure for the exact
+installed-output graft above: channel security grafts may differ even when
+the package version is identical.
+
+Do **not** run a broad Home/System reconfigure, reload/restart the physical
+Hyprland session, or exercise physical DPMS/disconnect merely to deploy this
+repair. Profile installation cannot change existing process mappings. Save
+work and log out/in normally: a **fresh normal login**, not a reboot, is
+required, followed by checking the mapped repaired
+Aquamarine and matched plugin loads. The successful isolated smoke does not
+verify physical DRM disconnect, fresh-login behavior or overnight stability.
+
+The manual Caelestia lock remains available; idle remains 1200-second
+DPMS-only with no hypridle process. No automatic lock/suspend policy changed.
+G9 remains 119.979 Hz HDR/10-bit with VRR off; CRT remains 800x600@75 and
+physical `configerrors` was empty. No reboot, broad activation or physical
+display-power cycle was performed for the repair.
+
 ## LAN Guix substitutes — source prepared 2026-10-18
 
 `/home/tay/src/config-k8-plus.scm` now declares `http://192.168.7.140`
