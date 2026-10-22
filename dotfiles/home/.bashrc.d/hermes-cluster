@@ -1,0 +1,4 @@
+# Cluster Hermes TUI: open a new TUI session in the hermes deployment (not dashboard attachment).
+if [[ "$HOSTNAME" == basedbox ]]; then
+    alias hermes-cluster='HERDR_AGENT=hermes /home/tay/projects/kube/.tools/kubectl-v1.34.9/kubectl --kubeconfig /home/tay/.local/state/kube-stage1/kubeconfig -n hermes exec -it deploy/hermes -c hermes -- hermes --tui'
+fi

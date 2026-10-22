@@ -155,6 +155,60 @@ not available on other hosts and are not visible to non-interactive shells.
 `rbs` targets `~/src/config-k8-plus.scm` and `rbh` targets
 `home-workstation-configuration.scm`; neither needs `--allow-downgrades`
 while the pulled channels are at or ahead of the running generation.
+## Cluster Hermes TUI (2026-10-05)
+
+The `hermes-cluster` alias opens a NEW TUI session inside the cluster's
+`hermes` deployment (it does not attach to a dashboard). Its literal expansion
+is:
+
+```sh
+alias hermes-cluster='HERDR_AGENT=hermes /home/tay/projects/kube/.tools/kubectl-v1.34.9/kubectl --kubeconfig /home/tay/.local/state/kube-stage1/kubeconfig -n hermes exec -it deploy/hermes -c hermes -- hermes --tui'
+```
+
+It lives in its own fragment, `dotfiles/home/.bashrc.d/hermes-cluster`,
+guarded by `$HOSTNAME == basedbox` so it is inert on other hosts; interactive
+SSH/login shells pick it up because `~/.bashrc` sources all regular
+`~/.bashrc.d/*` fragments. Deployment is a narrow source link,
+`ln -s` from `~/.bashrc.d/hermes-cluster` to that fragment, leaving the
+immutable `host-basedbox` file untouched; the future Home dotfiles packaging
+(stow home) includes the whole `.bashrc.d` automatically.
+
+The active source symlink picks up fragment edits automatically for new shells;
+existing interactive shells must re-source `~/.bashrc.d/hermes-cluster` to
+refresh the alias.
+
+The command-scoped `HERDR_AGENT=hermes` hint is received by the local,
+host-visible foreground `kubectl` wrapper, selecting Herdr's existing native
+Hermes screen-detection manifest even though the Hermes process runs remotely.
+Setting it only inside the container would be invisible to local Herdr; do not
+export it globally. See the official [Herdr agents documentation](https://herdr.dev/docs/agents/),
+especially "VMs and sandbox wrappers" and "How status works".
+
+This uses screen-derived `idle`, `working`, and `blocked` states only, not
+remote session restoration. Unusual approval/question prompt shapes may fall
+back to `idle` rather than `blocked`. No integration or plugin installation,
+remote socket exposure, or gateway/cluster change is required for this hint.
+
+Historical parent verification of the **pre-hint** alias ran
+`bash -lic 'alias hermes-cluster; hermes-cluster --help'` with a PTY: exit 0
+in 2.11 seconds, the correct unhinted alias expanded, and remote Hermes help
+returned. That proved interactive-login alias loading and the remote command
+path, not a full fresh TUI launch; no model turn was performed in that alias
+task.
+
+Parent live verification of the **hinted** alias on 2026-10-05 used a
+task-owned sibling pane, `w7:pT`, sourced the alias separately, and launched
+`hermes-cluster`; Hermes was ready within 11.38 seconds. `herdr agent get`
+recognized `agent=hermes`, `status=idle`, and `herdr agent explain` used the
+existing Hermes rules, including OSC-title evidence. A harmless no-tools
+exact-marker prompt returned visible `HERDR_HERMES_STATUS_OK`;
+`herdr agent wait` observed `working` at sequence 138 with the hourglass title,
+then `idle` at sequence 139 with the check-mark title. After `/exit` returned to the
+shell, `herdr pane get` had no agent field and `status=unknown`, demonstrating
+that the hint did not leak to the shell. The task-owned pane was closed; no
+user sessions were touched. No blocked screen was exercised, and this does
+not verify remote session restoration. No gateway, cluster, or vault changes
+were made.
 
 ## Hyprland workspace layouts (2026-09-30; layout card and dualmaster updated 2026-10-02)
 
