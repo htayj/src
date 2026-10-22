@@ -56,6 +56,8 @@
      ;; Stock catgirl's LibreSSL verifier rejects its self-signed CA:FALSE cert.
      "herdr"
      "htop"
+    ;; Mozilla Thunderbird, packaged under its GNU-unbranded name Icedove.
+    "icedove"
      ;; Optional Wayland session; StumpWM and its X clients stay available.
      "hyprland"
      ;; Version-matched manual tree layout; local channel pins the plugin ABI.
