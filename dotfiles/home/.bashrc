@@ -203,6 +203,15 @@ export PATH="$HOME/.local/bin/:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# Guix privileged wrappers must win after Nix and other user PATH setup.
+# Presence later in PATH is not enough when a desktop inherited profile bins first.
+if [ -d /run/privileged/bin ]; then
+    case "$PATH" in
+        /run/privileged/bin|/run/privileged/bin:*) ;;
+        *) export PATH="/run/privileged/bin${PATH:+:$PATH}" ;;
+    esac
+fi
+
 # Keep GnuPG pinentry out of interactive application panes. A dedicated tmux
 # pane advertises its terminal through the global GPG_PINENTRY_TTY variable.
 if [[ -t 1 ]]; then

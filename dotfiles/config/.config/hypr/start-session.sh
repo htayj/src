@@ -24,7 +24,9 @@ export XDG_CURRENT_DESKTOP=Hyprland
 export XDG_SESSION_DESKTOP=Hyprland
 export XDG_SESSION_TYPE=wayland
 export KITTY_WAYLAND_DETECT_MODIFIERS=1
-export PATH="$HOME/.guix-profile/bin:$HOME/.guix-home/profile/bin:/run/current-system/profile/bin${PATH:+:$PATH}"
+# Privileged wrappers must win over ordinary profile programs; keep the user
+# profile first among profiles for compositor/plugin ABI compatibility.
+export PATH="/run/privileged/bin:$HOME/.guix-profile/bin:$HOME/.guix-home/profile/bin:/run/current-system/profile/bin${PATH:+:$PATH}"
 export XDG_DATA_DIRS="$HOME/.guix-profile/share:$HOME/.guix-home/profile/share:/run/current-system/profile/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
 export QT_PLUGIN_PATH="$HOME/.guix-profile/lib/qt6/plugins:$HOME/.guix-home/profile/lib/qt6/plugins${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
 export QML2_IMPORT_PATH="$HOME/.guix-profile/lib/qt6/qml:$HOME/.guix-home/profile/lib/qt6/qml${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"

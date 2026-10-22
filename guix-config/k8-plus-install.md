@@ -155,6 +155,57 @@ not available on other hosts and are not visible to non-interactive shells.
 `rbs` targets `~/src/config-k8-plus.scm` and `rbh` targets
 `home-workstation-configuration.scm`; neither needs `--allow-downgrades`
 while the pulled channels are at or ahead of the running generation.
+
+## Sudo selects an unprivileged profile binary (2026-10-07)
+
+If `sudo` reports that it must be owned by uid 0 and have the setuid bit,
+check `command -v sudo` before changing permissions or packages. On Guix,
+it must resolve to `/run/privileged/bin/sudo`, not the ordinary copy in
+`/run/current-system/profile/bin`. The wrapper was intact: uid/gid 0, mode
+4555. `/etc/profile` already puts privileged programs first, but the Hyprland
+launcher subsequently prepended ordinary profile bins ahead of them.
+
+The tracked `.bashrc` now reasserts privileged precedence after Nix and other
+user PATH setup, checking the first component rather than presence anywhere.
+The launcher now puts `/run/privileged/bin` ahead of its existing user, Home
+and System profile bins. Their relative order is unchanged, preserving the
+user compositor/plugin ABI preference; its D-Bus and Qt/QML setup is unchanged.
+The inspected system `nix.sh` prepends `$NIX_LINK/bin`, not the System profile
+bin directly; do not attribute the launcher's mutation to Nix without evidence.
+
+Only the two live symlinks were replaced. `~/.config/hypr/start-session.sh`
+links to its tracked source under `~/src/dotfiles/`; `~/.bashrc` links to
+`~/.local/state/sudo-path-repair/20261007-141822/bashrc.activated`, a user-owned
+copy of the original generated Bash file with only the same PATH insertion.
+This preserves Guix's generated prefix and default aliases; a direct link
+to the tracked `.bashrc` would drop those generated definitions. The original
+Guix Home store symlinks remain as `bashrc.before` and `start-session.sh.before`
+in that receipt directory. No Home/System reconfigure or desktop restart was
+performed. A later `rbh` snapshots the tracked fixes into Home normally.
+
+Smoke evidence: Bash/POSIX shell syntax checks passed. Fresh interactive and
+interactive-login Bash inheriting System-before-privileged PATH both resolved
+sudo to `/run/privileged/bin/sudo`; `sudo -n true` returned 1 with
+`a password is required` in both (expected, no authentication attempted).
+After the activated-copy correction, fresh interactive and login smoke passed
+again, including the original generated `ls`, `ll`, `grep` and `ip` aliases.
+The login shell later prepends `~/.local/bin` from `.bash_profile`, but
+privileged remains ahead of System and sudo resolution is correct. The actual
+launcher prefix, stopping before either compositor exec, selected privileged
+sudo and `~/.guix-profile/bin/start-hyprland` in both TTY and GDM modes and
+preserved the inherited bus. GDM used an explicit bus value for the probe;
+its existing missing-bus rejection was also observed. No compositor was started.
+
+For an already-running shell, repair only its own environment and command cache:
+
+```sh
+export PATH="/run/privileged/bin${PATH:+:$PATH}"; hash -r
+```
+
+This cannot silently change the running desktop or parent-process environment.
+New interactive Bash shells use the deployed fix now; other children of the
+old desktop may retain its bad PATH until a future normal session start.
+
 ## Cluster Hermes TUI (2026-10-05)
 
 The `hermes-cluster` alias opens a NEW TUI session inside the cluster's
